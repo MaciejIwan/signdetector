@@ -12,16 +12,16 @@ vector<cv::Mat> images;
 vector<cv::Mat> hsv_images;
 
 // Define red color range
-cv::Scalar lower_red1(0, 50, 50);
+cv::Scalar lower_red1(0, 50, 30);
 cv::Scalar upper_red1(10, 255, 255);
-cv::Scalar lower_red2(170, 50, 50);
+cv::Scalar lower_red2(160, 50, 30);
 cv::Scalar upper_red2(180, 255, 255);
 cv::Scalar lower_red_pink(140, 50, 50);
-cv::Scalar upper_red_pink(170, 255, 255);
-cv::Scalar lower_red_claret(0, 50, 20);
+cv::Scalar upper_red_pink(160, 255, 255);
+cv::Scalar lower_red_claret(0, 50, 10);
 cv::Scalar upper_red_claret(10, 255, 150);
-cv::Scalar lower_red_dark(0, 50, 0);
-cv::Scalar upper_red_dark(10, 255, 50);
+cv::Scalar lower_red_dark(0, 5, 0);
+cv::Scalar upper_red_dark(10, 90, 50);
 
 
 void updateImageView();
@@ -33,9 +33,26 @@ void onImageTrackbar(int, void *) {
     updateImageView();
 }
 
+double compareContoursToCircle(const std::vector<cv::Point>& contour) {
+    // Fit a minimum enclosing circle to the contour
+    cv::Point2f center;
+    float radius;
+    cv::minEnclosingCircle(contour, center, radius);
+
+    // Calculate the area of the contour and the area of the enclosing circle
+    double contour_area = cv::contourArea(contour);
+    double circle_area = CV_PI * radius * radius;
+
+    // Calculate the similarity ratio between the contour and the circle
+    double similarity = contour_area / circle_area;
+
+    return similarity;
+}
+
+
 void updateImageView() {
 
-// Create mask for red color
+    // Create mask for red color
     cv::Mat red_mask, red_mask1, red_mask2, red_mask_pink, red_mask_claret, red_mask_dark;
     cv::inRange(hsv_images[currentImageIndex], lower_red1, upper_red1, red_mask1);
     cv::inRange(hsv_images[currentImageIndex], lower_red2, upper_red2, red_mask2);
@@ -51,31 +68,33 @@ void updateImageView() {
     cv::Mat masked_image;
     currImage.copyTo(masked_image, red_mask);
 
-    // Count red area
-    int red_area = cv::countNonZero(red_mask);
-    std::cout << "Red area size: " << red_area << " px" << std::endl;
-
-    // Select areas with size > 200px
+    // Find contours in the masked image
     std::vector<std::vector<cv::Point>> contours;
-    std::vector<cv::Vec4i> hierarchy;
-    cv::findContours(red_mask, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
-    for (int i = 0; i < contours.size(); i++) {
-        if (cv::contourArea(contours[i]) > 8192) {
-            // Check circle similarity
-            cv::RotatedRect bbox = cv::minAreaRect(contours[i]);
-            cv::Point2f center = bbox.center;
-            float radius = bbox.size.width / 2;
-            float circle_similarity = std::abs(1 - (bbox.size.width / bbox.size.height));
-            if (circle_similarity < 0.8) {
-                // Draw green bounding box on original image
-                cv::rectangle(currImage, bbox.boundingRect(), cv::Scalar(0, 255, 0), 2);
+    cv::findContours(red_mask, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+
+    // Create a copy of the original image for contour preview
+    cv::Mat contour_preview = currImage.clone();
+
+    // Iterate through each contour and check if it is a circle
+    for (const auto& contour : contours) {
+        double area = cv::contourArea(contour);
+        if (area > 2048) {
+            cv::Rect bounding_rect = cv::boundingRect(contour);
+            double contour_similarity = compareContoursToCircle(contour);
+            if (contour_similarity >= 0.7) {
+                // Draw a green bounding box on the original image
+                cv::rectangle(currImage, bounding_rect, cv::Scalar(0, 255, 0), 2);
             }
+            // Draw the contour on the contour preview image
+            cv::drawContours(contour_preview, std::vector<std::vector<cv::Point>>{contour}, 0, cv::Scalar(0, 255, 0), 2);
         }
     }
 
-    // Display original and masked images
+    // Display original and masked images, as well as contour preview
     cv::imshow("Original Image", currImage);
     cv::imshow("Masked Image", masked_image);
+    cv::imshow("Contour Preview", contour_preview);
+
 
 }
 
