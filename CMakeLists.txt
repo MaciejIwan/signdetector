@@ -24,4 +24,15 @@ add_executable(thresh thresh.cpp thresh.cpp) # Add new target
 target_link_libraries(thresh
         ${OpenCV_LIBS}
         )
+
+add_executable(maskRed maskRed.cpp)
+target_link_libraries(maskRed
+        ${OpenCV_LIBS}
+        )
+
+add_executable(meanShift meanShift.cpp meanShift.cpp)
+target_link_libraries(meanShift
+        ${OpenCV_LIBS}
+        )
+
 FILE(COPY imgs DESTINATION ${CMAKE_BINARY_DIR})
