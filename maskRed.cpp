@@ -35,7 +35,7 @@ void onImageTrackbar(int, void *) {
 
 void updateImageView() {
 
-    // Create mask for red color
+// Create mask for red color
     cv::Mat red_mask, red_mask1, red_mask2, red_mask_pink, red_mask_claret, red_mask_dark;
     cv::inRange(hsv_images[currentImageIndex], lower_red1, upper_red1, red_mask1);
     cv::inRange(hsv_images[currentImageIndex], lower_red2, upper_red2, red_mask2);
@@ -50,6 +50,28 @@ void updateImageView() {
     // Apply mask to image
     cv::Mat masked_image;
     currImage.copyTo(masked_image, red_mask);
+
+    // Count red area
+    int red_area = cv::countNonZero(red_mask);
+    std::cout << "Red area size: " << red_area << " px" << std::endl;
+
+    // Select areas with size > 200px
+    std::vector<std::vector<cv::Point>> contours;
+    std::vector<cv::Vec4i> hierarchy;
+    cv::findContours(red_mask, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    for (int i = 0; i < contours.size(); i++) {
+        if (cv::contourArea(contours[i]) > 8192) {
+            // Check circle similarity
+            cv::RotatedRect bbox = cv::minAreaRect(contours[i]);
+            cv::Point2f center = bbox.center;
+            float radius = bbox.size.width / 2;
+            float circle_similarity = std::abs(1 - (bbox.size.width / bbox.size.height));
+            if (circle_similarity < 0.8) {
+                // Draw green bounding box on original image
+                cv::rectangle(currImage, bbox.boundingRect(), cv::Scalar(0, 255, 0), 2);
+            }
+        }
+    }
 
     // Display original and masked images
     cv::imshow("Original Image", currImage);
