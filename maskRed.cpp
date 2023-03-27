@@ -81,12 +81,16 @@ void updateImageView() {
         if (area > 2048) {
             cv::Rect bounding_rect = cv::boundingRect(contour);
             double contour_similarity = compareContoursToCircle(contour);
-            if (contour_similarity >= 0.7) {
+            if (contour_similarity >= 0.6) {
                 // Draw a green bounding box on the original image
                 cv::rectangle(currImage, bounding_rect, cv::Scalar(0, 255, 0), 2);
             }
             // Draw the contour on the contour preview image
             cv::drawContours(contour_preview, std::vector<std::vector<cv::Point>>{contour}, 0, cv::Scalar(0, 255, 0), 2);
+            std::stringstream similarity_text;
+            similarity_text << "Similarity: " << std::fixed << std::setprecision(2) << contour_similarity;
+            cv::putText(contour_preview, similarity_text.str(), cv::Point(bounding_rect.x, bounding_rect.y + bounding_rect.height + 20),
+                        cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 255, 0), 2);
         }
     }
 
