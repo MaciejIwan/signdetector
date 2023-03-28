@@ -35,4 +35,11 @@ target_link_libraries(meanShift
         ${OpenCV_LIBS}
         )
 
+
+add_executable(video1 video1.cpp)
+target_link_libraries(video1
+        ${OpenCV_LIBS}
+        )
+
 FILE(COPY imgs DESTINATION ${CMAKE_BINARY_DIR})
+FILE(COPY video DESTINATION ${CMAKE_BINARY_DIR})

@@ -26,12 +26,7 @@ cv::Scalar upper_red_dark(10, 90, 50);
 
 void updateImageView();
 
-void onImageTrackbar(int, void *) {
-    currentImageIndex = cv::getTrackbarPos("Image", "Masked Image");
-    currImage = images[currentImageIndex];
 
-    updateImageView();
-}
 
 double compareContoursToCircle(const std::vector<cv::Point>& contour) {
     // Fit a minimum enclosing circle to the contour
@@ -49,6 +44,12 @@ double compareContoursToCircle(const std::vector<cv::Point>& contour) {
     return similarity;
 }
 
+void onImageTrackbar(int, void *) {
+    currentImageIndex = cv::getTrackbarPos("Image", "Masked Image");
+    currImage = images[currentImageIndex];
+
+    updateImageView();
+}
 
 void updateImageView() {
 
@@ -64,7 +65,6 @@ void updateImageView() {
     cv::bitwise_or(red_mask, red_mask_claret, red_mask);
     cv::bitwise_or(red_mask, red_mask_dark, red_mask);
 
-    // Apply mask to image
     cv::Mat masked_image;
     currImage.copyTo(masked_image, red_mask);
 
