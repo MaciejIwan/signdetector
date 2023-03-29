@@ -2,44 +2,26 @@ cmake_minimum_required(VERSION 3.22)
 
 set(CMAKE_CXX_STANDARD 17)
 
+project(sign_edge_method_test_1)
+
 find_package(OpenCV 4.0 REQUIRED)
+find_package(Tesseract 4)
+if (NOT Tesseract_FOUND)
+    find_package(PkgConfig REQUIRED)
+
+    pkg_check_modules(Tesseract REQUIRED IMPORTED_TARGET tesseract lept)
+    add_library(Tesseract::libtesseract ALIAS PkgConfig::Tesseract)
+endif ()
 
 include_directories(
         ${OpenCV_INCLUDE_DIRS}
+        ${Tesseract_INCLUDE_DIRS}
 )
 
-project(sign_edges_finder)
-
-add_executable(sign_edges_finder main.cpp)
-target_link_libraries(sign_edges_finder
+add_executable(main main.cpp)
+target_link_libraries(main
         ${OpenCV_LIBS}
+        Tesseract::libtesseract
         )
 
-add_executable(desc desc.cpp) # Add new target
-target_link_libraries(desc
-        ${OpenCV_LIBS}
-        )
-
-add_executable(thresh thresh.cpp thresh.cpp) # Add new target
-target_link_libraries(thresh
-        ${OpenCV_LIBS}
-        )
-
-add_executable(maskRed maskRed.cpp)
-target_link_libraries(maskRed
-        ${OpenCV_LIBS}
-        )
-
-add_executable(meanShift meanShift.cpp meanShift.cpp)
-target_link_libraries(meanShift
-        ${OpenCV_LIBS}
-        )
-
-
-add_executable(video1 video1.cpp)
-target_link_libraries(video1
-        ${OpenCV_LIBS}
-        )
-
-FILE(COPY imgs DESTINATION ${CMAKE_BINARY_DIR})
 FILE(COPY video DESTINATION ${CMAKE_BINARY_DIR})

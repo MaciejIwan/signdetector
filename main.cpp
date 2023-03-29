@@ -1,84 +1,175 @@
+#include <regex>
+
 #include <opencv2/opencv.hpp>
-#include <iostream>
+#include <tesseract/baseapi.h>
 
-using namespace cv;
-using namespace std;
+const int MIN_CONTOUR_SIMILARITY = 0.90;
+const std::string WHITESPACE = " \n\r\t\f\v";
 
+cv::Mat extractRedColorFromImage(const cv::Mat &hsvFrame);
 
-void resizeImage(cv::Mat &img, int max_height) {
-    double ratio = 1.0;
-    if (img.rows > max_height) {
-        ratio = float(max_height) / img.rows;
-        cv::resize(img, img, cv::Size(), ratio, ratio);
+std::string ltrim(const std::string &s) {
+    size_t start = s.find_first_not_of(WHITESPACE);
+    return (start == std::string::npos) ? "" : s.substr(start);
+}
+ 
+std::string rtrim(const std::string &s) {
+    size_t end = s.find_last_not_of(WHITESPACE);
+    return (end == std::string::npos) ? "" : s.substr(0, end + 1);
+}
+ 
+std::string trim(const std::string &s) {
+    return rtrim(ltrim(s));
+}
+
+double compareContoursToCircle(const std::vector<cv::Point>& contour) {
+    // Fit a minimum enclosing circle to the contour
+    cv::Point2f center;
+    float radius;
+    cv::minEnclosingCircle(contour, center, radius);
+
+    // Calculate the area of the contour and the area of the enclosing circle
+    double contour_area = cv::contourArea(contour);
+    double circle_area = CV_PI * radius * radius;
+
+    // Calculate the similarity ratio between the contour and the circle
+    double similarity = contour_area / circle_area;
+
+    return similarity;
+}
+
+int getNumberFromRoi(const cv::Mat& roi, tesseract::TessBaseAPI *ocr) {
+    ocr->SetImage(roi.data, roi.cols, roi.rows, 3, roi.step);
+    std::string text = trim(std::string(ocr->GetUTF8Text()));
+
+    std::regex re("\\(?\\d+\\)?");
+    std::smatch match;
+    bool matchFound = std::regex_match(text, match, re);
+    if (matchFound) {
+        std::regex_search(text, match, std::regex("\\b\\d+\\b"));
+        return std::stoi(match.str());
+    } else {
+        return 0;
     }
 }
 
 
-void mergeImages(const std::vector<cv::Mat>& images, cv::Mat& output) {
-    // Check that there are exactly 4 input images
-    CV_Assert(images.size() == 4);
+void updateImageView(cv::Mat &currentFrame, tesseract::TessBaseAPI *ocr, int& lastSpeedLimit) {
 
-    // Check that all input matrices have the same number of rows
-    CV_Assert(images[0].rows == images[1].rows && images[0].rows == images[2].rows && images[0].rows == images[3].rows);
+    cv::Mat hsvFrame;
+    cv::cvtColor(currentFrame, hsvFrame, cv::COLOR_BGR2HSV);
 
-    // Convert grayscale photos to color
-    std::vector<cv::Mat> color_images;
-    for (const cv::Mat& image : images) {
-        cv::Mat color_image;
-        if (image.channels() == 1) {
-            cv::cvtColor(image, color_image, cv::COLOR_GRAY2BGR);
-        } else {
-            color_image = image;
-        }
-        color_images.push_back(color_image);
-    }
+    cv::Mat red_mask = extractRedColorFromImage(hsvFrame);
 
-    cv::Mat top_row, bottom_row;
-    cv::hconcat(color_images[0], color_images[1], top_row);
-    cv::hconcat(color_images[2], color_images[3], bottom_row);
-    cv::vconcat(top_row, bottom_row, output);
-}
+    cv::Mat maskedFrame;
+    currentFrame.copyTo(maskedFrame, red_mask);
 
-int main() {
-    // Load the image
-    Mat image = imread("imgs/img.jpg");
+    // Find contours in the masked image
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(red_mask, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
-    // Convert the image to grayscale
-    Mat gray;
-    cvtColor(image, gray, COLOR_BGR2GRAY);
+    cv::Mat contourPreview = currentFrame.clone();
+    cv::Mat temp = currentFrame.clone(); // frame for tesseract
 
-    // Apply thresholding to the image
-    Mat thresholded;
-    threshold(gray, thresholded, 150, 255, THRESH_BINARY);
-
-    // Apply Canny edge detection
-    Mat edges;
-    Canny(thresholded, edges, 100, 200);
-
-    // Find contours in the image
-    vector<vector<Point>> contours;
-    findContours(edges, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-
-    // Iterate through the contours and find the one that matches a street sign
-    for (int i = 0; i < contours.size(); i++) {
-        double area = contourArea(contours[i]);
-        if (area > 500 && area < 5000) {
-            Rect rect = boundingRect(contours[i]);
-            double ratio = (double) rect.width / (double) rect.height;
-            if (ratio > 0.8 && ratio < 1.2) {
-                rectangle(image, rect, Scalar(0, 0, 255), 2);
+    // Iterate through each contour and check if it is a circle
+    for (const auto& contour : contours) {
+        double area = cv::contourArea(contour);
+        if (area > 750) {
+            cv::Rect bounding_rect = cv::boundingRect(contour);
+            double contour_similarity = compareContoursToCircle(contour);
+            if (contour_similarity >= MIN_CONTOUR_SIMILARITY) {
+                cv::Mat roi = temp(bounding_rect); // Extract the ROI from the current frame
+                int numberFromRoi = getNumberFromRoi(roi, ocr);
+                if (numberFromRoi != 0) {
+                    lastSpeedLimit = numberFromRoi;
+                }
+                cv::rectangle(currentFrame, bounding_rect, cv::Scalar(0, 255, 0), 2);
+                
             }
+            cv::drawContours(contourPreview, std::vector<std::vector<cv::Point>>{contour}, 0, cv::Scalar(0, 255, 0), 2);
+            std::stringstream similarity_text;
+            similarity_text << "Similarity: " << std::fixed << std::setprecision(2) << contour_similarity;
+            cv::putText(contourPreview, similarity_text.str(), cv::Point(bounding_rect.x, bounding_rect.y + bounding_rect.height + 20),
+                        cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 255, 0), 2);
         }
     }
+    std::stringstream sppedLimitText;
+    sppedLimitText << "speed limit: " << lastSpeedLimit << std::endl;
+    cv::putText(currentFrame, //target image
+            sppedLimitText.str(), //text
+            cv::Point(10, currentFrame.rows / 5), //top-left position
+            cv::FONT_HERSHEY_SIMPLEX,
+            1.0,
+            cv::Scalar(0, 255, 0), //font color
+            2);
 
+    // Display original and masked images, as well as contour preview
+    cv::imshow("Preview", currentFrame);
+    cv::imshow("Masked Image", red_mask);
+    cv::imshow("Contour Preview", contourPreview);
 
-    // Display the grayscale thresholded image and edges in the preview window
-    Mat preview;
-//    mergeImages(image, gray, thresholded, edges, preview);
-    mergeImages({image, gray, thresholded, edges}, preview);
-    resizeImage(preview, 1280);
-    imshow("Result", preview);
-    waitKey(0);
+}
 
-    return 0;
+cv::Mat extractRedColorFromImage(const cv::Mat &hsvFrame) {
+    static cv::Scalar lower_red1(0, 50, 30);
+    static cv::Scalar upper_red1(10, 255, 255);
+    static cv::Scalar lower_red2(160, 50, 30);
+    static cv::Scalar upper_red2(180, 255, 255);
+    static cv::Scalar lower_red_pink(140, 50, 50);
+    static cv::Scalar upper_red_pink(160, 255, 255);
+    static cv::Scalar lower_red_claret(0, 50, 10);
+    static cv::Scalar upper_red_claret(10, 255, 150);
+    static cv::Scalar lower_red_dark(0, 5, 0);
+    static cv::Scalar upper_red_dark(10, 90, 50);
+
+    cv::Mat red_mask, red_mask1, red_mask2, red_mask_pink, red_mask_claret, red_mask_dark;
+    cv::inRange(hsvFrame, lower_red1, upper_red1, red_mask1);
+    cv::inRange(hsvFrame, lower_red2, upper_red2, red_mask2);
+    cv::inRange(hsvFrame, lower_red_pink, upper_red_pink, red_mask_pink);
+    cv::inRange(hsvFrame, lower_red_claret, upper_red_claret, red_mask_claret);
+    cv::inRange(hsvFrame, lower_red_dark, upper_red_dark, red_mask_dark);
+    cv::bitwise_or(red_mask1, red_mask2, red_mask);
+    cv::bitwise_or(red_mask, red_mask_pink, red_mask);
+    cv::bitwise_or(red_mask, red_mask_claret, red_mask);
+    cv::bitwise_or(red_mask, red_mask_dark, red_mask);
+
+    return red_mask;
+}
+
+int main(int argc, char** argv) {
+    int lastSpeedLimit = 0;
+
+    tesseract::TessBaseAPI *ocr = new tesseract::TessBaseAPI();
+    ocr->Init(NULL, "eng", tesseract::OEM_LSTM_ONLY);
+    ocr->SetVariable("debug_file", "/dev/null");
+    ocr->SetPageSegMode(tesseract::PSM_AUTO);
+
+    std::cout << "OpenCV version : " << CV_VERSION << std::endl;
+
+    std::string videoFile = "video/znak2.mp4";
+    if (argc == 2)
+        videoFile = std::string(argv[1]);
+
+    cv::VideoCapture cap(videoFile);
+
+    if (!cap.isOpened()) {
+        std::cerr << "Error opening video file " << std::endl;
+        return -1;
+    }
+
+    cv::namedWindow("Preview", cv::WINDOW_NORMAL);
+
+    cv::Mat frame;
+    while (true) {
+        if (!cap.read(frame)) { // read next frame
+            cap.set(cv::CAP_PROP_POS_FRAMES, 0);
+            continue;
+        }
+
+        cv::waitKey(20); // change if calculation is too fast/slow
+        updateImageView(frame, ocr, lastSpeedLimit);
+    }
+
+    ocr->End();
+    delete ocr;
 }
