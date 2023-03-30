@@ -3,7 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
 
-const int MIN_CONTOUR_SIMILARITY = 0.90;
+const int MIN_CONTOUR_SIMILARITY = 0.75;
 const std::string WHITESPACE = " \n\r\t\f\v";
 
 cv::Mat extractRedColorFromImage(const cv::Mat &hsvFrame);
@@ -94,13 +94,13 @@ void updateImageView(cv::Mat &currentFrame, tesseract::TessBaseAPI *ocr, int& la
         }
     }
     std::stringstream sppedLimitText;
-    sppedLimitText << "speed limit: " << lastSpeedLimit << std::endl;
+    sppedLimitText << "speed limit: " << lastSpeedLimit;
     cv::putText(currentFrame, //target image
             sppedLimitText.str(), //text
             cv::Point(10, currentFrame.rows / 5), //top-left position
             cv::FONT_HERSHEY_SIMPLEX,
             1.0,
-            cv::Scalar(0, 255, 0), //font color
+            cv::Scalar(255, 0, 255), //font color
             2);
 
     // Display original and masked images, as well as contour preview

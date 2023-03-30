@@ -1,8 +1,15 @@
 To build project to ./build directory, run:
-```cmake -B build```
+```sh
+cmake -B build
+```
 
 then go to build directory and run:
-```make```
+```sh
+make
+```
 
-then run one of target like:
-```.video1```
+then run main program like:
+```sh
+./main [path to video]
+# f.e ./main video/znak1.mp4
+```
