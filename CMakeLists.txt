@@ -24,10 +24,4 @@ target_link_libraries(main
         Tesseract::libtesseract
         )
 
-add_executable(numbers numbers.cpp)
-target_link_libraries(numbers
-        ${OpenCV_LIBS}
-        Tesseract::libtesseract
-        )
-
 FILE(COPY video DESTINATION ${CMAKE_BINARY_DIR})
