@@ -44,7 +44,7 @@ target_link_libraries(mask_red
         ${OpenCV_LIBS}
         )
 
-add_executable(threshold_preview tools/Thresh.cpp)
+add_executable(threshold_preview tools/Threshold.cpp)
 target_link_libraries(threshold_preview
         ${OpenCV_LIBS}
         )
