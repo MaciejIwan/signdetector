@@ -17,11 +17,27 @@ private:
     int value;
 
 public:
-    RoadSign(SignType t, int v);
-    [[nodiscard]] SignType getType() const;
-    [[nodiscard]] int getValue() const;
-    void setType(SignType t);
-    void setValue(int v);
+    RoadSign(SignType t, int v) {
+        type = t;
+        value = v;
+    }
+
+    SignType getType() const {
+        return type;
+    }
+
+    int getValue() const {
+        return value;
+    }
+
+    void setType(SignType t) {
+        type = t;
+    }
+
+    void setValue(int v) {
+        value = v;
+    }
+
 };
 
 

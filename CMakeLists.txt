@@ -18,7 +18,7 @@ include_directories(
         ${Tesseract_INCLUDE_DIRS}
 )
 
-add_executable(main src/Main.cpp src/models/RoadSign.cpp src/models/RoadSign.h src/ShapeRoadSignDetector.cpp src/IRoadSignDetector.h src/MyOcr.cpp src/MyOcr.h)
+add_executable(main src/Main.cpp src/models/RoadSign.h src/ShapeRoadSignDetector.cpp src/IRoadSignDetector.h src/MyOcr.cpp src/MyOcr.h)
 target_link_libraries(main
         ${OpenCV_LIBS}
         Tesseract::libtesseract
