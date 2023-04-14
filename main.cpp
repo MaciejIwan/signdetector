@@ -40,7 +40,8 @@ double compareContoursToCircle(const std::vector<cv::Point>& contour) {
 
 void blurImage(cv::Mat &image, int size, double sigma) {
     cv::Size kernelSize = cv::Size(size, size);
-    cv::GaussianBlur(image, image, kernelSize, sigma);
+    //cv::GaussianBlur(image, image, kernelSize, sigma);
+    cv::medianBlur(image, image, size);
 }
 
 int getNumberFromRoi(const cv::Mat& roi, tesseract::TessBaseAPI *ocr) {
@@ -60,7 +61,7 @@ int getNumberFromRoi(const cv::Mat& roi, tesseract::TessBaseAPI *ocr) {
 
 
 void updateImageView(cv::Mat &currentFrame, tesseract::TessBaseAPI *ocr, int& lastSpeedLimit) {
-    blurImage(currentFrame, 3, 1);
+    blurImage(currentFrame, 5, 0);
 
     cv::Mat hsvFrame;
     cv::cvtColor(currentFrame, hsvFrame, cv::COLOR_BGR2HSV);
@@ -99,7 +100,7 @@ void updateImageView(cv::Mat &currentFrame, tesseract::TessBaseAPI *ocr, int& la
                     lastSpeedLimit = numberFromRoi;
                 }
                 cv::rectangle(currentFrame, bounding_rect, cv::Scalar(0, 255, 0), 2);
-                
+
             }
             cv::drawContours(contourPreview, std::vector<std::vector<cv::Point>>{contour}, 0, cv::Scalar(0, 255, 0), 2);
             std::stringstream similarity_text;
@@ -128,7 +129,7 @@ void updateImageView(cv::Mat &currentFrame, tesseract::TessBaseAPI *ocr, int& la
 
 cv::Mat extractRedColorFromImage(const cv::Mat &hsvFrame) {
     static cv::Scalar lower_red1(0, 50, 30);
-    static cv::Scalar upper_red1(10, 255, 255);
+    static cv::Scalar upper_red1(15, 255, 255);
     static cv::Scalar lower_red2(160, 50, 30);
     static cv::Scalar upper_red2(180, 255, 255);
     static cv::Scalar lower_red_pink(140, 50, 50);

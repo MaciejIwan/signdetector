@@ -24,4 +24,14 @@ target_link_libraries(main
         Tesseract::libtesseract
         )
 
+add_executable(colorPicker demo/HsvColorPicker.cpp)
+target_link_libraries(colorPicker
+        ${OpenCV_LIBS}
+        )
+add_executable(edges demo/Edges.cpp)
+target_link_libraries(edges
+        ${OpenCV_LIBS}
+        )
+
 FILE(COPY video DESTINATION ${CMAKE_BINARY_DIR})
+FILE(COPY imgs DESTINATION ${CMAKE_BINARY_DIR})
