@@ -3,7 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
 
-const int MIN_CONTOUR_SIMILARITY = 0.75;
+const double MIN_CONTOUR_SIMILARITY = 0.75;
 const std::string WHITESPACE = " \n\r\t\f\v";
 
 cv::Mat extractRedColorFromImage(const cv::Mat &hsvFrame);
