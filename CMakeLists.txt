@@ -34,5 +34,25 @@ target_link_libraries(edges
         ${OpenCV_LIBS}
         )
 
+add_executable(desc demo/Desc.cpp)
+target_link_libraries(desc
+        ${OpenCV_LIBS}
+        )
+
+add_executable(mask_red demo/MaskRed.cpp)
+target_link_libraries(mask_red
+        ${OpenCV_LIBS}
+        )
+
+add_executable(threshold_preview demo/Thresh.cpp)
+target_link_libraries(threshold_preview
+        ${OpenCV_LIBS}
+        )
+
+add_executable(mean_shift demo/MeanShift.cpp)
+target_link_libraries(mean_shift
+        ${OpenCV_LIBS}
+        )
+
 FILE(COPY video DESTINATION ${CMAKE_BINARY_DIR})
 FILE(COPY imgs DESTINATION ${CMAKE_BINARY_DIR})
