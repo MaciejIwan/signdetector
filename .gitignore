@@ -3,3 +3,7 @@ cmake-build-debug/
 build/
 .vscode/
 CMakeCache.txt
+/resources/imgs/gradient1.jpg
+/resources/imgs/gradient2.jpg
+/resources/imgs/gradient3.jpg
+/resources/imgs/gradient3_2.png
