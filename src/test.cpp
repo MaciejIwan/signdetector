@@ -25,7 +25,7 @@ std::string trim(const std::string &s) {
     return rtrim(ltrim(s));
 }
 
-int getNumberFromRoi(const cv::Mat& roi, tesseract::TessBaseAPI *ocr) {
+int read_number_test(const cv::Mat& roi, tesseract::TessBaseAPI *ocr) {
     int expected_results[] = {30, 50, -1, 30, 70, -1, -1 }
     int number_of_images = 7;
     for (int text_index = 0; test_index < number_of_images; i++) {
