@@ -12,12 +12,12 @@ std::string ltrim(const std::string &s) {
     size_t start = s.find_first_not_of(WHITESPACE);
     return (start == std::string::npos) ? "" : s.substr(start);
 }
- 
+
 std::string rtrim(const std::string &s) {
     size_t end = s.find_last_not_of(WHITESPACE);
     return (end == std::string::npos) ? "" : s.substr(0, end + 1);
 }
- 
+
 std::string trim(const std::string &s) {
     return rtrim(ltrim(s));
 }
@@ -38,6 +38,11 @@ double compareContoursToCircle(const std::vector<cv::Point>& contour) {
     return similarity;
 }
 
+void blurImage(cv::Mat &image, int size, double sigma) {
+    cv::Size kernelSize = cv::Size(size, size);
+    cv::GaussianBlur(image, image, kernelSize, sigma);
+}
+
 int getNumberFromRoi(const cv::Mat& roi, tesseract::TessBaseAPI *ocr) {
     ocr->SetImage(roi.data, roi.cols, roi.rows, 3, roi.step);
     std::string text = trim(std::string(ocr->GetUTF8Text()));
@@ -55,18 +60,28 @@ int getNumberFromRoi(const cv::Mat& roi, tesseract::TessBaseAPI *ocr) {
 
 
 void updateImageView(cv::Mat &currentFrame, tesseract::TessBaseAPI *ocr, int& lastSpeedLimit) {
+    blurImage(currentFrame, 3, 1);
 
     cv::Mat hsvFrame;
     cv::cvtColor(currentFrame, hsvFrame, cv::COLOR_BGR2HSV);
 
-    cv::Mat red_mask = extractRedColorFromImage(hsvFrame);
+
+
+    cv::Mat red_binary_mask = extractRedColorFromImage(hsvFrame);
+
+    // Zdefiniuj rozmiar jądra dla operacji morfologicznych
+    cv::Mat kernel = getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3));
+    // Zastosuj operację otwarcia
+    morphologyEx(red_binary_mask, red_binary_mask, cv::MORPH_OPEN, kernel);
+    // Zastosuj operację zamknięcia
+    morphologyEx(red_binary_mask, red_binary_mask, cv::MORPH_CLOSE, kernel);
 
     cv::Mat maskedFrame;
-    currentFrame.copyTo(maskedFrame, red_mask);
+    currentFrame.copyTo(maskedFrame, red_binary_mask);
 
     // Find contours in the masked image
     std::vector<std::vector<cv::Point>> contours;
-    cv::findContours(red_mask, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+    cv::findContours(red_binary_mask, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
     cv::Mat contourPreview = currentFrame.clone();
     cv::Mat temp = currentFrame.clone(); // frame for tesseract
@@ -105,7 +120,8 @@ void updateImageView(cv::Mat &currentFrame, tesseract::TessBaseAPI *ocr, int& la
 
     // Display original and masked images, as well as contour preview
     cv::imshow("Preview", currentFrame);
-    cv::imshow("Masked Image", red_mask);
+    cv::imshow("Masked Image", maskedFrame);
+    cv::imshow("red color mask", red_binary_mask);
     cv::imshow("Contour Preview", contourPreview);
 
 }
