@@ -1,0 +1,43 @@
+//
+// Created by maciej on 14.04.23.
+//
+
+#ifndef SIGN_EDGE_METHOD_TEST_1_IROADSIGNDETECTOR_H
+#define SIGN_EDGE_METHOD_TEST_1_IROADSIGNDETECTOR_H
+
+
+#include <vector>
+#include <opencv2/core/mat.hpp>
+#include "models/RoadSign.h"
+#include "MyOcr.h"
+
+class IRoadSignDetector {
+public:
+    virtual RoadSign detectRoadSigns(const cv::Mat &image) = 0;
+};
+
+
+class ShapeRoadSignDetector : public IRoadSignDetector {
+public:
+    RoadSign detectRoadSigns(const cv::Mat &image) override;
+
+    ShapeRoadSignDetector();
+
+    ~ShapeRoadSignDetector();
+
+    void updateImageView(cv::Mat &currentFrame,
+                         int &lastSpeedLimit); // todo Split and simplify this function. Then remove it and use detectRoadSigns instead. Extract: preprocessing, contour detection, selection, recognition etc
+
+private:
+    const double MIN_CONTOUR_SIMILARITY = 0.75;
+    MyOcr myOcr;
+
+    static double compareContoursToCircle(const std::vector<cv::Point> &contour);
+
+    cv::Mat extractRedColorFromImage(const cv::Mat &hsvFrame);
+
+
+    static void blurImage(cv::Mat &image, int size);
+};
+
+#endif
