@@ -8,11 +8,11 @@
 
 #include <vector>
 #include <opencv2/core/mat.hpp>
-#include "RoadSign.h"
+#include "models/RoadSign.h"
 
 class IRoadSignDetector {
 public:
-    virtual std::vector<RoadSign> detectRoadSigns(const cv::Mat& image) = 0;
+    virtual RoadSign detectRoadSigns(const cv::Mat& image) = 0;
 };
 
 #endif
