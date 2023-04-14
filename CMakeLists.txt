@@ -18,7 +18,7 @@ include_directories(
         ${Tesseract_INCLUDE_DIRS}
 )
 
-add_executable(main src/main.cpp)
+add_executable(main src/Main.cpp)
 target_link_libraries(main
         ${OpenCV_LIBS}
         Tesseract::libtesseract
