@@ -4,7 +4,7 @@
 
 #include <string>
 #include <regex>
-#include "MyOcr.h"
+#include "../include/MyOcr.h"
 
 MyOcr::MyOcr() : ocr(new tesseract::TessBaseAPI()) {
     ocr->Init(NULL, "eng", tesseract::OEM_LSTM_ONLY);

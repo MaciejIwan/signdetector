@@ -8,8 +8,8 @@
 
 #include <vector>
 #include <opencv2/core/mat.hpp>
-#include "models/RoadSign.h"
 #include "MyOcr.h"
+#include "models/RoadSign.h"
 
 class IRoadSignDetector {
 public:

@@ -7,7 +7,8 @@
 #include <iomanip>
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
-#include "IRoadSignDetector.h"
+#include "../include/IRoadSignDetector.h"
+#include "../include/models/RoadSign.h"
 
 
 ShapeRoadSignDetector::ShapeRoadSignDetector() : myOcr() {
