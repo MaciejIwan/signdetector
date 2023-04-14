@@ -24,35 +24,35 @@ target_link_libraries(main
         Tesseract::libtesseract
         )
 
-add_executable(colorPicker demo/HsvColorPicker.cpp)
+add_executable(colorPicker tools/HsvColorPicker.cpp)
 target_link_libraries(colorPicker
         ${OpenCV_LIBS}
         )
 
-add_executable(edges demo/Edges.cpp)
+add_executable(edges tools/Edges.cpp)
 target_link_libraries(edges
         ${OpenCV_LIBS}
         )
 
-add_executable(desc demo/Desc.cpp)
+add_executable(desc tools/Desc.cpp)
 target_link_libraries(desc
         ${OpenCV_LIBS}
         )
 
-add_executable(mask_red demo/MaskRed.cpp)
+add_executable(mask_red tools/MaskRed.cpp)
 target_link_libraries(mask_red
         ${OpenCV_LIBS}
         )
 
-add_executable(threshold_preview demo/Thresh.cpp)
+add_executable(threshold_preview tools/Thresh.cpp)
 target_link_libraries(threshold_preview
         ${OpenCV_LIBS}
         )
 
-add_executable(mean_shift demo/MeanShift.cpp)
+add_executable(mean_shift tools/MeanShift.cpp)
 target_link_libraries(mean_shift
         ${OpenCV_LIBS}
         )
 
-FILE(COPY video DESTINATION ${CMAKE_BINARY_DIR})
-FILE(COPY imgs DESTINATION ${CMAKE_BINARY_DIR})
+FILE(COPY resources/video DESTINATION ${CMAKE_BINARY_DIR})
+FILE(COPY resources/imgs DESTINATION ${CMAKE_BINARY_DIR})
