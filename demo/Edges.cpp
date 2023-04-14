@@ -42,7 +42,7 @@ int main()
 
     cv::Mat cannyOutput,medianImg,output;
 
-    cv::Mat img = cv::imread("imgs/5.jpg");
+    cv::Mat img = cv::imread("imgs/2.jpg");
     output = img.clone();
     cv::imshow("Input",img);
 

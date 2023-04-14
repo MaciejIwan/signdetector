@@ -18,7 +18,7 @@ include_directories(
         ${Tesseract_INCLUDE_DIRS}
 )
 
-add_executable(main main.cpp)
+add_executable(main src/main.cpp)
 target_link_libraries(main
         ${OpenCV_LIBS}
         Tesseract::libtesseract
@@ -28,6 +28,7 @@ add_executable(colorPicker demo/HsvColorPicker.cpp)
 target_link_libraries(colorPicker
         ${OpenCV_LIBS}
         )
+
 add_executable(edges demo/Edges.cpp)
 target_link_libraries(edges
         ${OpenCV_LIBS}
