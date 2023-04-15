@@ -1,8 +1,10 @@
 #include "../include/ImageProcessing.h"
+#include <gtest/gtest.h>
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
 
-int main(int argc, char** argv)
+// Demonstrate some basic assertions.
+TEST(HelloTest, BasicAssertions)
 {
     int lastSpeedLimit = 0;
 
@@ -14,14 +16,12 @@ int main(int argc, char** argv)
     std::cout << "OpenCV version : " << CV_VERSION << std::endl;
 
     std::string videoFile = "video/znak2.mp4";
-    if (argc == 2)
-        videoFile = std::string(argv[1]);
 
     cv::VideoCapture cap(videoFile);
 
     if (!cap.isOpened()) {
         std::cerr << "Error opening video file " << std::endl;
-        return -1;
+        return;
     }
 
     cv::namedWindow("Preview", cv::WINDOW_NORMAL);
@@ -29,8 +29,7 @@ int main(int argc, char** argv)
     cv::Mat frame;
     while (true) {
         if (!cap.read(frame)) { // read next frame
-            cap.set(cv::CAP_PROP_POS_FRAMES, 0);
-            continue;
+            return;
         }
 
         cv::waitKey(20); // change if calculation is too fast/slow
@@ -39,4 +38,11 @@ int main(int argc, char** argv)
 
     ocr->End();
     delete ocr;
+
+    // TODO: Placeholder test output - change to real test (question: what will qualify as test success?)
+
+    // Expect two strings not to be equal.
+    EXPECT_STRNE("hello", "world");
+    // Expect equality.
+    EXPECT_EQ(7 * 6, 42);
 }

@@ -5,9 +5,8 @@
 #ifndef SIGN_EDGE_METHOD_TEST_1_OCR_H
 #define SIGN_EDGE_METHOD_TEST_1_OCR_H
 
-
-#include <tesseract/baseapi.h>
 #include <opencv2/core/mat.hpp>
+#include <tesseract/baseapi.h>
 
 class Ocr {
 public:
@@ -15,18 +14,17 @@ public:
 
     ~Ocr();
 
-    int getNumberFromRoi(const cv::Mat &roi);
+    int getNumberFromRoi(const cv::Mat& roi);
 
 private:
     const std::string WHITESPACE = " \n\r\t\f\v";
-    tesseract::TessBaseAPI *ocr;
+    tesseract::TessBaseAPI* ocr;
 
-    std::string rtrim(const std::string &s);
+    std::string rtrim(const std::string& s);
 
-    std::string ltrim(const std::string &s);
+    std::string ltrim(const std::string& s);
 
-    std::string trim(const std::string &s);
+    std::string trim(const std::string& s);
 };
 
-
-#endif //SIGN_EDGE_METHOD_TEST_1_OCR_H
+#endif // SIGN_EDGE_METHOD_TEST_1_OCR_H
