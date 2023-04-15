@@ -18,7 +18,15 @@ include_directories(
         ${Tesseract_INCLUDE_DIRS}
 )
 
-add_executable(main src/Main.cpp include/models/RoadSign.h src/ShapeRoadSignDetector.cpp include/IRoadSignDetector.h src/Ocr.cpp include/Ocr.h include/models/SpeedLimitSign.h)
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+
+FetchContent_MakeAvailable(googletest)
+
+add_executable(main src/Main.cpp include/models/RoadSign.h src/ShapeRoadSignDetector.cpp include/IRoadSignDetector.h src/Ocr.cpp include/Ocr.h include/models/SpeedLimitSign.h src/ImageProcessing.cpp include/ImageProcessing.h)
 target_link_libraries(main
         ${OpenCV_LIBS}
         Tesseract::libtesseract
@@ -56,3 +64,23 @@ target_link_libraries(mean_shift
 
 FILE(COPY resources/video DESTINATION ${CMAKE_BINARY_DIR})
 FILE(COPY resources/imgs DESTINATION ${CMAKE_BINARY_DIR})
+
+enable_testing()
+
+add_executable(
+  tests
+  tests/tests.cpp
+  include/models/RoadSign.h src/ShapeRoadSignDetector.cpp include/IRoadSignDetector.h src/Ocr.cpp include/Ocr.h include/models/SpeedLimitSign.h src/ImageProcessing.cpp include/ImageProcessing.h
+)
+target_link_libraries(tests
+        ${OpenCV_LIBS}
+        Tesseract::libtesseract
+        )
+
+target_link_libraries(
+  tests
+  GTest::gtest_main
+)
+
+include(GoogleTest)
+gtest_discover_tests(tests)
