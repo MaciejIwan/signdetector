@@ -4,20 +4,20 @@
 
 #include <string>
 #include <regex>
-#include "../include/MyOcr.h"
+#include "../include/Ocr.h"
 
-MyOcr::MyOcr() : ocr(new tesseract::TessBaseAPI()) {
+Ocr::Ocr() : ocr(new tesseract::TessBaseAPI()) {
     ocr->Init(NULL, "eng", tesseract::OEM_LSTM_ONLY);
     ocr->SetVariable("debug_file", "/dev/null");
     ocr->SetPageSegMode(tesseract::PSM_AUTO);
 }
 
-MyOcr::~MyOcr() {
+Ocr::~Ocr() {
     ocr->End();
     delete ocr;
 }
 
-int MyOcr::getNumberFromRoi(const cv::Mat &roi) {
+int Ocr::getNumberFromRoi(const cv::Mat &roi) {
     ocr->SetImage(roi.data, roi.cols, roi.rows, 3, roi.step);
     std::string text = trim(std::string(ocr->GetUTF8Text()));
 
@@ -32,17 +32,17 @@ int MyOcr::getNumberFromRoi(const cv::Mat &roi) {
     }
 }
 
-std::string MyOcr::ltrim(const std::string &s) {
+std::string Ocr::ltrim(const std::string &s) {
     size_t start = s.find_first_not_of(WHITESPACE);
     return (start == std::string::npos) ? "" : s.substr(start);
 }
 
-std::string MyOcr::rtrim(const std::string &s) {
+std::string Ocr::rtrim(const std::string &s) {
     size_t end = s.find_last_not_of(WHITESPACE);
     return (end == std::string::npos) ? "" : s.substr(0, end + 1);
 }
 
-std::string MyOcr::trim(const std::string &s) {
+std::string Ocr::trim(const std::string &s) {
     return rtrim(ltrim(s));
 }
 

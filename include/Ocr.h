@@ -2,18 +2,18 @@
 // Created by maciej on 14.04.23.
 //
 
-#ifndef SIGN_EDGE_METHOD_TEST_1_MYOCR_H
-#define SIGN_EDGE_METHOD_TEST_1_MYOCR_H
+#ifndef SIGN_EDGE_METHOD_TEST_1_OCR_H
+#define SIGN_EDGE_METHOD_TEST_1_OCR_H
 
 
 #include <tesseract/baseapi.h>
 #include <opencv2/core/mat.hpp>
 
-class MyOcr {
+class Ocr {
 public:
-    MyOcr();
+    Ocr();
 
-    ~MyOcr();
+    ~Ocr();
 
     int getNumberFromRoi(const cv::Mat &roi);
 
@@ -29,4 +29,4 @@ private:
 };
 
 
-#endif //SIGN_EDGE_METHOD_TEST_1_MYOCR_H
+#endif //SIGN_EDGE_METHOD_TEST_1_OCR_H
