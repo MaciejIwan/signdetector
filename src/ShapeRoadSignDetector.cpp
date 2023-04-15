@@ -86,20 +86,24 @@ void ShapeRoadSignDetector::updateImageView(cv::Mat &currentFrame, int &lastSpee
         cv::rectangle(currentFrame, bounding_rect, cv::Scalar(0, 255, 0), 2);
     }
 
-    std::stringstream sppedLimitText;
-    sppedLimitText << "speed limit: " << lastSpeedLimit;
-    cv::putText(currentFrame, //target image
-                sppedLimitText.str(), //text
-                cv::Point(10, currentFrame.rows / 5), //top-left position
-                cv::FONT_HERSHEY_SIMPLEX,
-                1.0,
-                cv::Scalar(255, 0, 255), //font color
-                2);
+    drawSpeedLimitOnFrame(currentFrame, lastSpeedLimit);
 
     cv::imshow("Preview", currentFrame);
 //    cv::imshow("red color mask", red_binary_mask);
 //    cv::imshow("Contour Preview", contourPreview);
 
+}
+
+void ShapeRoadSignDetector::drawSpeedLimitOnFrame(const cv::Mat &currentFrame, const int &lastSpeedLimit) const {
+    std::stringstream speedLimitText;
+    speedLimitText << "speed limit: " << lastSpeedLimit;
+    cv::putText(currentFrame, //target image
+                speedLimitText.str(), //text
+                cv::Point(10, currentFrame.rows / 5), //top-left position
+                cv::FONT_HERSHEY_SIMPLEX,
+                1.0,
+                cv::Scalar(255, 0, 255), //font color
+                2);
 }
 
 void ShapeRoadSignDetector::findSignsBoundingBoxes(const cv::Mat &red_binary_mask,

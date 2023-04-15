@@ -42,6 +42,8 @@ private:
     void preprocess(cv::Mat &currentFrame, cv::Mat &red_binary_mask);
 
     void findSignsBoundingBoxes(const cv::Mat &red_binary_mask, std::vector<cv::Rect> &boundingBoxes) const;
+
+    void drawSpeedLimitOnFrame(const cv::Mat &currentFrame, const int &lastSpeedLimit) const;
 };
 
 #endif
