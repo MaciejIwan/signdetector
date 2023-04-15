@@ -38,6 +38,10 @@ private:
 
 
     static void blurImage(cv::Mat &image, int size);
+
+    void preprocess(cv::Mat &currentFrame, cv::Mat &red_binary_mask);
+
+    void findSignsBoundingBoxes(const cv::Mat &red_binary_mask, std::vector<cv::Rect> &boundingBoxes) const;
 };
 
 #endif

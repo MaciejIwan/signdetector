@@ -2,11 +2,10 @@
 // Created by maciej on 14.04.23.
 //
 
-#include <regex>
+#include <vector>
 #include <opencv2/imgproc.hpp>
 #include <iomanip>
 #include <opencv2/opencv.hpp>
-#include <tesseract/baseapi.h>
 #include "../include/IRoadSignDetector.h"
 #include "../include/models/SpeedLimitSign.h"
 
@@ -18,7 +17,7 @@ ShapeRoadSignDetector::ShapeRoadSignDetector() : myOcr() {
 
 ShapeRoadSignDetector::~ShapeRoadSignDetector() = default;
 
-RoadSign* ShapeRoadSignDetector::detectRoadSigns(const cv::Mat &image) {
+RoadSign *ShapeRoadSignDetector::detectRoadSigns(const cv::Mat &image) {
     return new SpeedLimitSign(30);
 }
 
@@ -71,55 +70,22 @@ cv::Mat ShapeRoadSignDetector::extractRedColorFromImage(const cv::Mat &hsvFrame)
 
 
 void ShapeRoadSignDetector::updateImageView(cv::Mat &currentFrame, int &lastSpeedLimit) {
-    blurImage(currentFrame, 5);
+    cv::Mat red_binary_mask;
+    preprocess(currentFrame, red_binary_mask);
 
-    cv::Mat hsvFrame;
-    cv::cvtColor(currentFrame, hsvFrame, cv::COLOR_BGR2HSV);
+    std::vector<cv::Rect> boundingBoxes;
+    findSignsBoundingBoxes(red_binary_mask, boundingBoxes);
 
-
-    cv::Mat red_binary_mask = extractRedColorFromImage(hsvFrame);
-
-    // Zdefiniuj rozmiar jądra dla operacji morfologicznych
-    cv::Mat kernel = getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3));
-    // Zastosuj operację otwarcia
-    morphologyEx(red_binary_mask, red_binary_mask, cv::MORPH_OPEN, kernel);
-    // Zastosuj operację zamknięcia
-    morphologyEx(red_binary_mask, red_binary_mask, cv::MORPH_CLOSE, kernel);
-
-    cv::Mat maskedFrame;
-    currentFrame.copyTo(maskedFrame, red_binary_mask);
-
-    // Find contours in the masked image
-    std::vector<std::vector<cv::Point>> contours;
-    cv::findContours(red_binary_mask, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
-
-    cv::Mat contourPreview = currentFrame.clone();
     cv::Mat temp = currentFrame.clone(); // frame for tesseract
-
-    // Iterate through each contour and check if it is a circle
-    for (const auto &contour: contours) {
-        double area = cv::contourArea(contour);
-        if (area > 750) {
-            cv::Rect bounding_rect = cv::boundingRect(contour);
-            double contour_similarity = compareContoursToCircle(contour);
-            if (contour_similarity >= MIN_CONTOUR_SIMILARITY) {
-                cv::Mat roi = temp(bounding_rect); // Extract the ROI from the current frame
-                int numberFromRoi = myOcr.getNumberFromRoi(roi);
-                if (numberFromRoi != 0) {
-                    lastSpeedLimit = numberFromRoi;
-                }
-                cv::rectangle(currentFrame, bounding_rect, cv::Scalar(0, 255, 0), 2);
-
-            }
-            cv::drawContours(contourPreview, std::vector<std::vector<cv::Point>>{contour}, 0, cv::Scalar(0, 255, 0),
-                             2);
-            std::stringstream similarity_text;
-            similarity_text << "Similarity: " << std::fixed << std::setprecision(2) << contour_similarity;
-            cv::putText(contourPreview, similarity_text.str(),
-                        cv::Point(bounding_rect.x, bounding_rect.y + bounding_rect.height + 20),
-                        cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 255, 0), 2);
+    for (cv::Rect bounding_rect: boundingBoxes) {
+        cv::Mat roi = temp(bounding_rect); // extract the ROI from the current frame
+        int numberFromRoi = myOcr.getNumberFromRoi(roi);
+        if (numberFromRoi != 0) {
+            lastSpeedLimit = numberFromRoi;
         }
+        cv::rectangle(currentFrame, bounding_rect, cv::Scalar(0, 255, 0), 2);
     }
+
     std::stringstream sppedLimitText;
     sppedLimitText << "speed limit: " << lastSpeedLimit;
     cv::putText(currentFrame, //target image
@@ -130,10 +96,47 @@ void ShapeRoadSignDetector::updateImageView(cv::Mat &currentFrame, int &lastSpee
                 cv::Scalar(255, 0, 255), //font color
                 2);
 
-    // Display original and masked images, as well as contour preview
     cv::imshow("Preview", currentFrame);
-    cv::imshow("Masked Image", maskedFrame);
-    cv::imshow("red color mask", red_binary_mask);
-    cv::imshow("Contour Preview", contourPreview);
+//    cv::imshow("red color mask", red_binary_mask);
+//    cv::imshow("Contour Preview", contourPreview);
 
+}
+
+void ShapeRoadSignDetector::findSignsBoundingBoxes(const cv::Mat &red_binary_mask,
+                                                   std::vector<cv::Rect> &boundingBoxes) const {// Find contours in the masked image
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(red_binary_mask, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+    //cv::Mat contourPreview = currentFrame.clone();
+
+
+    // Iterate through each contour and check if it is a circle
+    for (const auto &contour: contours) {
+        double area = cv::contourArea(contour);
+        if (area > 750) {
+            cv::Rect bounding_rect = cv::boundingRect(contour);
+            double contour_similarity = compareContoursToCircle(contour);
+            if (contour_similarity >= MIN_CONTOUR_SIMILARITY) {
+                boundingBoxes.push_back(bounding_rect);
+            }
+        }
+    }
+}
+
+void ShapeRoadSignDetector::preprocess(cv::Mat &currentFrame, cv::Mat &red_binary_mask) {
+
+    blurImage(currentFrame, 5);
+
+    cv::Mat hsvFrame;
+    cv::cvtColor(currentFrame, hsvFrame, cv::COLOR_BGR2HSV);// Zdefiniuj rozmiar jądra dla operacji morfologicznych
+    red_binary_mask = extractRedColorFromImage(hsvFrame);
+
+    cv::Mat kernel = getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3));
+    // Zastosuj operację otwarcia
+    morphologyEx(red_binary_mask, red_binary_mask, cv::MORPH_OPEN, kernel);
+    // Zastosuj operację zamknięcia
+    morphologyEx(red_binary_mask, red_binary_mask, cv::MORPH_CLOSE, kernel);
+
+    cv::Mat maskedFrame;
+    currentFrame.copyTo(maskedFrame, red_binary_mask);
+    cv::imshow("Masked Image", maskedFrame);
 }
