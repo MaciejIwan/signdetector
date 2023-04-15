@@ -8,18 +8,18 @@
 
 #include <vector>
 #include <opencv2/core/mat.hpp>
-#include "MyOcr.h"
+#include "Ocr.h"
 #include "models/RoadSign.h"
 
 class IRoadSignDetector {
 public:
-    virtual RoadSign detectRoadSigns(const cv::Mat &image) = 0;
+    virtual RoadSign* detectRoadSigns(const cv::Mat &image) = 0;
 };
 
 
 class ShapeRoadSignDetector : public IRoadSignDetector {
 public:
-    RoadSign detectRoadSigns(const cv::Mat &image) override;
+    RoadSign* detectRoadSigns(const cv::Mat &image) override;
 
     ShapeRoadSignDetector();
 
@@ -30,7 +30,7 @@ public:
 
 private:
     const double MIN_CONTOUR_SIMILARITY = 0.75;
-    MyOcr myOcr;
+    Ocr myOcr;
 
     static double compareContoursToCircle(const std::vector<cv::Point> &contour);
 

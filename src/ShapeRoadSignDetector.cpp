@@ -8,7 +8,7 @@
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
 #include "../include/IRoadSignDetector.h"
-#include "../include/models/RoadSign.h"
+#include "../include/models/SpeedLimitSign.h"
 
 
 ShapeRoadSignDetector::ShapeRoadSignDetector() : myOcr() {
@@ -18,11 +18,8 @@ ShapeRoadSignDetector::ShapeRoadSignDetector() : myOcr() {
 
 ShapeRoadSignDetector::~ShapeRoadSignDetector() = default;
 
-RoadSign ShapeRoadSignDetector::detectRoadSigns(const cv::Mat &image) {
-    RoadSign roadSign = RoadSign(SignType::SPEED_LIMIT, 30);
-
-
-    return roadSign;
+RoadSign* ShapeRoadSignDetector::detectRoadSigns(const cv::Mat &image) {
+    return new SpeedLimitSign(30);
 }
 
 

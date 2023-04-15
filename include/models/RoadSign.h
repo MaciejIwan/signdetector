@@ -5,37 +5,29 @@
 #ifndef SIGN_EDGE_METHOD_TEST_1_ROADSIGN_H
 #define SIGN_EDGE_METHOD_TEST_1_ROADSIGN_H
 
+#include <string>
+
 enum SignType {
-    SPEED_LIMIT,
-    WARNING,
-    REGULATORY
+    SPEED_LIMIT
 };
 
 class RoadSign {
-private:
+protected:
     SignType type;
-    int value;
 
 public:
-    RoadSign(SignType t, int v) {
+    RoadSign(SignType t) {
         type = t;
-        value = v;
     }
+
+    virtual std::string toString() = 0;
 
     SignType getType() const {
         return type;
     }
 
-    int getValue() const {
-        return value;
-    }
-
     void setType(SignType t) {
         type = t;
-    }
-
-    void setValue(int v) {
-        value = v;
     }
 
 };
