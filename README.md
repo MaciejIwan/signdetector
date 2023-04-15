@@ -48,3 +48,8 @@ make
 for file in *.mp4; do ffmpeg -i "$file" -vf scale=-2:720 "../${file%.*}_720p.mp4"; done # resize videos to 720p (1280x720 px)
 ```
 
+### To run automated tests:
+```sh
+# in build directory
+./tests
+```
