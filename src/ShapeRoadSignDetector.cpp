@@ -17,7 +17,7 @@ ShapeRoadSignDetector::ShapeRoadSignDetector() : myOcr() {
 
 ShapeRoadSignDetector::~ShapeRoadSignDetector() = default;
 
-RoadSign *ShapeRoadSignDetector::detectRoadSigns(const cv::Mat &image) {
+RoadSign *ShapeRoadSignDetector::detectRoadSign(const cv::Mat &image) {
     return new SpeedLimitSign(30);
 }
 

@@ -13,20 +13,20 @@
 
 class IRoadSignDetector {
 public:
-    virtual RoadSign* detectRoadSigns(const cv::Mat &image) = 0;
+    virtual RoadSign* detectRoadSign(const cv::Mat &image) = 0;
 };
 
 
 class ShapeRoadSignDetector : public IRoadSignDetector {
 public:
-    RoadSign* detectRoadSigns(const cv::Mat &image) override;
+    RoadSign* detectRoadSign(const cv::Mat &image) override;
 
     ShapeRoadSignDetector();
 
     ~ShapeRoadSignDetector();
 
     void updateImageView(cv::Mat &currentFrame,
-                         int &lastSpeedLimit); // todo Split and simplify this function. Then remove it and use detectRoadSigns instead. Extract: preprocessing, contour detection, selection, recognition etc
+                         int &lastSpeedLimit); // todo Split and simplify this function. Then remove it and use detectRoadSign instead. Extract: preprocessing, contour detection, selection, recognition etc
 
 private:
     const double MIN_CONTOUR_SIMILARITY = 0.75;
