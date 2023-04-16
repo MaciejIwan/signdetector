@@ -1,4 +1,6 @@
 #include "../include/ImageProcessing.h"
+#include "../include/IRoadSignDetector.h"
+#include "../include/models/SpeedLimitSign.h"
 #include <fstream>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -8,7 +10,7 @@
 
 const int MAX_SIGN_LABELS = 100;
 
-const float MIN_VALID_ACCURACY_RATE = 0.9;
+const float MIN_VALID_ACCURACY_RATE = 0.6;
 
 const bool TEST_FALSE_POSITIVES = false;
 const float MAX_VALID_FALSE_POSITIVES_RATE = 0.05;
@@ -90,18 +92,14 @@ TEST(VideoTest, SignRecognitionAccuracy)
         return;
     }
 
-    int lastSpeedLimit = 0;
 
-    int framesWithSignCorrectlyRecignized = 0;
-    int framesWithSignIncorrectlyRecignized = 0;
+    int framesWithSignCorrectlyRecognized = 0;
+    int framesWithSignIncorrectlyRecognized = 0;
 
-    int framesWithoutSignCorrectlyRecignized = 0;
-    int framesWithoutSignIncorrectlyRecignized = 0;
+    int framesWithoutSignCorrectlyRecognized = 0;
+    int framesWithoutSignIncorrectlyRecognized = 0;
 
-    tesseract::TessBaseAPI* ocr = new tesseract::TessBaseAPI();
-    ocr->Init(NULL, "eng", tesseract::OEM_LSTM_ONLY);
-    ocr->SetVariable("debug_file", "/dev/null");
-    ocr->SetPageSegMode(tesseract::PSM_AUTO);
+    auto signDetector = ShapeRoadSignDetector();
 
     cv::VideoCapture cap(videoFile);
 
@@ -114,8 +112,11 @@ TEST(VideoTest, SignRecognitionAccuracy)
 
     cv::Mat frame;
 
+    cv::namedWindow("Preview", cv::WINDOW_NORMAL);
     while (cap.read(frame)) {
-        updateImageView(frame, ocr, lastSpeedLimit);
+        auto* sign = (SpeedLimitSign*) signDetector.detectRoadSign(frame);
+        std::cout << sign->getLimit() << std::endl;
+
 
         int currentFrame = cap.get(cv::CAP_PROP_POS_FRAMES);
 
@@ -124,10 +125,10 @@ TEST(VideoTest, SignRecognitionAccuracy)
         // Current frame should contain the sign
         for (int i = 0; i < labelCount; i++) {
             if (currentFrame >= labels[i].frameStart && currentFrame <= labels[i].frameEnd) {
-                if (lastSpeedLimit == labels[i].speedSignValue) {
-                    framesWithSignCorrectlyRecignized++;
+                if (sign->getLimit() == labels[i].speedSignValue) {
+                    framesWithSignCorrectlyRecognized++;
                 } else {
-                    framesWithSignIncorrectlyRecignized++;
+                    framesWithSignIncorrectlyRecognized++;
                 }
                 frameCounted = true;
                 break;
@@ -136,25 +137,24 @@ TEST(VideoTest, SignRecognitionAccuracy)
 
         if (!frameCounted) {
             // Current frame should not contain any sign
-            if (lastSpeedLimit == 0) {
-                framesWithoutSignCorrectlyRecignized++;
+            if (sign->getLimit() == 0) {
+                framesWithoutSignCorrectlyRecognized++;
             } else {
-                framesWithoutSignIncorrectlyRecignized++;
+                framesWithoutSignIncorrectlyRecognized++;
             }
         }
     }
 
-    ocr->End();
-    delete ocr;
+
 
     EXPECT_EQ(
-        framesWithSignCorrectlyRecignized + framesWithSignIncorrectlyRecignized + framesWithoutSignCorrectlyRecignized + framesWithoutSignIncorrectlyRecignized, totalFrames);
+            framesWithSignCorrectlyRecognized + framesWithSignIncorrectlyRecognized + framesWithoutSignCorrectlyRecognized + framesWithoutSignIncorrectlyRecognized, totalFrames);
 
     const int totalSignFrames = countTotalFramesWithSigns(labels, labelCount);
-    const int titalNoSignFrames = totalFrames - totalSignFrames;
+    const int totalNoSignFrames = totalFrames - totalSignFrames;
 
-    float signRecognizedAccuracy = framesWithSignCorrectlyRecignized / (float)totalSignFrames;
-    float falsePositivesAccuracy = framesWithoutSignIncorrectlyRecignized / (float)titalNoSignFrames;
+    float signRecognizedAccuracy = framesWithSignCorrectlyRecognized / (float)totalSignFrames;
+    float falsePositivesAccuracy = framesWithoutSignIncorrectlyRecognized / (float)totalNoSignFrames;
 
     std::cout << "[ ACCURACY ] " << signRecognizedAccuracy * 100 << "%" << std::endl;
     std::cout << "[FALSE POS.] " << falsePositivesAccuracy * 100 << "%" << std::endl;

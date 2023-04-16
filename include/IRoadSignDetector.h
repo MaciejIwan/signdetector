@@ -13,13 +13,13 @@
 
 class IRoadSignDetector {
 public:
-    virtual RoadSign* detectRoadSign(const cv::Mat &image) = 0;
+    virtual RoadSign* detectRoadSign( cv::Mat &image) = 0;
 };
 
 
 class ShapeRoadSignDetector : public IRoadSignDetector {
 public:
-    RoadSign* detectRoadSign(const cv::Mat &image) override;
+    RoadSign* detectRoadSign(cv::Mat &image) override;
 
     ShapeRoadSignDetector();
 

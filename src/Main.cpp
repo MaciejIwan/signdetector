@@ -1,17 +1,14 @@
-#include "../include/ImageProcessing.h"
+
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
+#include "../include/IRoadSignDetector.h"
+#include "../include/models/SpeedLimitSign.h"
 
-int main(int argc, char** argv)
-{
-    int lastSpeedLimit = 0;
-
-    tesseract::TessBaseAPI* ocr = new tesseract::TessBaseAPI();
-    ocr->Init(NULL, "eng", tesseract::OEM_LSTM_ONLY);
-    ocr->SetVariable("debug_file", "/dev/null");
-    ocr->SetPageSegMode(tesseract::PSM_AUTO);
-
+int main(int argc, char **argv) {
     std::cout << "OpenCV version : " << CV_VERSION << std::endl;
+
+    ShapeRoadSignDetector detector = ShapeRoadSignDetector();
+    int lastSpeedLimit = 0;
 
     std::string videoFile = "video/znak2.mp4";
     if (argc == 2)
@@ -28,15 +25,18 @@ int main(int argc, char** argv)
 
     cv::Mat frame;
     while (true) {
-        if (!cap.read(frame)) { // read next frame
+        if (!cap.read(frame)) {
             cap.set(cv::CAP_PROP_POS_FRAMES, 0);
             continue;
         }
 
         cv::waitKey(20); // change if calculation is too fast/slow
-        updateImageView(frame, ocr, lastSpeedLimit);
+
+
+        cv::imshow("Preview", frame);
+        auto* sign = (SpeedLimitSign*)detector.detectRoadSign(frame);
+        std::cout << sign->toString() << std::endl;
+
     }
 
-    ocr->End();
-    delete ocr;
 }

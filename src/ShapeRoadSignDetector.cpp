@@ -10,6 +10,8 @@
 #include "../include/models/SpeedLimitSign.h"
 
 
+bool DEBUG_MODE = true;
+
 ShapeRoadSignDetector::ShapeRoadSignDetector() : myOcr() {
 
 }
@@ -17,8 +19,55 @@ ShapeRoadSignDetector::ShapeRoadSignDetector() : myOcr() {
 
 ShapeRoadSignDetector::~ShapeRoadSignDetector() = default;
 
-RoadSign *ShapeRoadSignDetector::detectRoadSign(const cv::Mat &image) {
-    return new SpeedLimitSign(30);
+void ShapeRoadSignDetector::updateImageView(cv::Mat &currentFrame, int &lastSpeedLimit) {
+    cv::Mat red_binary_mask;
+    preprocess(currentFrame, red_binary_mask);
+
+    std::vector<cv::Rect> boundingBoxes;
+    findSignsBoundingBoxes(red_binary_mask, boundingBoxes);
+
+    cv::Mat temp = currentFrame.clone(); // frame for tesseract
+    for (cv::Rect bounding_rect: boundingBoxes) {
+        cv::Mat roi = temp(bounding_rect); // extract the ROI from the current frame
+        int numberFromRoi = myOcr.getNumberFromRoi(roi);
+        if (numberFromRoi != 0) {
+            lastSpeedLimit = numberFromRoi;
+        }
+        cv::rectangle(currentFrame, bounding_rect, cv::Scalar(0, 255, 0), 2);
+    }
+
+    drawSpeedLimitOnFrame(currentFrame, lastSpeedLimit);
+
+    if(DEBUG_MODE){
+        cv::imshow("red color mask", red_binary_mask);
+        drawSpeedLimitOnFrame(currentFrame, lastSpeedLimit);
+    }
+
+
+}
+
+RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
+    cv::Mat red_binary_mask;
+    preprocess(image, red_binary_mask);
+
+    std::vector<cv::Rect> boundingBoxes;
+    findSignsBoundingBoxes(red_binary_mask, boundingBoxes);
+
+    int lastSpeedLimit;
+    cv::Mat cached_image = image.clone();
+    for (cv::Rect bounding_rect: boundingBoxes) {
+        cv::Mat roi = cached_image(bounding_rect);
+
+        int numberFromRoi = myOcr.getNumberFromRoi(roi);
+        if (numberFromRoi != 0) {
+            lastSpeedLimit = numberFromRoi;
+        }
+        cv::rectangle(image, bounding_rect, cv::Scalar(0, 255, 0), 2);
+    }
+
+    //drawSpeedLimitOnFrame(image, lastSpeedLimit);
+
+    return new SpeedLimitSign(lastSpeedLimit);
 }
 
 
@@ -68,32 +117,6 @@ cv::Mat ShapeRoadSignDetector::extractRedColorFromImage(const cv::Mat &hsvFrame)
     return red_mask;
 }
 
-
-void ShapeRoadSignDetector::updateImageView(cv::Mat &currentFrame, int &lastSpeedLimit) {
-    cv::Mat red_binary_mask;
-    preprocess(currentFrame, red_binary_mask);
-
-    std::vector<cv::Rect> boundingBoxes;
-    findSignsBoundingBoxes(red_binary_mask, boundingBoxes);
-
-    cv::Mat temp = currentFrame.clone(); // frame for tesseract
-    for (cv::Rect bounding_rect: boundingBoxes) {
-        cv::Mat roi = temp(bounding_rect); // extract the ROI from the current frame
-        int numberFromRoi = myOcr.getNumberFromRoi(roi);
-        if (numberFromRoi != 0) {
-            lastSpeedLimit = numberFromRoi;
-        }
-        cv::rectangle(currentFrame, bounding_rect, cv::Scalar(0, 255, 0), 2);
-    }
-
-    drawSpeedLimitOnFrame(currentFrame, lastSpeedLimit);
-
-    cv::imshow("Preview", currentFrame);
-//    cv::imshow("red color mask", red_binary_mask);
-//    cv::imshow("Contour Preview", contourPreview);
-
-}
-
 void ShapeRoadSignDetector::drawSpeedLimitOnFrame(const cv::Mat &currentFrame, const int &lastSpeedLimit) const {
     std::stringstream speedLimitText;
     speedLimitText << "speed limit: " << lastSpeedLimit;
@@ -140,7 +163,11 @@ void ShapeRoadSignDetector::preprocess(cv::Mat &currentFrame, cv::Mat &red_binar
     // Zastosuj operację zamknięcia
     morphologyEx(red_binary_mask, red_binary_mask, cv::MORPH_CLOSE, kernel);
 
-    cv::Mat maskedFrame;
-    currentFrame.copyTo(maskedFrame, red_binary_mask);
-    cv::imshow("Masked Image", maskedFrame);
+//    if(DEBUG_MODE) {
+//
+//        cv::Mat maskedFrame;
+//        currentFrame.copyTo(maskedFrame, red_binary_mask);
+//        cv::imshow("Masked Image", maskedFrame);
+//    }
+
 }
