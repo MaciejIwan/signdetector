@@ -1,4 +1,3 @@
-#include "../include/ImageProcessing.h"
 #include "../include/IRoadSignDetector.h"
 #include "../include/models/SpeedLimitSign.h"
 #include <fstream>
@@ -15,14 +14,15 @@ const float MIN_VALID_ACCURACY_RATE = 0.6;
 const bool TEST_FALSE_POSITIVES = false;
 const float MAX_VALID_FALSE_POSITIVES_RATE = 0.05;
 
+const bool DEBUG_MODE = true;
+
 struct SignLabel {
     int frameStart;
     int frameEnd;
     int speedSignValue;
 };
 
-int loadSignLabelsFromCSV(std::string filename, SignLabel* labels, int* labelCount)
-{
+int loadSignLabelsFromCSV(std::string filename, SignLabel *labels, int *labelCount) {
     using namespace std;
 
     if (!labels || !filename.length()) {
@@ -66,8 +66,7 @@ int loadSignLabelsFromCSV(std::string filename, SignLabel* labels, int* labelCou
     return 0;
 }
 
-int countTotalFramesWithSigns(SignLabel* labels, int labelCount)
-{
+int countTotalFramesWithSigns(SignLabel *labels, int labelCount) {
     int signFrames = 0;
 
     for (int i = 0; i < labelCount; i++) {
@@ -76,8 +75,7 @@ int countTotalFramesWithSigns(SignLabel* labels, int labelCount)
     return signFrames;
 }
 
-TEST(VideoTest, SignRecognitionAccuracy)
-{
+TEST(VideoTest, SignRecognitionAccuracy) {
     std::string videoFile = "video/speed_limit_0.mp4";
 
     std::cout << "[ FILENAME ] " << videoFile << std::endl;
@@ -114,17 +112,22 @@ TEST(VideoTest, SignRecognitionAccuracy)
 
     cv::namedWindow("Preview", cv::WINDOW_NORMAL);
     while (cap.read(frame)) {
-        auto* sign = (SpeedLimitSign*) signDetector.detectRoadSign(frame);
+
+        auto *sign = (SpeedLimitSign *) signDetector.detectRoadSign(frame);
         std::cout << sign->getLimit() << std::endl;
 
+        if (DEBUG_MODE) {
+            cv::imshow("Preview", frame);
+            cv::waitKey(1);
+        }
+        int currentFrameNumber = cap.get(cv::CAP_PROP_POS_FRAMES);
 
-        int currentFrame = cap.get(cv::CAP_PROP_POS_FRAMES);
 
         bool frameCounted = false;
 
         // Current frame should contain the sign
         for (int i = 0; i < labelCount; i++) {
-            if (currentFrame >= labels[i].frameStart && currentFrame <= labels[i].frameEnd) {
+            if (currentFrameNumber >= labels[i].frameStart && currentFrameNumber <= labels[i].frameEnd) {
                 if (sign->getLimit() == labels[i].speedSignValue) {
                     framesWithSignCorrectlyRecognized++;
                 } else {
@@ -146,15 +149,15 @@ TEST(VideoTest, SignRecognitionAccuracy)
     }
 
 
-
     EXPECT_EQ(
-            framesWithSignCorrectlyRecognized + framesWithSignIncorrectlyRecognized + framesWithoutSignCorrectlyRecognized + framesWithoutSignIncorrectlyRecognized, totalFrames);
+            framesWithSignCorrectlyRecognized + framesWithSignIncorrectlyRecognized +
+            framesWithoutSignCorrectlyRecognized + framesWithoutSignIncorrectlyRecognized, totalFrames);
 
     const int totalSignFrames = countTotalFramesWithSigns(labels, labelCount);
     const int totalNoSignFrames = totalFrames - totalSignFrames;
 
-    float signRecognizedAccuracy = framesWithSignCorrectlyRecognized / (float)totalSignFrames;
-    float falsePositivesAccuracy = framesWithoutSignIncorrectlyRecognized / (float)totalNoSignFrames;
+    float signRecognizedAccuracy = framesWithSignCorrectlyRecognized / (float) totalSignFrames;
+    float falsePositivesAccuracy = framesWithoutSignIncorrectlyRecognized / (float) totalNoSignFrames;
 
     std::cout << "[ ACCURACY ] " << signRecognizedAccuracy * 100 << "%" << std::endl;
     std::cout << "[FALSE POS.] " << falsePositivesAccuracy * 100 << "%" << std::endl;
