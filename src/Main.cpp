@@ -1,10 +1,11 @@
 
-#include <opencv2/opencv.hpp>
-#include <tesseract/baseapi.h>
 #include "../include/IRoadSignDetector.h"
 #include "../include/models/SpeedLimitSign.h"
+#include <opencv2/opencv.hpp>
+#include <tesseract/baseapi.h>
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv)
+{
     std::cout << "OpenCV version : " << CV_VERSION << std::endl;
 
     ShapeRoadSignDetector detector = ShapeRoadSignDetector();
@@ -32,11 +33,8 @@ int main(int argc, char **argv) {
 
         cv::waitKey(20); // change if calculation is too fast/slow
 
-
         cv::imshow("Preview", frame);
         auto* sign = (SpeedLimitSign*)detector.detectRoadSign(frame);
         std::cout << sign->toString() << std::endl;
-
     }
-
 }
