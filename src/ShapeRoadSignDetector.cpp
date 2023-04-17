@@ -53,7 +53,7 @@ RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
     std::vector<cv::Rect> boundingBoxes;
     findSignsBoundingBoxes(red_binary_mask, boundingBoxes);
 
-    int lastSpeedLimit;
+    int lastSpeedLimit = 0;
     cv::Mat cached_image = image.clone();
     for (cv::Rect bounding_rect: boundingBoxes) {
         cv::Mat roi = cached_image(bounding_rect);
