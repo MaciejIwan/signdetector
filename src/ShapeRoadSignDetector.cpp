@@ -9,17 +9,14 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 
-bool DEBUG_MODE = true;
 
 ShapeRoadSignDetector::ShapeRoadSignDetector()
-    : myOcr()
-{
+        : myOcr() {
 }
 
 ShapeRoadSignDetector::~ShapeRoadSignDetector() = default;
 
-void ShapeRoadSignDetector::updateImageView(cv::Mat& currentFrame, int& lastSpeedLimit)
-{
+void ShapeRoadSignDetector::updateImageView(cv::Mat &currentFrame, int &lastSpeedLimit) {
     cv::Mat red_binary_mask;
     preprocess(currentFrame, red_binary_mask);
 
@@ -27,7 +24,7 @@ void ShapeRoadSignDetector::updateImageView(cv::Mat& currentFrame, int& lastSpee
     findSignsBoundingBoxes(red_binary_mask, boundingBoxes);
 
     cv::Mat temp = currentFrame.clone(); // frame for tesseract
-    for (cv::Rect bounding_rect : boundingBoxes) {
+    for (cv::Rect bounding_rect: boundingBoxes) {
         cv::Mat roi = temp(bounding_rect); // extract the ROI from the current frame
         int numberFromRoi = myOcr.getNumberFromRoi(roi);
         if (numberFromRoi != 0) {
@@ -44,17 +41,15 @@ void ShapeRoadSignDetector::updateImageView(cv::Mat& currentFrame, int& lastSpee
     }
 }
 
-RoadSign* ShapeRoadSignDetector::detectRoadSign(cv::Mat& image)
-{
+RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
     cv::Mat red_binary_mask;
     preprocess(image, red_binary_mask);
 
     std::vector<cv::Rect> boundingBoxes;
     findSignsBoundingBoxes(red_binary_mask, boundingBoxes);
 
-    int lastSpeedLimit = 0;
     cv::Mat cached_image = image.clone();
-    for (cv::Rect bounding_rect : boundingBoxes) {
+    for (cv::Rect bounding_rect: boundingBoxes) {
         cv::Mat roi = cached_image(bounding_rect);
 
         int numberFromRoi = myOcr.getNumberFromRoi(roi);
@@ -64,18 +59,16 @@ RoadSign* ShapeRoadSignDetector::detectRoadSign(cv::Mat& image)
         cv::rectangle(image, bounding_rect, cv::Scalar(0, 255, 0), 2);
     }
 
-    // drawSpeedLimitOnFrame(image, lastSpeedLimit);
+    drawSpeedLimitOnFrame(image, lastSpeedLimit);
 
     return new SpeedLimitSign(lastSpeedLimit);
 }
 
-void ShapeRoadSignDetector::blurImage(cv::Mat& image, int size)
-{
+void ShapeRoadSignDetector::blurImage(cv::Mat &image, int size) {
     cv::medianBlur(image, image, size);
 }
 
-double ShapeRoadSignDetector::compareContoursToCircle(const std::vector<cv::Point>& contour)
-{
+double ShapeRoadSignDetector::compareContoursToCircle(const std::vector<cv::Point> &contour) {
     // Fit a minimum enclosing circle to the contour
     cv::Point2f center;
     float radius;
@@ -91,8 +84,7 @@ double ShapeRoadSignDetector::compareContoursToCircle(const std::vector<cv::Poin
     return similarity;
 }
 
-cv::Mat ShapeRoadSignDetector::extractRedColorFromImage(const cv::Mat& hsvFrame)
-{
+cv::Mat ShapeRoadSignDetector::extractRedColorFromImage(const cv::Mat &hsvFrame) {
     static cv::Scalar lower_red1(0, 50, 30);
     static cv::Scalar upper_red1(15, 255, 255);
     static cv::Scalar lower_red2(160, 50, 30);
@@ -118,28 +110,26 @@ cv::Mat ShapeRoadSignDetector::extractRedColorFromImage(const cv::Mat& hsvFrame)
     return red_mask;
 }
 
-void ShapeRoadSignDetector::drawSpeedLimitOnFrame(const cv::Mat& currentFrame, const int& lastSpeedLimit) const
-{
+void ShapeRoadSignDetector::drawSpeedLimitOnFrame(const cv::Mat &currentFrame, const int &lastSpeedLimit) const {
     std::stringstream speedLimitText;
     speedLimitText << "speed limit: " << lastSpeedLimit;
     cv::putText(currentFrame, // target image
-        speedLimitText.str(), // text
-        cv::Point(10, currentFrame.rows / 5), // top-left position
-        cv::FONT_HERSHEY_SIMPLEX,
-        1.0,
-        cv::Scalar(255, 0, 255), // font color
-        2);
+                speedLimitText.str(), // text
+                cv::Point(10, currentFrame.rows / 5), // top-left position
+                cv::FONT_HERSHEY_SIMPLEX,
+                1.0,
+                cv::Scalar(255, 0, 255), // font color
+                2);
 }
 
-void ShapeRoadSignDetector::findSignsBoundingBoxes(const cv::Mat& red_binary_mask,
-    std::vector<cv::Rect>& boundingBoxes) const
-{ // Find contours in the masked image
+void ShapeRoadSignDetector::findSignsBoundingBoxes(const cv::Mat &red_binary_mask,
+                                                   std::vector<cv::Rect> &boundingBoxes) const { // Find contours in the masked image
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(red_binary_mask, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
     // cv::Mat contourPreview = currentFrame.clone();
 
     // Iterate through each contour and check if it is a circle
-    for (const auto& contour : contours) {
+    for (const auto &contour: contours) {
         double area = cv::contourArea(contour);
         if (area > 750) {
             cv::Rect bounding_rect = cv::boundingRect(contour);
@@ -151,8 +141,7 @@ void ShapeRoadSignDetector::findSignsBoundingBoxes(const cv::Mat& red_binary_mas
     }
 }
 
-void ShapeRoadSignDetector::preprocess(cv::Mat& currentFrame, cv::Mat& red_binary_mask)
-{
+void ShapeRoadSignDetector::preprocess(cv::Mat &currentFrame, cv::Mat &red_binary_mask) {
 
     blurImage(currentFrame, 5);
 
@@ -166,10 +155,9 @@ void ShapeRoadSignDetector::preprocess(cv::Mat& currentFrame, cv::Mat& red_binar
     // Zastosuj operację zamknięcia
     morphologyEx(red_binary_mask, red_binary_mask, cv::MORPH_CLOSE, kernel);
 
-    //    if(DEBUG_MODE) {
-    //
-    //        cv::Mat maskedFrame;
-    //        currentFrame.copyTo(maskedFrame, red_binary_mask);
-    //        cv::imshow("Masked Image", maskedFrame);
-    //    }
+    if (DEBUG_MODE) {
+        cv::Mat maskedFrame;
+        currentFrame.copyTo(maskedFrame, red_binary_mask);
+        cv::imshow("Masked Image", maskedFrame);
+    }
 }

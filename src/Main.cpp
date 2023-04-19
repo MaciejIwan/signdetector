@@ -33,8 +33,10 @@ int main(int argc, char** argv)
 
         cv::waitKey(20); // change if calculation is too fast/slow
 
-        cv::imshow("Preview", frame);
+
         auto* sign = (SpeedLimitSign*)detector.detectRoadSign(frame);
         std::cout << sign->toString() << std::endl;
+
+        cv::imshow("Preview", frame);
     }
 }

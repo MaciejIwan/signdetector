@@ -6,7 +6,7 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <tesseract/baseapi.h>
-
+#include "../include/common.h"
 const int MAX_SIGN_LABELS = 100;
 
 const float MIN_VALID_ACCURACY_RATE = 0.6;
@@ -14,7 +14,6 @@ const float MIN_VALID_ACCURACY_RATE = 0.6;
 const bool TEST_FALSE_POSITIVES = false;
 const float MAX_VALID_FALSE_POSITIVES_RATE = 0.05;
 
-const bool DEBUG_MODE = true;
 
 struct SignLabel {
     int frameStart;
@@ -110,13 +109,15 @@ TEST(VideoTest, SignRecognitionAccuracy) {
 
     cv::Mat frame;
 
-    cv::namedWindow("Preview", cv::WINDOW_NORMAL);
+    if(DEBUG_MODE)
+        cv::namedWindow("Preview", cv::WINDOW_NORMAL);
     while (cap.read(frame)) {
 
         auto *sign = (SpeedLimitSign *) signDetector.detectRoadSign(frame);
-        std::cout << sign->getLimit() << std::endl;
+
 
         if (DEBUG_MODE) {
+            std::cout << sign->getLimit() << std::endl;
             cv::imshow("Preview", frame);
             cv::waitKey(1);
         }

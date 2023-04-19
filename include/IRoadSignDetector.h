@@ -10,7 +10,7 @@
 #include <opencv2/core/mat.hpp>
 #include "Ocr.h"
 #include "models/RoadSign.h"
-
+#include "common.h"
 class IRoadSignDetector {
 public:
     virtual RoadSign* detectRoadSign( cv::Mat &image) = 0;
@@ -31,6 +31,7 @@ public:
 private:
     const double MIN_CONTOUR_SIMILARITY = 0.75;
     Ocr myOcr;
+    int lastSpeedLimit = 0;
 
     static double compareContoursToCircle(const std::vector<cv::Point> &contour);
 
