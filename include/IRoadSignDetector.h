@@ -11,6 +11,7 @@
 #include "Ocr.h"
 #include "models/RoadSign.h"
 #include "common.h"
+#include "models/SpeedLimitSign.h"
 
 class IRoadSignDetector {
 public:
@@ -30,6 +31,7 @@ private:
     const double MIN_CONTOUR_SIMILARITY = 0.75;
     Ocr myOcr;
     int lastSpeedLimit = 0;
+    SpeedLimitSign lastSeenSign = SpeedLimitSign(SpeedLimitSign::DEFAULT_SPEED_LIMIT);
 
     static double compareContoursToCircle(const std::vector<cv::Point> &contour);
 
@@ -41,7 +43,7 @@ private:
 
     void findSignsBoundingBoxes(const cv::Mat &red_binary_mask, std::vector<cv::Rect> &boundingBoxes) const;
 
-    void drawSpeedLimitOnFrame(const cv::Mat &currentFrame, const int &lastSpeedLimit) const;
+    void drawSpeedLimitOnFrame(const cv::Mat &currentFrame) const;
 };
 
 #endif

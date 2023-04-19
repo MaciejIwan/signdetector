@@ -30,14 +30,15 @@ RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
         int numberFromRoi = myOcr.getNumberFromRoi(roi);
         if (numberFromRoi != 0) {
             lastSpeedLimit = numberFromRoi;
+            lastSeenSign.updateLastSeenSign(lastSpeedLimit);
         }
         cv::rectangle(image, bounding_rect, cv::Scalar(0, 255, 0), 2);
     }
 
-    drawSpeedLimitOnFrame(image, lastSpeedLimit);
+    drawSpeedLimitOnFrame(image);
 
 
-    return new SpeedLimitSign(lastSpeedLimit);
+    return &lastSeenSign;
 }
 
 void ShapeRoadSignDetector::blurImage(cv::Mat &image, int size) {
@@ -86,9 +87,9 @@ cv::Mat ShapeRoadSignDetector::extractRedColorFromImage(const cv::Mat &hsvFrame)
     return red_mask;
 }
 
-void ShapeRoadSignDetector::drawSpeedLimitOnFrame(const cv::Mat &currentFrame, const int &lastSpeedLimit) const {
+void ShapeRoadSignDetector::drawSpeedLimitOnFrame(const cv::Mat &currentFrame) const {
     std::stringstream speedLimitText;
-    speedLimitText << "speed limit: " << lastSpeedLimit;
+    speedLimitText << "speed limit: " << lastSeenSign.getLimit();
     cv::putText(currentFrame, // target image
                 speedLimitText.str(), // text
                 cv::Point(10, currentFrame.rows / 5), // top-left position

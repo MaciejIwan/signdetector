@@ -71,7 +71,7 @@ add_executable(
   tests
   tests/tests.cpp
   include/models/RoadSign.h src/ShapeRoadSignDetector.cpp include/IRoadSignDetector.h src/Ocr.cpp include/Ocr.h include/models/SpeedLimitSign.h
-        include/common.h)
+        include/common.h tests/utils/videoTestUtils.cpp)
 target_link_libraries(tests
         ${OpenCV_LIBS}
         Tesseract::libtesseract

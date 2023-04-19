@@ -7,13 +7,12 @@
 
 #include "RoadSign.h"
 
-#define DEFAULT_SPEED_LIMIT 0
-
 class SpeedLimitSign : public RoadSign {
 private:
     int limit = DEFAULT_SPEED_LIMIT;
     static constexpr const int VALID_LIMITS[] = {10, 30, 40, 50, 60, 70, 90, 100, 110, 120, 130, 140};
 public:
+    static const int DEFAULT_SPEED_LIMIT = 0;
     //SpeedLimitSign(int l) : RoadSign(SignType::SPEED_LIMIT), limit(l) {}
     SpeedLimitSign(int l) : RoadSign(SignType::SPEED_LIMIT) {
         setLimit(l);
@@ -28,17 +27,18 @@ public:
     }
 
     void setLimit(int l) {
+        limit = l;
+    }
+    void updateLastSeenSign(int value) {
         bool valid_limit = false;
         for (const auto &lim: VALID_LIMITS) {
-            if (l == lim) {
+            if (value == lim) {
                 valid_limit = true;
                 break;
             }
         }
         if (valid_limit) {
-            SpeedLimitSign::limit = l;
-        } else {
-            SpeedLimitSign::limit = DEFAULT_SPEED_LIMIT;
+            SpeedLimitSign::limit = value;
         }
     }
 };
