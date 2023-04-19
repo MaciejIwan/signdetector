@@ -75,7 +75,8 @@ int countTotalFramesWithSigns(SignLabel *labels, int labelCount) {
 }
 
 TEST(VideoTest, SignRecognitionAccuracy) {
-    std::string videoFile = "video/speed_limit_0.mp4";
+    std::string filename = "speed_limit_11";
+    std::string videoFile = "video/" + filename + ".mp4";
 
     std::cout << "[ FILENAME ] " << videoFile << std::endl;
 
@@ -84,7 +85,7 @@ TEST(VideoTest, SignRecognitionAccuracy) {
     int labelCount = 0;
 
     // TODO: Make the CSV filepath dynamic
-    int csvCheck = loadSignLabelsFromCSV("video/labels/speed_limit_0.csv", labels, &labelCount);
+    int csvCheck = loadSignLabelsFromCSV("video/labels/" + filename + ".csv", labels, &labelCount);
     if (csvCheck) {
         return;
     }
@@ -117,7 +118,7 @@ TEST(VideoTest, SignRecognitionAccuracy) {
 
 
         if (DEBUG_MODE) {
-            std::cout << sign->getLimit() << std::endl;
+            //std::cout << sign->getLimit() << std::endl;
             cv::imshow("Preview", frame);
             cv::waitKey(1);
         }

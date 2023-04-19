@@ -143,7 +143,7 @@ void ShapeRoadSignDetector::findSignsBoundingBoxes(const cv::Mat &red_binary_mas
 
 void ShapeRoadSignDetector::preprocess(cv::Mat &currentFrame, cv::Mat &red_binary_mask) {
 
-    blurImage(currentFrame, 5);
+    //blurImage(currentFrame, 3);
 
     cv::Mat hsvFrame;
     cv::cvtColor(currentFrame, hsvFrame, cv::COLOR_BGR2HSV); // Zdefiniuj rozmiar jądra dla operacji morfologicznych
