@@ -11,22 +11,20 @@
 #include "Ocr.h"
 #include "models/RoadSign.h"
 #include "common.h"
+
 class IRoadSignDetector {
 public:
-    virtual RoadSign* detectRoadSign( cv::Mat &image) = 0;
+    virtual RoadSign *detectRoadSign(cv::Mat &image) = 0;
 };
 
 
 class ShapeRoadSignDetector : public IRoadSignDetector {
 public:
-    RoadSign* detectRoadSign(cv::Mat &image) override;
+    RoadSign *detectRoadSign(cv::Mat &image) override;
 
     ShapeRoadSignDetector();
 
     ~ShapeRoadSignDetector();
-
-    void updateImageView(cv::Mat &currentFrame,
-                         int &lastSpeedLimit); // todo Split and simplify this function. Then remove it and use detectRoadSign instead. Extract: preprocessing, contour detection, selection, recognition etc
 
 private:
     const double MIN_CONTOUR_SIMILARITY = 0.75;
@@ -36,7 +34,6 @@ private:
     static double compareContoursToCircle(const std::vector<cv::Point> &contour);
 
     cv::Mat extractRedColorFromImage(const cv::Mat &hsvFrame);
-
 
     static void blurImage(cv::Mat &image, int size);
 

@@ -16,31 +16,6 @@ ShapeRoadSignDetector::ShapeRoadSignDetector()
 
 ShapeRoadSignDetector::~ShapeRoadSignDetector() = default;
 
-void ShapeRoadSignDetector::updateImageView(cv::Mat &currentFrame, int &lastSpeedLimit) {
-    cv::Mat red_binary_mask;
-    preprocess(currentFrame, red_binary_mask);
-
-    std::vector<cv::Rect> boundingBoxes;
-    findSignsBoundingBoxes(red_binary_mask, boundingBoxes);
-
-    cv::Mat temp = currentFrame.clone(); // frame for tesseract
-    for (cv::Rect bounding_rect: boundingBoxes) {
-        cv::Mat roi = temp(bounding_rect); // extract the ROI from the current frame
-        int numberFromRoi = myOcr.getNumberFromRoi(roi);
-        if (numberFromRoi != 0) {
-            lastSpeedLimit = numberFromRoi;
-        }
-        cv::rectangle(currentFrame, bounding_rect, cv::Scalar(0, 255, 0), 2);
-    }
-
-    drawSpeedLimitOnFrame(currentFrame, lastSpeedLimit);
-
-    if (DEBUG_MODE) {
-        cv::imshow("red color mask", red_binary_mask);
-        drawSpeedLimitOnFrame(currentFrame, lastSpeedLimit);
-    }
-}
-
 RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
     cv::Mat red_binary_mask;
     preprocess(image, red_binary_mask);
@@ -60,6 +35,7 @@ RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
     }
 
     drawSpeedLimitOnFrame(image, lastSpeedLimit);
+
 
     return new SpeedLimitSign(lastSpeedLimit);
 }
