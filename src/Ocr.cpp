@@ -12,19 +12,31 @@
 Ocr::Ocr() : ocr(new tesseract::TessBaseAPI()) {
     ocr->Init(NULL, "eng", tesseract::OEM_LSTM_ONLY);
     ocr->SetVariable("debug_file", "/dev/null");
-    ocr->SetPageSegMode(tesseract::PSM_AUTO);
+    ocr->SetPageSegMode(tesseract::PSM_SINGLE_LINE);
 }
 
 Ocr::~Ocr() {
     ocr->End();
     delete ocr;
 }
+void Ocr::preprocess(cv::Mat &roi) {
+    cv::cvtColor(roi, roi, cv::COLOR_BGR2GRAY);
 
-int Ocr::getNumberFromRoi(const cv::Mat &roi) {
-    ocr->SetImage(roi.data, roi.cols, roi.rows, 3, roi.step);
+    cv::adaptiveThreshold(roi, roi, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 25, 50);
+    cv::erode(roi, roi, getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
+}
+
+int Ocr::getNumberFromRoi(cv::Mat &roi) {
+    cv::imwrite("0.jpg", roi);
+    preprocess(roi);
+    ocr->SetImage(roi.data, roi.cols, roi.rows, 1, roi.step);
+
     if(DEBUG_MODE){
         cv::imshow("ROI", roi);
+        cv::waitKey(0);
+        std::cout << "OCR: " << ocr->GetUTF8Text() << std::endl;
     }
+
     std::string text = trim(std::string(ocr->GetUTF8Text()));
 
     std::regex re("\\(?\\d+\\)?");

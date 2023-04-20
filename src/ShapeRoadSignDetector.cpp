@@ -11,7 +11,7 @@
 
 
 ShapeRoadSignDetector::ShapeRoadSignDetector()
-        : myOcr() {
+        : ocr() {
 }
 
 ShapeRoadSignDetector::~ShapeRoadSignDetector() = default;
@@ -27,7 +27,7 @@ RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
     for (cv::Rect bounding_rect: boundingBoxes) {
         cv::Mat roi = cached_image(bounding_rect);
 
-        int numberFromRoi = myOcr.getNumberFromRoi(roi);
+        int numberFromRoi = ocr.getNumberFromRoi(roi);
         if (numberFromRoi != 0) {
             lastSpeedLimit = numberFromRoi;
             lastSeenSign.updateLastSeenSign(lastSpeedLimit);

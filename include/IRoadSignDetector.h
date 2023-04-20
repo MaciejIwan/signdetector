@@ -29,7 +29,7 @@ public:
 
 private:
     const double MIN_CONTOUR_SIMILARITY = 0.75;
-    Ocr myOcr;
+    Ocr ocr;
     int lastSpeedLimit = 0;
     SpeedLimitSign lastSeenSign = SpeedLimitSign(SpeedLimitSign::DEFAULT_SPEED_LIMIT);
 
