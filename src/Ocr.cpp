@@ -27,9 +27,8 @@ void Ocr::preprocess(cv::Mat &roi) {
     cv::adaptiveThreshold(roi, roi, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 81, 0);
     cv::bitwise_not(roi, roi);
 
-
-//    cv::dilate(roi, roi, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2,2)));
-//    cv::erode(roi, roi, getStructuringElement(cv::MORPH_RECT, cv::Size(2, 2)));
+    cv::erode(roi, roi, getStructuringElement(cv::MORPH_RECT, cv::Size(2, 2)));
+    cv::dilate(roi, roi, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2,2)));
 }
 
 int Ocr::getNumberFromRoi(cv::Mat &roi) {
