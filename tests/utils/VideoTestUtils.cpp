@@ -4,7 +4,7 @@
 
 #include "../include/utils/VideoTestUtils.h"
 #include "../../include/IRoadSignDetector.h"
-#include "../../include/common.h"
+#include "../../include/Common.h"
 #include "../../include/models/SpeedLimitSign.h"
 #include <fstream>
 #include <gtest/gtest.h>
@@ -114,6 +114,7 @@ void testSignRecognitionAccuracy(const std::string& filename)
         auto* sign = (SpeedLimitSign*)signDetector.detectRoadSign(frame);
 
         if (DEBUG_MODE) {
+            drawSpeedLimitOnFrame(frame, sign->getLimit());
             cv::imshow("Preview", frame);
             cv::waitKey(delay);
         }

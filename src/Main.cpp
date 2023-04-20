@@ -1,6 +1,5 @@
 
 #include "../include/IRoadSignDetector.h"
-#include "../include/models/SpeedLimitSign.h"
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
 
@@ -8,7 +7,7 @@ int main(int argc, char **argv) {
     std::cout << "OpenCV version : " << CV_VERSION << std::endl;
 
     ShapeRoadSignDetector detector = ShapeRoadSignDetector();
-    int lastSpeedLimit = 0;
+    SpeedLimitSign lastSeenSign = SpeedLimitSign(SpeedLimitSign::DEFAULT_SPEED_LIMIT);
 
     std::string videoFile = "video/znak2.mp4";
     if (argc == 2)
@@ -32,8 +31,8 @@ int main(int argc, char **argv) {
 
         cv::waitKey(20); // change if calculation is too fast/slow
 
-
         auto *sign = (SpeedLimitSign *) detector.detectRoadSign(frame);
+        drawSpeedLimitOnFrame(frame, sign->getLimit());
         std::cout << sign->toString() << std::endl;
 
         cv::imshow("Preview", frame);

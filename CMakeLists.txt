@@ -26,7 +26,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
-add_executable(main src/Main.cpp include/models/RoadSign.h src/ShapeRoadSignDetector.cpp include/IRoadSignDetector.h src/Ocr.cpp include/Ocr.h include/models/SpeedLimitSign.h include/common.h)
+add_executable(main src/Main.cpp include/models/RoadSign.h src/ShapeRoadSignDetector.cpp include/IRoadSignDetector.h src/Ocr.cpp include/Ocr.h include/models/SpeedLimitSign.h include/Common.h src/Util.cpp)
 target_link_libraries(main
         ${OpenCV_LIBS}
         Tesseract::libtesseract
@@ -71,7 +71,7 @@ add_executable(
   tests
         tests/Tests.cpp
   include/models/RoadSign.h src/ShapeRoadSignDetector.cpp include/IRoadSignDetector.h src/Ocr.cpp include/Ocr.h include/models/SpeedLimitSign.h
-        include/common.h tests/utils/VideoTestUtils.cpp tests/OcrTest.cpp)
+        include/Common.h tests/utils/VideoTestUtils.cpp tests/OcrTest.cpp src/Util.cpp)
 target_link_libraries(tests
         ${OpenCV_LIBS}
         Tesseract::libtesseract

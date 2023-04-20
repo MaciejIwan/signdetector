@@ -4,7 +4,7 @@
 
 #include <string>
 #include <regex>
-#include "../include/common.h"
+#include "../include/Common.h"
 #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 #include "../include/Ocr.h"
@@ -22,21 +22,23 @@ Ocr::~Ocr() {
 
 void Ocr::preprocess(cv::Mat &roi) {
     cv::cvtColor(roi, roi, cv::COLOR_BGR2GRAY);
-    cv::equalizeHist(roi, roi);
+    //cv::equalizeHist(roi, roi);
 
-    cv::adaptiveThreshold(roi, roi, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 45, 0);
-    cv::erode(roi, roi, getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
+    cv::adaptiveThreshold(roi, roi, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 81, 80);
+    cv::bitwise_not(roi, roi);
 
-    cv::dilate(roi, roi, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5)));
+
+//    cv::dilate(roi, roi, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2,2)));
+//    cv::erode(roi, roi, getStructuringElement(cv::MORPH_RECT, cv::Size(2, 2)));
 }
 
 int Ocr::getNumberFromRoi(cv::Mat &roi) {
     preprocess(roi);
     ocr->SetImage(roi.data, roi.cols, roi.rows, 1, roi.step);
 
-    if (DEBUG_OCR) {
+    if (DEBUG_OCR && DEBUG_MODE) {
         cv::imshow("ROI", roi);
-        cv::waitKey(100);
+        cv::waitKey(DEBUG_OCR_IMG_DELAY);
         std::cout << "OCR: " << ocr->GetUTF8Text() << std::endl;
     }
 
