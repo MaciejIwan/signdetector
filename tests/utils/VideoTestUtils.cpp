@@ -2,7 +2,7 @@
 // Created by maciej on 19.04.23.
 //
 
-#include "../include/utils/videoTestUtils.h"
+#include "../include/utils/VideoTestUtils.h"
 #include "../../include/IRoadSignDetector.h"
 #include "../../include/common.h"
 #include "../../include/models/SpeedLimitSign.h"
@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include <string>
 #include <tesseract/baseapi.h>
 
 const int MAX_SIGN_LABELS = 100;
@@ -55,7 +56,6 @@ int loadSignLabelsFromCSV(std::string filename, SignLabel* labels, int* labelCou
         labels[i].frameStart = stoi(content[i][0]);
         labels[i].frameEnd = stoi(content[i][1]);
         labels[i].speedSignValue = stoi(content[i][2]);
-        labels[i].detected = false;
     }
 
     *labelCount = content.size();
@@ -71,18 +71,6 @@ int countTotalFramesWithSigns(SignLabel* labels, int labelCount)
         signFrames += labels[i].frameEnd - labels[i].frameStart;
     }
     return signFrames;
-}
-
-int countDetectedSigns(SignLabel* labels, int labelCount)
-{
-    int detectedSigns = 0;
-
-    for (int i = 0; i < labelCount; i++) {
-        if (labels[i].detected) {
-            detectedSigns++;
-        }
-    }
-    return detectedSigns;
 }
 
 void testSignRecognitionAccuracy(const std::string& filename)
@@ -138,7 +126,6 @@ void testSignRecognitionAccuracy(const std::string& filename)
             if (currentFrameNumber >= labels[i].frameStart && currentFrameNumber <= labels[i].frameEnd) {
                 if (sign->getLimit() == labels[i].speedSignValue) {
                     framesWithSignCorrectlyRecognized++;
-                    labels[i].detected = true;
                 } else {
                     framesWithSignIncorrectlyRecognized++;
                 }
@@ -163,17 +150,13 @@ void testSignRecognitionAccuracy(const std::string& filename)
     const int totalNoSignFrames = totalFrames - totalSignFrames;
 
     float signRecognizedAccuracy = framesWithSignCorrectlyRecognized / (float)totalSignFrames;
+    float falsePositivesAccuracy = framesWithoutSignIncorrectlyRecognized / (float)totalNoSignFrames;
 
-    int detectedSigns = countDetectedSigns(labels, labelCount);
-
-    std::cout << "[ DETECTED ] " << detectedSigns << " out of " << labelCount << " signs." << std::endl;
     std::cout << "[ ACCURACY ] " << signRecognizedAccuracy * 100 << "%" << std::endl;
+    std::cout << "[FALSE POS.] " << falsePositivesAccuracy * 100 << "%" << std::endl;
 
     EXPECT_TRUE(signRecognizedAccuracy >= MIN_VALID_ACCURACY_RATE);
 
-    if (TEST_FALSE_POSITIVES) {
-        float falsePositivesAccuracy = framesWithoutSignIncorrectlyRecognized / (float)totalNoSignFrames;
-        std::cout << "[FALSE POS.] " << falsePositivesAccuracy * 100 << "%" << std::endl;
+    if (TEST_FALSE_POSITIVES)
         EXPECT_TRUE(falsePositivesAccuracy <= MAX_VALID_FALSE_POSITIVES_RATE);
-    }
 }
