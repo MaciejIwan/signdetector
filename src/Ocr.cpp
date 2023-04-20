@@ -33,7 +33,7 @@ int Ocr::getNumberFromRoi(cv::Mat &roi) {
 
     if (DEBUG_MODE) {
         cv::imshow("ROI", roi);
-        // cv::waitKey(0);
+        cv::waitKey(0);
         std::cout << "OCR: " << ocr->GetUTF8Text() << std::endl;
     }
 
