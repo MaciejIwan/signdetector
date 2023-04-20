@@ -24,7 +24,7 @@ void Ocr::preprocess(cv::Mat &roi) {
     cv::cvtColor(roi, roi, cv::COLOR_BGR2GRAY);
     //cv::equalizeHist(roi, roi);
 
-    cv::adaptiveThreshold(roi, roi, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 81, 80);
+    cv::adaptiveThreshold(roi, roi, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 81, 0);
     cv::bitwise_not(roi, roi);
 
 
