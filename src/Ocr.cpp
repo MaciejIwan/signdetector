@@ -4,6 +4,9 @@
 
 #include <string>
 #include <regex>
+#include "../include/common.h"
+#include <opencv2/imgproc.hpp>
+#include <opencv2/opencv.hpp>
 #include "../include/Ocr.h"
 
 Ocr::Ocr() : ocr(new tesseract::TessBaseAPI()) {
@@ -19,6 +22,9 @@ Ocr::~Ocr() {
 
 int Ocr::getNumberFromRoi(const cv::Mat &roi) {
     ocr->SetImage(roi.data, roi.cols, roi.rows, 3, roi.step);
+    if(DEBUG_MODE){
+        cv::imshow("ROI", roi);
+    }
     std::string text = trim(std::string(ocr->GetUTF8Text()));
 
     std::regex re("\\(?\\d+\\)?");

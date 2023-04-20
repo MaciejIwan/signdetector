@@ -11,7 +11,7 @@
 #include <fstream>
 #include "../../include/models/SpeedLimitSign.h"
 #include "../../include/IRoadSignDetector.h"
-#include "../include/utils/videoTestUtils.h"
+#include "../include/utils/VideoTestUtils.h"
 
 const int MAX_SIGN_LABELS = 100;
 const float MIN_VALID_ACCURACY_RATE = 0.6;

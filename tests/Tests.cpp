@@ -1,7 +1,7 @@
 
 #include <gtest/gtest.h>
 #include <string>
-#include "include/utils/videoTestUtils.h"
+#include "include/utils/VideoTestUtils.h"
 
 
 TEST(VideoTest_speed_limit_seqence_1, SignRecognitionAccuracy) {
