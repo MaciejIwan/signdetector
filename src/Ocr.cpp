@@ -19,6 +19,7 @@ Ocr::~Ocr() {
     ocr->End();
     delete ocr;
 }
+
 void Ocr::preprocess(cv::Mat &roi) {
     cv::cvtColor(roi, roi, cv::COLOR_BGR2GRAY);
 
@@ -27,11 +28,10 @@ void Ocr::preprocess(cv::Mat &roi) {
 }
 
 int Ocr::getNumberFromRoi(cv::Mat &roi) {
-    cv::imwrite("40_1.jpg", roi);
     preprocess(roi);
     ocr->SetImage(roi.data, roi.cols, roi.rows, 1, roi.step);
 
-    if(DEBUG_MODE){
+    if (DEBUG_MODE) {
         cv::imshow("ROI", roi);
         cv::waitKey(0);
         std::cout << "OCR: " << ocr->GetUTF8Text() << std::endl;
