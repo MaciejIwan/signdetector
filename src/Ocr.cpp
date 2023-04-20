@@ -27,7 +27,7 @@ void Ocr::preprocess(cv::Mat &roi) {
 }
 
 int Ocr::getNumberFromRoi(cv::Mat &roi) {
-    cv::imwrite("0.jpg", roi);
+    cv::imwrite("40_1.jpg", roi);
     preprocess(roi);
     ocr->SetImage(roi.data, roi.cols, roi.rows, 1, roi.step);
 

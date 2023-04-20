@@ -10,7 +10,7 @@
 
 TEST(OcrTest, shouldReturn40) {
     std::cout << "OcrTest: ImagePreprocessing" << std::endl;
-    std::string filename = "imgs/signs/0.jpg";
+    std::string filename = "imgs/signs/40_1.jpg";
 
     int expectedSign = 40;
     Ocr ocr = Ocr();
