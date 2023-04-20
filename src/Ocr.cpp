@@ -22,18 +22,21 @@ Ocr::~Ocr() {
 
 void Ocr::preprocess(cv::Mat &roi) {
     cv::cvtColor(roi, roi, cv::COLOR_BGR2GRAY);
+    cv::equalizeHist(roi, roi);
 
-    cv::adaptiveThreshold(roi, roi, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 25, 50);
+    cv::adaptiveThreshold(roi, roi, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 45, 0);
     cv::erode(roi, roi, getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
+
+    cv::dilate(roi, roi, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(5, 5)));
 }
 
 int Ocr::getNumberFromRoi(cv::Mat &roi) {
     preprocess(roi);
     ocr->SetImage(roi.data, roi.cols, roi.rows, 1, roi.step);
 
-    if (DEBUG_MODE) {
+    if (DEBUG_OCR) {
         cv::imshow("ROI", roi);
-        cv::waitKey(0);
+        cv::waitKey(100);
         std::cout << "OCR: " << ocr->GetUTF8Text() << std::endl;
     }
 
