@@ -62,6 +62,11 @@ target_link_libraries(mean_shift
         ${OpenCV_LIBS}
         )
 
+add_executable(perspective tools/perspective.cpp)
+target_link_libraries(perspective
+        ${OpenCV_LIBS}
+        )
+
 FILE(COPY resources/video DESTINATION ${CMAKE_BINARY_DIR})
 FILE(COPY resources/imgs DESTINATION ${CMAKE_BINARY_DIR})
 
