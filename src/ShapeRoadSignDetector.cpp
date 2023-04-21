@@ -60,13 +60,13 @@ double ShapeRoadSignDetector::compareContoursToCircle(const std::vector<cv::Poin
 
 cv::Mat ShapeRoadSignDetector::extractRedColorFromImage(const cv::Mat &hsvFrame) {
     static cv::Scalar lower_red1(0, 50, 30);
-    static cv::Scalar upper_red1(15, 255, 255);
+    static cv::Scalar upper_red1(8, 255, 255);
     static cv::Scalar lower_red2(160, 50, 30);
     static cv::Scalar upper_red2(180, 255, 255);
-    static cv::Scalar lower_red_pink(140, 50, 50);
-    static cv::Scalar upper_red_pink(160, 255, 255);
-    static cv::Scalar lower_red_claret(0, 50, 10);
-    static cv::Scalar upper_red_claret(10, 255, 150);
+    static cv::Scalar lower_red_pink(138, 30, 60);
+    static cv::Scalar upper_red_pink(179, 255, 250);
+//    static cv::Scalar lower_red_claret(0, 50, 10);
+//    static cv::Scalar upper_red_claret(10, 255, 150);
     static cv::Scalar lower_red_dark(0, 5, 0);
     static cv::Scalar upper_red_dark(10, 90, 50);
 
@@ -74,11 +74,11 @@ cv::Mat ShapeRoadSignDetector::extractRedColorFromImage(const cv::Mat &hsvFrame)
     cv::inRange(hsvFrame, lower_red1, upper_red1, red_mask1);
     cv::inRange(hsvFrame, lower_red2, upper_red2, red_mask2);
     cv::inRange(hsvFrame, lower_red_pink, upper_red_pink, red_mask_pink);
-    cv::inRange(hsvFrame, lower_red_claret, upper_red_claret, red_mask_claret);
+    //cv::inRange(hsvFrame, lower_red_claret, upper_red_claret, red_mask_claret);
     cv::inRange(hsvFrame, lower_red_dark, upper_red_dark, red_mask_dark);
     cv::bitwise_or(red_mask1, red_mask2, red_mask);
     cv::bitwise_or(red_mask, red_mask_pink, red_mask);
-    cv::bitwise_or(red_mask, red_mask_claret, red_mask);
+    //cv::bitwise_or(red_mask, red_mask_claret, red_mask);
     cv::bitwise_or(red_mask, red_mask_dark, red_mask);
 
     return red_mask;
