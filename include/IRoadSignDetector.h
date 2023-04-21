@@ -8,36 +8,38 @@
 
 #include <vector>
 #include <opencv2/core/mat.hpp>
-#include "MyOcr.h"
+#include "Ocr.h"
 #include "models/RoadSign.h"
+#include "Common.h"
+#include "models/SpeedLimitSign.h"
 
 class IRoadSignDetector {
 public:
-    virtual RoadSign detectRoadSigns(const cv::Mat &image) = 0;
+    virtual RoadSign *detectRoadSign(cv::Mat &image) = 0;
 };
 
 
 class ShapeRoadSignDetector : public IRoadSignDetector {
 public:
-    RoadSign detectRoadSigns(const cv::Mat &image) override;
+    RoadSign *detectRoadSign(cv::Mat &image) override;
 
     ShapeRoadSignDetector();
 
     ~ShapeRoadSignDetector();
 
-    void updateImageView(cv::Mat &currentFrame,
-                         int &lastSpeedLimit); // todo Split and simplify this function. Then remove it and use detectRoadSigns instead. Extract: preprocessing, contour detection, selection, recognition etc
-
 private:
     const double MIN_CONTOUR_SIMILARITY = 0.75;
-    MyOcr myOcr;
+    Ocr ocr;
 
     static double compareContoursToCircle(const std::vector<cv::Point> &contour);
 
     cv::Mat extractRedColorFromImage(const cv::Mat &hsvFrame);
 
-
     static void blurImage(cv::Mat &image, int size);
+
+    void preprocess(cv::Mat &currentFrame, cv::Mat &red_binary_mask);
+
+    void findSignsBoundingBoxes(const cv::Mat &red_binary_mask, std::vector<cv::Rect> &boundingBoxes) const;
 };
 
 #endif

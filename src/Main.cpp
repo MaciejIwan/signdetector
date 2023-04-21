@@ -1,16 +1,15 @@
-#include <regex>
 
+#include "../include/IRoadSignDetector.h"
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
-#include "../include/IRoadSignDetector.h"
 
 int main(int argc, char **argv) {
     std::cout << "OpenCV version : " << CV_VERSION << std::endl;
 
     ShapeRoadSignDetector detector = ShapeRoadSignDetector();
-    int lastSpeedLimit = 0;
+    auto* lastSeenSign = new SpeedLimitSign(SpeedLimitSign::DEFAULT_SPEED_LIMIT);
 
-    std::string videoFile = "video/znak2.mp4";
+    std::string videoFile = "video/speed_limit_seqence_1.mp4";
     if (argc == 2)
         videoFile = std::string(argv[1]);
 
@@ -32,8 +31,13 @@ int main(int argc, char **argv) {
 
         cv::waitKey(20); // change if calculation is too fast/slow
 
-        //RoadSign sign = detector.detectRoadSigns(frame);
-        detector.updateImageView(frame, lastSpeedLimit);
-    }
+        auto *sign = (SpeedLimitSign *) detector.detectRoadSign(frame);
+        if(sign->getLimit() != 0)
+            lastSeenSign = sign;
 
+        drawSpeedLimitOnFrame(frame, lastSeenSign->getLimit());
+        std::cout << sign->toString() << std::endl;
+
+        cv::imshow("Preview", frame);
+    }
 }
