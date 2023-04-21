@@ -21,35 +21,52 @@ Ocr::~Ocr() {
 }
 
 void Ocr::preprocess(cv::Mat &roi) {
-    cv::cvtColor(roi, roi, cv::COLOR_BGR2GRAY);
-    //cv::equalizeHist(roi, roi);
+    double alpha = 1.5; // contrast control, adjust as needed
+    int beta = 20; // brightness control, adjust as needed
+    cv::Mat result;
+    roi.convertTo(result, -1, alpha, beta);
 
-    cv::adaptiveThreshold(roi, roi, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY, 81, 0);
+    if (DEBUG_OCR_IMG && DEBUG_MODE) {
+        cv::imshow("contrast ROI", result);
+        cv::imshow("Orignal roi", roi);
+    }
+    roi = result;
+
+    cv::cvtColor(roi, roi, cv::COLOR_BGR2GRAY);
+    cv::equalizeHist(roi, roi);
     cv::bitwise_not(roi, roi);
 
-    cv::erode(roi, roi, getStructuringElement(cv::MORPH_RECT, cv::Size(2, 2)));
-    cv::dilate(roi, roi, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2,2)));
+    cv::adaptiveThreshold(roi, roi, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 81, 0);
+    //cv::threshold(roi, roi, 0, 255, cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
+    //cv::threshold(roi, roi, 90, 255, cv::THRESH_BINARY_INV);
+
+    cv::erode(roi, roi, getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
+    cv::dilate(roi, roi, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
 }
 
 int Ocr::getNumberFromRoi(cv::Mat &roi) {
     preprocess(roi);
     ocr->SetImage(roi.data, roi.cols, roi.rows, 1, roi.step);
 
-    if (DEBUG_OCR && DEBUG_MODE) {
-        cv::imshow("ROI", roi);
-        cv::waitKey(DEBUG_OCR_IMG_DELAY);
-        std::cout << "OCR: " << ocr->GetUTF8Text() << std::endl;
+    if (DEBUG_MODE) {
+        if (DEBUG_OCR_CONSOLE_LOG)
+            std::cout << "OCR: " << ocr->GetUTF8Text() << std::endl;
+
+        if (DEBUG_OCR_IMG) {
+            cv::imshow("final ROI", roi);
+            cv::waitKey(DEBUG_OCR_IMG_DELAY);
+        }
     }
 
     std::string text = trim(std::string(ocr->GetUTF8Text()));
 
-    std::regex re("\\(?\\d+\\)?");
+    std::regex re("[^0-9]?\\d+[^0-9]?");
     std::smatch match;
-    bool matchFound = std::regex_match(text, match, re);
-    if (matchFound) {
+    std::regex_match(text, match, re);
+    try {
         std::regex_search(text, match, std::regex("\\b\\d+\\b"));
         return std::stoi(match.str());
-    } else {
+    } catch (...) {
         return 0;
     }
 }
