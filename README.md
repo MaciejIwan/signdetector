@@ -52,4 +52,5 @@ for file in *.mp4; do ffmpeg -i "$file" -vf scale=-2:720 "../${file%.*}_720p.mp4
 ```sh
 # in build directory
 ./tests
+./tests --gtest_filter=RoiOcrTest* # to run example ts
 ```
