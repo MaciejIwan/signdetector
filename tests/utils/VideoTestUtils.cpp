@@ -6,6 +6,7 @@
 #include "../../include/IRoadSignDetector.h"
 #include "../../include/Common.h"
 #include "../../include/models/SpeedLimitSign.h"
+#include "../../include/ShapeRoadSignDetector.h"
 #include <fstream>
 #include <gtest/gtest.h>
 #include <iostream>

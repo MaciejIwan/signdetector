@@ -2,7 +2,8 @@
 // Created by maciej on 14.04.23.
 //
 
-#include "../include/IRoadSignDetector.h"
+//#include "../include/IRoadSignDetector.h"
+#include "../include/ShapeRoadSignDetector.h"
 #include "../include/models/SpeedLimitSign.h"
 #include <iomanip>
 #include <opencv2/imgproc.hpp>
