@@ -16,7 +16,7 @@
 #define DEBUG_MODE true
 
 // true to see OCR image && print raw OCR text
-#define DEBUG_OCR_IMG false
+#define DEBUG_OCR_IMG true
 
 // how long u see OCR IMG before next frame.
 //0 wait for key press, 10 wait for 10ms
