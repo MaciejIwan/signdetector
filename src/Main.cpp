@@ -1,4 +1,3 @@
-
 #include "../include/IRoadSignDetector.h"
 #include "../include/ShapeRoadSignDetector.h"
 #include <opencv2/opencv.hpp>
@@ -24,23 +23,29 @@ int main(int argc, char **argv) {
     cv::namedWindow("Preview", cv::WINDOW_NORMAL);
 
     cv::Mat frame;
+    int64 prevTickCount = cv::getTickCount();
+    double fps = 0;
     while (true) {
         if (!cap.read(frame)) {
             cap.set(cv::CAP_PROP_POS_FRAMES, 0);
             continue;
         }
 
-        cv::waitKey(15); // change if calculation is too fast/slow
+        int64 curTickCount = cv::getTickCount();
+        double timeElapsed = (curTickCount - prevTickCount) / cv::getTickFrequency();
+        prevTickCount = curTickCount;
+        fps = 1 / timeElapsed;
 
         auto *sign = (SpeedLimitSign *) detector.detectRoadSign(frame);
         if (sign->getLimit() != 0)
             lastSeenSign = sign;
 
-        drawSpeedLimitOnFrame(frame, lastSeenSign->getLimit());
+        drawSpeedLimitOnFrame(frame, lastSeenSign->getLimit(), fps);
 
         if (DEBUG_MODE)
             std::cout << sign->toString() << std::endl;
 
         cv::imshow("Preview", frame);
+        cv::waitKey(fps); // change if calculation is too fast/slow
     }
 }

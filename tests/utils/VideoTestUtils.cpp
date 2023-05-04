@@ -126,7 +126,7 @@ void testSignRecognitionAccuracy(const std::string& filename)
         auto* sign = (SpeedLimitSign*)signDetector.detectRoadSign(frame);
 
         if (DEBUG_MODE) {
-            drawSpeedLimitOnFrame(frame, sign->getLimit());
+            drawSpeedLimitOnFrame(frame, sign->getLimit(), 0.0);
             cv::imshow("Preview", frame);
             cv::waitKey(delay);
         }

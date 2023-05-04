@@ -24,6 +24,6 @@
 
 #define DEBUG_OCR_CONSOLE_LOG false
 
-void drawSpeedLimitOnFrame(const cv::Mat &frame, int speedLimitValue);
+void drawSpeedLimitOnFrame(const cv::Mat &frame, int speedLimitValue, double fps);
 
 #endif //SIGN_EDGE_METHOD_TEST_1_COMMON_H
