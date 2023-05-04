@@ -74,7 +74,6 @@ enable_testing()
 
 add_executable(
   tests
-        tests/VideoSequenceTests.cpp
   include/models/RoadSign.h src/ShapeRoadSignDetector.cpp include/IRoadSignDetector.h src/Ocr.cpp include/Ocr.h include/models/SpeedLimitSign.h
         include/Common.h tests/utils/VideoTestUtils.cpp tests/OcrTest.cpp src/Util.cpp tests/VideoTest.cpp tests/RoadSignDetectorTest.cpp)
 target_link_libraries(tests

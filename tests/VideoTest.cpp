@@ -114,3 +114,8 @@ TEST_F(VideoTest, speed_limit_night_19) {
 std::string filename = "speed_limit_night_19";
 testSignRecognitionAccuracy(filename);
 }
+
+TEST_F(VideoTest, speed_limit_seqence_1) {
+    std::string filename = "speed_limit_seqence_1";
+    testSignRecognitionAccuracy(filename);
+}

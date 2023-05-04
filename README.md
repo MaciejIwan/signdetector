@@ -65,4 +65,6 @@ boxcolor=0x00000099"
 # in build directory
 ./tests
 ./tests --gtest_filter=RoiOcrTest* # to run example ts
+./tests --gtest_filter=VideoTest* # to run tests for all videos
+./tests --gtest_filter=VideoTest.speed_limit_night_19 # to run tests for video
 ```
