@@ -13,7 +13,7 @@
 // DEBUGGING SETUP
 
 // main switch for debugging
-#define DEBUG_MODE false
+#define DEBUG_MODE true
 
 // true to see OCR image && print raw OCR text
 #define DEBUG_OCR_IMG false
