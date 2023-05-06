@@ -18,31 +18,9 @@ ShapeRoadSignDetector::ShapeRoadSignDetector()
 
 ShapeRoadSignDetector::~ShapeRoadSignDetector() = default;
 
-void extractWhiteColorFromImage(const cv::Mat &currentFrame, cv::Mat &white_binary_mask) {
-    cv::Mat grayImage;
-    cv::cvtColor(currentFrame, grayImage, cv::COLOR_BGR2GRAY);
-
-    // Apply thresholding to the gray image to isolate white pixels
-    cv::Mat thresholdedImage;
-    cv::threshold(grayImage, thresholdedImage, 200, 255, cv::THRESH_BINARY);
-
-    // Apply a morphological opening operation to remove small noise
-    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
-    cv::morphologyEx(thresholdedImage, thresholdedImage, cv::MORPH_OPEN, kernel);
-
-    if (DEBUG_MODE) {
-        cv::imshow("Masked Image White", thresholdedImage);
-    }
-
-    white_binary_mask = thresholdedImage;
-}
-
-
 RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
     cv::Mat red_binary_mask;
-    cv::Mat white_binary_mask;
     preprocess(image, red_binary_mask);
-    extractWhiteColorFromImage(image, white_binary_mask);
 
     std::vector<cv::Rect> boundingBoxes;
     findSignsBoundingBoxes(red_binary_mask, boundingBoxes);
