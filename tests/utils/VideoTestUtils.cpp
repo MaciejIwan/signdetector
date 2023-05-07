@@ -144,6 +144,7 @@ void testSignRecognitionAccuracy(const std::string& filename)
                     framesWithSignIncorrectlyRecognized++;
                 }
                 frameCounted = true;
+                delete sign;
                 break;
             }
         }
@@ -156,6 +157,7 @@ void testSignRecognitionAccuracy(const std::string& filename)
                 framesWithoutSignIncorrectlyRecognized++;
             }
         }
+        delete sign;
     }
 
     EXPECT_EQ(framesWithSignCorrectlyRecognized + framesWithSignIncorrectlyRecognized + framesWithoutSignCorrectlyRecognized + framesWithoutSignIncorrectlyRecognized, totalFrames);

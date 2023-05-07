@@ -48,4 +48,5 @@ int main(int argc, char **argv) {
         cv::imshow("Preview", frame);
         cv::waitKey(fps); // change if calculation is too fast/slow
     }
+    delete lastSeenSign;
 }
