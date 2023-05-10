@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
             std::cout << sign->toString() << std::endl;
 
         cv::imshow("Preview", frame);
-        cv::waitKey(fps); // change if calculation is too fast/slow
+        cv::waitKey(15); // change if calculation is too fast/slow
     }
     delete lastSeenSign;
 }
