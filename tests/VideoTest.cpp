@@ -115,6 +115,31 @@ std::string filename = "speed_limit_night_19";
 testSignRecognitionAccuracy(filename);
 }
 
+TEST_F(VideoTest, speed_limit_night_20) {
+std::string filename = "speed_limit_night_20";
+testSignRecognitionAccuracy(filename);
+}
+
+TEST_F(VideoTest, speed_limit_night_21) {
+std::string filename = "speed_limit_night_21";
+testSignRecognitionAccuracy(filename);
+}
+
+TEST_F(VideoTest, speed_limit_night_22) {
+std::string filename = "speed_limit_night_22";
+testSignRecognitionAccuracy(filename);
+}
+
+TEST_F(VideoTest, speed_limit_night_23) {
+std::string filename = "speed_limit_night_23";
+testSignRecognitionAccuracy(filename);
+}
+
+TEST_F(VideoTest, speed_limit_night_24) {
+std::string filename = "speed_limit_night_24";
+testSignRecognitionAccuracy(filename);
+}
+
 TEST_F(VideoTest, speed_limit_seqence_1) {
     std::string filename = "speed_limit_seqence_1";
     testSignRecognitionAccuracy(filename);
