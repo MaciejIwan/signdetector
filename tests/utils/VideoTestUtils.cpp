@@ -6,6 +6,7 @@
 #include "../../include/IRoadSignDetector.h"
 #include "../../include/Common.h"
 #include "../../include/models/SpeedLimitSign.h"
+#include "../../include/ShapeRoadSignDetector.h"
 #include <fstream>
 #include <gtest/gtest.h>
 #include <iostream>
@@ -125,7 +126,7 @@ void testSignRecognitionAccuracy(const std::string& filename)
         auto* sign = (SpeedLimitSign*)signDetector.detectRoadSign(frame);
 
         if (DEBUG_MODE) {
-            drawSpeedLimitOnFrame(frame, sign->getLimit());
+            drawSpeedLimitOnFrame(frame, sign->getLimit(), 0.0);
             cv::imshow("Preview", frame);
             cv::waitKey(delay);
         }
@@ -155,6 +156,7 @@ void testSignRecognitionAccuracy(const std::string& filename)
                 framesWithoutSignIncorrectlyRecognized++;
             }
         }
+        delete sign;
     }
 
     EXPECT_EQ(framesWithSignCorrectlyRecognized + framesWithSignIncorrectlyRecognized + framesWithoutSignCorrectlyRecognized + framesWithoutSignIncorrectlyRecognized, totalFrames);

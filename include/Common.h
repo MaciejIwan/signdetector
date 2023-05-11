@@ -20,10 +20,10 @@
 
 // how long u see OCR IMG before next frame.
 //0 wait for key press, 10 wait for 10ms
-#define DEBUG_OCR_IMG_DELAY 0
+#define DEBUG_OCR_IMG_DELAY false
 
 #define DEBUG_OCR_CONSOLE_LOG false
 
-void drawSpeedLimitOnFrame(const cv::Mat &frame, int speedLimitValue);
+void drawSpeedLimitOnFrame(const cv::Mat &frame, int speedLimitValue, double fps);
 
 #endif //SIGN_EDGE_METHOD_TEST_1_COMMON_H
