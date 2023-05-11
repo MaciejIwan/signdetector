@@ -72,16 +72,26 @@ int readVideoFilesInFolder(string folderPath, vector<string> *videoFileNames) {
         return 1;
     }
 
-    while ((ent = readdir(dir)) != NULL) {
+    vector<string> fileNames;
+
+    while ((ent = readdir(dir)) != nullptr) {
         string fileName = ent->d_name;
         if (fileName.find(".avi") != string::npos ||
             fileName.find(".mp4") != string::npos ||
             fileName.find(".mov") != string::npos) {
-            videoFileNames->push_back(folderPath + fileName);
+            fileNames.push_back(fileName);
         }
     }
 
     closedir(dir);
+
+    // Sort the file names in alphabetical order
+    sort(fileNames.begin(), fileNames.end());
+
+    // Add the sorted file names to the videoFileNames vector
+    for (const auto& fileName : fileNames) {
+        videoFileNames->push_back(folderPath + fileName);
+    }
 
     return 0;
 }
