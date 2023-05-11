@@ -27,6 +27,7 @@ int main(int argc, char **argv) {
     int64 prevTickCount = cv::getTickCount();
     double fps = 0;
 
+    // TODO: it should keep Signs not ints
     CircularBuffer<int> buffer(30);
     while (true) {
         if (!cap.read(frame)) {
@@ -40,6 +41,8 @@ int main(int argc, char **argv) {
         fps = 1 / timeElapsed;
 
         auto *sign = (SpeedLimitSign *) detector.detectRoadSign(frame);
+
+        // todo integrate buffer with system (maybe decetor module). Now it is just print value to console
         buffer.push(sign->getLimit());
         int mostPopular = buffer.findMostPopularValue();
         if(mostPopular != 0){
