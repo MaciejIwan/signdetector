@@ -20,7 +20,8 @@
 
 // how long u see OCR IMG before next frame.
 //0 wait for key press, 10 wait for 10ms
-#define DEBUG_OCR_IMG_DELAY false
+// do not how impact if DEBUG_OCR_IMG is false
+#define DEBUG_OCR_IMG_DELAY 1
 
 #define DEBUG_OCR_CONSOLE_LOG false
 
