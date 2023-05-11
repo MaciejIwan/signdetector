@@ -53,6 +53,11 @@ void onVideoBar(int value, void *data) {
     setTrackbarPos("Frame", "Video Player", 0);
 
     imshow("Video Player", frame);
+
+    string filename = (*currentVideoData->videoFileNames)[value];
+    int lastSlashIndex = filename.find_last_of("/");
+    string videoName = filename.substr(lastSlashIndex + 1);
+    setWindowTitle("Video Player", videoName);
 }
 
 int frameNumber = 0;
@@ -111,6 +116,10 @@ int main(int argc, char **argv) {
     createTrackbar("Video", "Video Player", &videoIndex, videoFileNames.size() - 1, onVideoBar, &currentVideoData);
 
     setTrackbarMax("Frame", "Video Player", numFrames - 1);
+
+    int lastSlashIndex = videoFileName.find_last_of("/");
+    string videoName = videoFileName.substr(lastSlashIndex + 1);
+    setWindowTitle("Video Player", videoName);
 
     Mat frame;
     videoCapture >> frame;
