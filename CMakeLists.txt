@@ -26,7 +26,25 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
-add_executable(main src/Main.cpp include/models/RoadSign.h src/ShapeRoadSignDetector.cpp include/IRoadSignDetector.h src/Ocr.cpp include/Ocr.h include/models/SpeedLimitSign.h include/Common.h src/Util.cpp include/ShapeRoadSignDetector.h)
+add_executable(main 
+        src/Main.cpp 
+        include/models/RoadSign.h 
+        include/IRoadSignDetector.h 
+
+        src/ShapeRoadSignDetector.cpp 
+        include/ShapeRoadSignDetector.h
+
+        include/Ocr.h 
+        src/Ocr.cpp 
+        
+        include/models/SpeedLimitSign.h 
+        include/Common.h 
+        
+        include/CircularBuffer.h 
+
+        src/Util.cpp
+        
+)
 target_link_libraries(main
         ${OpenCV_LIBS}
         Tesseract::libtesseract
@@ -62,7 +80,7 @@ target_link_libraries(mean_shift
         ${OpenCV_LIBS}
         )
 
-add_executable(perspective tools/perspective.cpp)
+add_executable(perspective tools/Perspective.cpp)
 target_link_libraries(perspective
         ${OpenCV_LIBS}
         )

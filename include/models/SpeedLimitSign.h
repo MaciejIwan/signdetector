@@ -18,8 +18,9 @@ public:
         setLimit(l);
     }
 
-    std::string toString() override {
-        return "Speed limit: " + std::to_string(limit);
+    friend std::ostream& operator<<(std::ostream& os, const SpeedLimitSign& speedLimit) {
+        os << "Speed limit: " << speedLimit.limit;
+        return os;
     }
 
     int getLimit() const {

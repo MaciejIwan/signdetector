@@ -53,6 +53,11 @@ void onVideoBar(int value, void *data) {
     setTrackbarPos("Frame", "Video Player", 0);
 
     imshow("Video Player", frame);
+
+    string filename = (*currentVideoData->videoFileNames)[value];
+    int lastSlashIndex = filename.find_last_of("/");
+    string videoName = filename.substr(lastSlashIndex + 1);
+    setWindowTitle("Video Player", videoName);
 }
 
 int frameNumber = 0;
@@ -67,16 +72,26 @@ int readVideoFilesInFolder(string folderPath, vector<string> *videoFileNames) {
         return 1;
     }
 
-    while ((ent = readdir(dir)) != NULL) {
+    vector<string> fileNames;
+
+    while ((ent = readdir(dir)) != nullptr) {
         string fileName = ent->d_name;
         if (fileName.find(".avi") != string::npos ||
             fileName.find(".mp4") != string::npos ||
             fileName.find(".mov") != string::npos) {
-            videoFileNames->push_back(folderPath + fileName);
+            fileNames.push_back(fileName);
         }
     }
 
     closedir(dir);
+
+    // Sort the file names in alphabetical order
+    sort(fileNames.begin(), fileNames.end());
+
+    // Add the sorted file names to the videoFileNames vector
+    for (const auto& fileName : fileNames) {
+        videoFileNames->push_back(folderPath + fileName);
+    }
 
     return 0;
 }
@@ -111,6 +126,10 @@ int main(int argc, char **argv) {
     createTrackbar("Video", "Video Player", &videoIndex, videoFileNames.size() - 1, onVideoBar, &currentVideoData);
 
     setTrackbarMax("Frame", "Video Player", numFrames - 1);
+
+    int lastSlashIndex = videoFileName.find_last_of("/");
+    string videoName = videoFileName.substr(lastSlashIndex + 1);
+    setWindowTitle("Video Player", videoName);
 
     Mat frame;
     videoCapture >> frame;

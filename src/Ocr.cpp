@@ -2,11 +2,7 @@
 // Created by maciej on 14.04.23.
 //
 
-#include <string>
-#include <regex>
-#include "../include/Common.h"
-#include <opencv2/imgproc.hpp>
-#include <opencv2/opencv.hpp>
+
 #include "../include/Ocr.h"
 
 Ocr::Ocr() : ocr(new tesseract::TessBaseAPI()) {

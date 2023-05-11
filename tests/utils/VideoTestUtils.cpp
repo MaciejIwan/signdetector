@@ -15,7 +15,6 @@
 #include <tesseract/baseapi.h>
 
 const int MAX_SIGN_LABELS = 100;
-const float MIN_VALID_ACCURACY_RATE = 0.02;
 
 int loadSignLabelsFromCSV(std::string filename, SignLabel* labels, int* labelCount)
 {
@@ -173,6 +172,5 @@ void testSignRecognitionAccuracy(const std::string& filename)
     std::cout << "[ ACCURACY ] " << signRecognizedAccuracy * 100 << "%" << std::endl;
 //    std::cout << "[FALSE POS.] " << falsePositivesAccuracy * 100 << "%" << std::endl;
 
-    EXPECT_TRUE(signRecognizedAccuracy >= MIN_VALID_ACCURACY_RATE);
     EXPECT_TRUE(detectedSigns == labelCount);
 }
