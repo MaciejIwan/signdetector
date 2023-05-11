@@ -6,7 +6,7 @@
 
 void drawSpeedLimitOnFrame(const cv::Mat &frame, int speedLimitValue, double fps) {
     std::stringstream speedLimitText;
-    speedLimitText << "Speed Limit: " << speedLimitValue;
+    //speedLimitText << "Speed Limit: " << speedLimitValue;
 
     std::stringstream fpsText;
     fpsText << "FPS: " << std::setprecision(2) << std::fixed << fps;

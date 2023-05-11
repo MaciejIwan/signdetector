@@ -11,6 +11,11 @@
 #include "Ocr.h"
 #include "Common.h"
 #include "IRoadSignDetector.h"
+#include <iomanip>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/opencv.hpp>
+#include <vector>
+#include "../include/models/SpeedLimitSign.h"
 
 class ShapeRoadSignDetector : public IRoadSignDetector {
 public:

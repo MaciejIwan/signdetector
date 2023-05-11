@@ -7,6 +7,11 @@
 
 #include <opencv2/core/mat.hpp>
 #include <tesseract/baseapi.h>
+#include <string>
+#include <regex>
+#include "../include/Common.h"
+#include <opencv2/imgproc.hpp>
+#include <opencv2/opencv.hpp>
 
 class Ocr {
 public:

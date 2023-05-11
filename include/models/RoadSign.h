@@ -20,8 +20,6 @@ public:
         type = t;
     }
 
-    virtual std::string toString() = 0;
-
     SignType getType() const {
         return type;
     }

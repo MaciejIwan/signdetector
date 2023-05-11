@@ -5,12 +5,6 @@
 // #include "../include/IRoadSignDetector.h"
 #include "../include/ShapeRoadSignDetector.h"
 
-#include <iomanip>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/opencv.hpp>
-#include <vector>
-
-#include "../include/models/SpeedLimitSign.h"
 
 ShapeRoadSignDetector::ShapeRoadSignDetector()
     : ocr() {

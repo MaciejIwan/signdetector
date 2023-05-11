@@ -2,6 +2,7 @@
 #include "../include/ShapeRoadSignDetector.h"
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
+#include "../include/CircularBuffer.h"
 
 int main(int argc, char **argv) {
     std::cout << "OpenCV version : " << CV_VERSION << std::endl;
@@ -25,6 +26,8 @@ int main(int argc, char **argv) {
     cv::Mat frame;
     int64 prevTickCount = cv::getTickCount();
     double fps = 0;
+
+    CircularBuffer<int> buffer(30);
     while (true) {
         if (!cap.read(frame)) {
             cap.set(cv::CAP_PROP_POS_FRAMES, 0);
@@ -37,16 +40,22 @@ int main(int argc, char **argv) {
         fps = 1 / timeElapsed;
 
         auto *sign = (SpeedLimitSign *) detector.detectRoadSign(frame);
+        buffer.push(sign->getLimit());
+        int mostPopular = buffer.findMostPopularValue();
+        if(mostPopular != 0){
+            std::cout << "mostPopular" << mostPopular << std::endl;
+        } 
+        if(sign->getLimit() != 0)
+            std::cout << *sign << std::endl;
         if (sign->getLimit() != 0)
             lastSeenSign = sign;
 
         drawSpeedLimitOnFrame(frame, lastSeenSign->getLimit(), fps);
-
-        if (DEBUG_MODE)
-            std::cout << sign->toString() << std::endl;
 
         cv::imshow("Preview", frame);
         cv::waitKey(15); // change if calculation is too fast/slow
     }
     delete lastSeenSign;
 }
+
+
