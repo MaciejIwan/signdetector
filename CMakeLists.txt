@@ -43,8 +43,8 @@ add_executable(main
         include/CircularBuffer.h 
 
         src/Util.cpp
-        
-)
+
+        src/CircularRoadSignDetector.cpp include/CircularRoadSignDetector.h)
 target_link_libraries(main
         ${OpenCV_LIBS}
         Tesseract::libtesseract

@@ -45,11 +45,18 @@ int main(int argc, char **argv) {
         // todo integrate buffer with system (maybe decetor module). Now it is just print value to console
         buffer.push(sign->getLimit());
         int mostPopular = buffer.findMostPopularValue();
-        if(mostPopular != 0){
+        if (mostPopular != 0) {
             std::cout << "mostPopular" << mostPopular << std::endl;
-        } 
-        if(sign->getLimit() != 0)
+            if (sign->getLimit() != lastSeenSign->getLimit()) {
+                std::cout << "Speed limit changed from " << lastSeenSign->getLimit() << " to " << sign->getLimit()
+                          << std::endl;
+                lastSeenSign = sign;
+            }
+        }
+        if (sign->getLimit() != 0) {
             std::cout << *sign << std::endl;
+        }
+
         if (sign->getLimit() != 0)
             lastSeenSign = sign;
 
