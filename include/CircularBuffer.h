@@ -1,5 +1,4 @@
-#ifndef CIRCULAR_BUFFER_H
-#define CIRCULAR_BUFFER_H
+#pragma once
 
 #include <iostream>
 #include <unordered_map>
@@ -83,5 +82,3 @@ T CircularBuffer<T>::findMostPopularValue() const {
 
     return mostPopularValue;
 }
-
-#endif  // CIRCULAR_BUFFER_H

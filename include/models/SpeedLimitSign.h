@@ -1,9 +1,4 @@
-//
-// Created by maciej on 15.04.23.
-//
-
-#ifndef SIGN_EDGE_METHOD_TEST_1_SPEEDLIMITSIGN_H
-#define SIGN_EDGE_METHOD_TEST_1_SPEEDLIMITSIGN_H
+#pragma once
 
 #include "RoadSign.h"
 
@@ -18,7 +13,7 @@ public:
         setLimit(l);
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const SpeedLimitSign& speedLimit) {
+    friend std::ostream &operator<<(std::ostream &os, const SpeedLimitSign &speedLimit) {
         os << "Speed limit: " << speedLimit.limit;
         return os;
     }
@@ -43,5 +38,3 @@ public:
     }
 
 };
-
-#endif //SIGN_EDGE_METHOD_TEST_1_SPEEDLIMITSIGN_H

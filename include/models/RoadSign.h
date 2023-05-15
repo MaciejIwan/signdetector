@@ -1,9 +1,4 @@
-//
-// Created by maciej on 14.04.23.
-//
-
-#ifndef SIGN_EDGE_METHOD_TEST_1_ROADSIGN_H
-#define SIGN_EDGE_METHOD_TEST_1_ROADSIGN_H
+#pragma once
 
 #include <string>
 
@@ -29,6 +24,3 @@ public:
     }
 
 };
-
-
-#endif //SIGN_EDGE_METHOD_TEST_1_ROADSIGN_H

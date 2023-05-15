@@ -1,10 +1,4 @@
-//
-// Created by maciej on 26.04.23.
-//
-
-#ifndef SIGN_EDGE_METHOD_TEST_1_SHAPEROADSIGNDETECTOR_H
-#define SIGN_EDGE_METHOD_TEST_1_SHAPEROADSIGNDETECTOR_H
-
+#pragma once
 
 #include <opencv2/core/mat.hpp>
 #include "models/RoadSign.h"
@@ -40,5 +34,3 @@ private:
     void findSignsBoundingBoxes(const cv::Mat &red_binary_mask, std::vector<cv::Rect> &boundingBoxes) const;
 };
 
-
-#endif //SIGN_EDGE_METHOD_TEST_1_SHAPEROADSIGNDETECTOR_H

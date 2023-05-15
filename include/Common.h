@@ -1,9 +1,4 @@
-//
-// Created by maciej on 19.04.23.
-//
-
-#ifndef SIGN_EDGE_METHOD_TEST_1_COMMON_H
-#define SIGN_EDGE_METHOD_TEST_1_COMMON_H
+#pragma once
 
 #include <opencv2/core/mat.hpp>
 #include <opencv2/imgproc.hpp>
@@ -27,4 +22,3 @@
 
 void drawSpeedLimitOnFrame(const cv::Mat &frame, int speedLimitValue, double fps);
 
-#endif //SIGN_EDGE_METHOD_TEST_1_COMMON_H
