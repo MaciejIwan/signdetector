@@ -1,7 +1,5 @@
 #include "../include/utils/VideoTestUtils.h"
 #include "../../include/IRoadSignDetector.h"
-#include "../../include/Common.h"
-#include "../../include/models/SpeedLimitSign.h"
 #include "../../include/ShapeRoadSignDetector.h"
 #include <fstream>
 #include <gtest/gtest.h>
@@ -12,8 +10,7 @@
 
 const int MAX_SIGN_LABELS = 100;
 
-int loadSignLabelsFromCSV(std::string filename, SignLabel* labels, int* labelCount)
-{
+int loadSignLabelsFromCSV(std::string filename, SignLabel *labels, int *labelCount) {
     using namespace std;
 
     if (!labels || !filename.length()) {
@@ -58,8 +55,7 @@ int loadSignLabelsFromCSV(std::string filename, SignLabel* labels, int* labelCou
     return 0;
 }
 
-int countTotalFramesWithSigns(SignLabel* labels, int labelCount)
-{
+int countTotalFramesWithSigns(SignLabel *labels, int labelCount) {
     int signFrames = 0;
 
     for (int i = 0; i < labelCount; i++) {
@@ -68,8 +64,7 @@ int countTotalFramesWithSigns(SignLabel* labels, int labelCount)
     return signFrames;
 }
 
-int countDetectedSigns(SignLabel* labels, int labelCount)
-{
+int countDetectedSigns(SignLabel *labels, int labelCount) {
     int detectedSigns = 0;
 
     for (int i = 0; i < labelCount; i++) {
@@ -80,8 +75,7 @@ int countDetectedSigns(SignLabel* labels, int labelCount)
     return detectedSigns;
 }
 
-void testSignRecognitionAccuracy(const std::string& filename)
-{
+void testSignRecognitionAccuracy(const std::string &filename) {
     std::string videoFile = "video/" + filename + ".mp4";
 
     std::cout << "[ FILENAME ] " << videoFile << std::endl;
@@ -118,7 +112,7 @@ void testSignRecognitionAccuracy(const std::string& filename)
         cv::namedWindow("Preview", cv::WINDOW_NORMAL);
 
     while (cap.read(frame)) {
-        auto* sign = (SpeedLimitSign*)signDetector.detectRoadSign(frame);
+        auto *sign = (SpeedLimitSign *) signDetector.detectRoadSign(frame);
 
         if (DEBUG_MODE) {
             drawSpeedLimitOnFrame(frame, sign->getLimit(), 0.0);
@@ -154,13 +148,14 @@ void testSignRecognitionAccuracy(const std::string& filename)
         delete sign;
     }
 
-    EXPECT_EQ(framesWithSignCorrectlyRecognized + framesWithSignIncorrectlyRecognized + framesWithoutSignCorrectlyRecognized + framesWithoutSignIncorrectlyRecognized, totalFrames);
+    EXPECT_EQ(framesWithSignCorrectlyRecognized + framesWithSignIncorrectlyRecognized +
+              framesWithoutSignCorrectlyRecognized + framesWithoutSignIncorrectlyRecognized, totalFrames);
 
     const int totalSignFrames = countTotalFramesWithSigns(labels, labelCount);
     const int totalNoSignFrames = totalFrames - totalSignFrames;
 
-    float signRecognizedAccuracy = framesWithSignCorrectlyRecognized / (float)totalSignFrames;
-    float falsePositivesAccuracy = framesWithoutSignIncorrectlyRecognized / (float)totalNoSignFrames;
+    float signRecognizedAccuracy = framesWithSignCorrectlyRecognized / (float) totalSignFrames;
+    float falsePositivesAccuracy = framesWithoutSignIncorrectlyRecognized / (float) totalNoSignFrames;
 
     int detectedSigns = countDetectedSigns(labels, labelCount);
 

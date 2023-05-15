@@ -14,7 +14,7 @@ void resizeImage(cv::Mat &img, int max_height) {
 }
 
 
-void mergeImages(const std::vector<cv::Mat>& images, cv::Mat& output) {
+void mergeImages(const std::vector<cv::Mat> &images, cv::Mat &output) {
     // Check that there are exactly 4 input images
     CV_Assert(images.size() == 4);
 
@@ -23,7 +23,7 @@ void mergeImages(const std::vector<cv::Mat>& images, cv::Mat& output) {
 
     // Convert grayscale photos to color
     std::vector<cv::Mat> color_images;
-    for (const cv::Mat& image : images) {
+    for (const cv::Mat &image: images) {
         cv::Mat color_image;
         if (image.channels() == 1) {
             cv::cvtColor(image, color_image, cv::COLOR_GRAY2BGR);

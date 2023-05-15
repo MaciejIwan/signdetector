@@ -2,7 +2,7 @@
 
 
 ShapeRoadSignDetector::ShapeRoadSignDetector()
-    : ocr() {
+        : ocr() {
 }
 
 ShapeRoadSignDetector::~ShapeRoadSignDetector() = default;
@@ -16,7 +16,7 @@ RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
 
     cv::Mat cached_image = image.clone();
     int lastSpeedLimit = 0;
-    for (cv::Rect bounding_rect : boundingBoxes) {
+    for (cv::Rect bounding_rect: boundingBoxes) {
         cv::Mat roi = cached_image(bounding_rect);
 
         int numberFromRoi = ocr.getNumberFromRoi(roi);
@@ -82,7 +82,7 @@ void ShapeRoadSignDetector::findSignsBoundingBoxes(const cv::Mat &red_binary_mas
     // cv::Mat contourPreview = currentFrame.clone();
 
     // Iterate through each contour and check if it is a circle
-    for (const auto &contour : contours) {
+    for (const auto &contour: contours) {
         double area = cv::contourArea(contour);
         if (area > 750) {
             cv::Rect bounding_rect = cv::boundingRect(contour);

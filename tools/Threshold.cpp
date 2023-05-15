@@ -12,8 +12,7 @@ Mat originalImage, thresholdedImage;
 vector<cv::String> fn;
 vector<Mat> images;
 
-void updateThresholdedImage()
-{
+void updateThresholdedImage() {
     switch (colorChannel) {
         case 0: // grayscale option
             cvtColor(originalImage, thresholdedImage, COLOR_BGR2GRAY);
@@ -51,29 +50,25 @@ void updateThresholdedImage()
     imshow("Thresholded Image", thresholdedImage);
 }
 
-void onThresholdTrackbar(int, void*)
-{
+void onThresholdTrackbar(int, void *) {
     updateThresholdedImage();
 }
 
-void onImageTrackbar(int, void*)
-{
+void onImageTrackbar(int, void *) {
     currentImageIndex = getTrackbarPos("Image", "Thresholded Image");
     originalImage = images[currentImageIndex];
 
     updateThresholdedImage();
 }
 
-int main()
-{
+int main() {
 
     glob("imgs/*.jpg", fn, false);
     size_t count = fn.size(); //number of png files in images folder
-    for (size_t i=0; i<count; i++)
+    for (size_t i = 0; i < count; i++)
         images.push_back(imread(fn[i]));
 
-    if (images.empty())
-    {
+    if (images.empty()) {
         cout << "Could not read the image: " << endl;
         return 1;
     }
@@ -86,7 +81,7 @@ int main()
     // Create a threshold trackbar
     createTrackbar("Threshold Value", "Thresholded Image", &thresholdValue, 255, onThresholdTrackbar);
 
-    createTrackbar("Image", "Thresholded Image", &currentImageIndex, images.size()-1, onImageTrackbar);
+    createTrackbar("Image", "Thresholded Image", &currentImageIndex, images.size() - 1, onImageTrackbar);
 
     // Create a color channel dropdown
     createTrackbar("Color Channel", "Thresholded Image", &colorChannel, 3, onThresholdTrackbar);

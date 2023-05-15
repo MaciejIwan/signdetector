@@ -81,7 +81,7 @@ int readVideoFilesInFolder(string folderPath, vector<string> *videoFileNames) {
     sort(fileNames.begin(), fileNames.end());
 
     // Add the sorted file names to the videoFileNames vector
-    for (const auto& fileName : fileNames) {
+    for (const auto &fileName: fileNames) {
         videoFileNames->push_back(folderPath + fileName);
     }
 

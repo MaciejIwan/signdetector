@@ -17,6 +17,7 @@ public:
         // then
         ASSERT_EQ(expectedSpeedLimit, actualSpeedLimit);
     }
+
 protected:
     void SetUp() override {
     }
@@ -24,8 +25,6 @@ protected:
     void TearDown() override {
     }
 };
-
-
 
 
 TEST_F(RoiOcrTest, shouldReturn30_1) {

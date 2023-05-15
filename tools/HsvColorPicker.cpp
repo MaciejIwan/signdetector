@@ -17,13 +17,13 @@ std::tuple<int, int, int> fixHSVRange(int h, int s, int v) {
 
 int main() {
     // Load the input image in the HSV color space
-    cv::Mat inputImage =  cv::imread("imgs/gradient3_2.png", cv::IMREAD_COLOR);
+    cv::Mat inputImage = cv::imread("imgs/gradient3_2.png", cv::IMREAD_COLOR);
     cv::Mat hsvImage;
     cv::cvtColor(inputImage, hsvImage, cv::COLOR_BGR2HSV);
 
     // Define the lower and upper bounds of the range of HSV values to extract
     cv::Scalar lowerb(0, 90, 0);
-    cv::Scalar upperb(18,  255, 255);
+    cv::Scalar upperb(18, 255, 255);
 
     cv::Scalar lowerb2(150, 108, 0);
     cv::Scalar upperb2(180, 255, 255);

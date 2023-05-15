@@ -29,87 +29,81 @@
 
 cv::RNG rng(12345);
 
-int main()
-{
-    cv::namedWindow("Input",0);
-    cv::namedWindow("Output",0);
-    cv::namedWindow("Median",0);
-    cv::namedWindow("Canny",0);
-    cv::namedWindow("inRange",0);
+int main() {
+    cv::namedWindow("Input", 0);
+    cv::namedWindow("Output", 0);
+    cv::namedWindow("Median", 0);
+    cv::namedWindow("Canny", 0);
+    cv::namedWindow("inRange", 0);
 
-    cv::Mat cannyOutput,medianImg,output;
+    cv::Mat cannyOutput, medianImg, output;
 
     cv::Mat img = cv::imread("imgs/2.jpg");
     output = img.clone();
-    cv::imshow("Input",img);
+    cv::imshow("Input", img);
 
     //Step 1
-    cv::cvtColor(img,img,cv::COLOR_BGR2GRAY);
+    cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
 
     //Step 2
-    cv::medianBlur(img,medianImg,5);
-    cv::imshow("Median",medianImg);
+    cv::medianBlur(img, medianImg, 5);
+    cv::imshow("Median", medianImg);
 
     //Step 3
-    cv::Canny(medianImg,cannyOutput,80,240,3,0);
-    cv::imshow("Canny",cannyOutput);
+    cv::Canny(medianImg, cannyOutput, 80, 240, 3, 0);
+    cv::imshow("Canny", cannyOutput);
 
     //Step 4
     std::vector<std::vector<cv::Point> > contours;
     std::vector<cv::Vec4i> hierarchy;
 
-    cv::findContours(cannyOutput,contours,hierarchy,cv::RETR_EXTERNAL,cv::CHAIN_APPROX_SIMPLE);
+    cv::findContours(cannyOutput, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
-    std::vector<cv::RotatedRect> minRect( contours.size() );
+    std::vector<cv::RotatedRect> minRect(contours.size());
 
     int counter = 1;
-    for( size_t i = 0; i< contours.size(); i++ )
-    {
+    for (size_t i = 0; i < contours.size(); i++) {
         //Step 5
-        minRect[i] = cv::minAreaRect( contours[i] );
+        minRect[i] = cv::minAreaRect(contours[i]);
         cv::Point2f rect_points[4];
-        minRect[i].points( rect_points );
+        minRect[i].points(rect_points);
 
         //Step 6
-        if(contours[i].size()>100)
-        {
+        if (contours[i].size() > 100) {
             //Step 7
-            int centerX = (rect_points[0].x + rect_points[2].x)/2;
-            int centerY = (rect_points[0].y + rect_points[2].y)/2;
-            cv::Point2f a(centerX,centerY);
+            int centerX = (rect_points[0].x + rect_points[2].x) / 2;
+            int centerY = (rect_points[0].y + rect_points[2].y) / 2;
+            cv::Point2f a(centerX, centerY);
 
             //Step 8 and Step 9
             int sum = 0;
             std::vector<int> storeLength;
-            for(int j=0; j<(int)contours[i].size(); j++)
-            {
-                cv::Point2f b(contours[i][j].x,contours[i][j].y);
-                int res = cv::norm(cv::Mat(a),cv::Mat(b));
+            for (int j = 0; j < (int) contours[i].size(); j++) {
+                cv::Point2f b(contours[i][j].x, contours[i][j].y);
+                int res = cv::norm(cv::Mat(a), cv::Mat(b));
                 sum += res;
                 storeLength.push_back(res);
             }
-            int meanLength = sum / (int)storeLength.size();
+            int meanLength = sum / (int) storeLength.size();
             int countBads = 0;
-            for(int u:storeLength)
-                if(abs(u-meanLength)>3)
+            for (int u: storeLength)
+                if (abs(u - meanLength) > 3)
                     countBads++;
 
-            if(countBads<5)
-            {
-                for ( int j = 0; j < 4; j++ )
-                {
-                    line( output, rect_points[j], rect_points[(j+1)%4], cv::Scalar(0,0,255),3 );
-                    cv::putText(output,std::to_string(counter),cv::Point(centerX,centerY),cv::FONT_HERSHEY_SIMPLEX,1.0,cv::Scalar(0,255,255),3);
+            if (countBads < 5) {
+                for (int j = 0; j < 4; j++) {
+                    line(output, rect_points[j], rect_points[(j + 1) % 4], cv::Scalar(0, 0, 255), 3);
+                    cv::putText(output, std::to_string(counter), cv::Point(centerX, centerY), cv::FONT_HERSHEY_SIMPLEX,
+                                1.0, cv::Scalar(0, 255, 255), 3);
                 }
                 counter++;
             }
         }
     }
 
-    cv::imshow("Output",output);
+    cv::imshow("Output", output);
 
     cv::waitKey(0);
-
 
 
     return 0;

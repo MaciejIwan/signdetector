@@ -10,5 +10,6 @@ struct SignLabel {
     bool detected;
 };
 
-int loadSignLabelsFromCSV(std::string filename, SignLabel* labels, int* labelCount);
-void testSignRecognitionAccuracy(const std::string& filename);
+int loadSignLabelsFromCSV(std::string filename, SignLabel *labels, int *labelCount);
+
+void testSignRecognitionAccuracy(const std::string &filename);
