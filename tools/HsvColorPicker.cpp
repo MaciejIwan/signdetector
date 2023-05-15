@@ -17,7 +17,7 @@ std::tuple<int, int, int> fixHSVRange(int h, int s, int v) {
 
 int main() {
     // Load the input image in the HSV color space
-    cv::Mat inputImage = cv::imread("imgs/gradient3_2.png", cv::IMREAD_COLOR);
+    cv::Mat inputImage = cv::imread("imgs/gradient3.png", cv::IMREAD_COLOR);
     cv::Mat hsvImage;
     cv::cvtColor(inputImage, hsvImage, cv::COLOR_BGR2HSV);
 
