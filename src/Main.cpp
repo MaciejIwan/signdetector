@@ -3,6 +3,8 @@
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
 #include "../include/CircularBuffer.h"
+#include "../include/models/SpeedLimitSign.h"
+#include "../include/Common.h"
 
 int main(int argc, char **argv) {
     std::cout << "OpenCV version : " << CV_VERSION << std::endl;

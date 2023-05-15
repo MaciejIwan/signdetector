@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 enum SignType {
     SPEED_LIMIT
 };

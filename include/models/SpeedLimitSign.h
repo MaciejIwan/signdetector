@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RoadSign.h"
+#include <ostream>
 
 class SpeedLimitSign : public RoadSign {
 private:

@@ -1,4 +1,10 @@
 #include "../include/ShapeRoadSignDetector.h"
+#include "../include/Common.h"
+#include "../include/models/SpeedLimitSign.h"
+#include <iomanip>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/opencv.hpp>
+
 
 
 ShapeRoadSignDetector::ShapeRoadSignDetector()

@@ -1,15 +1,10 @@
 #pragma once
 
 #include <opencv2/core/mat.hpp>
-#include "models/RoadSign.h"
 #include "Ocr.h"
-#include "Common.h"
-#include "IRoadSignDetector.h"
-#include <iomanip>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/opencv.hpp>
 #include <vector>
-#include "../include/models/SpeedLimitSign.h"
+#include "models/RoadSign.h"
+#include "IRoadSignDetector.h"
 
 class ShapeRoadSignDetector : public IRoadSignDetector {
 public:

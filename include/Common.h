@@ -1,9 +1,6 @@
 #pragma once
 
 #include <opencv2/core/mat.hpp>
-#include <opencv2/imgproc.hpp>
-
-
 
 // DEBUGGING SETUP
 

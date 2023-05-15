@@ -1,4 +1,9 @@
 #include "../include/Ocr.h"
+#include <regex>
+#include "../include/Common.h"
+#include <opencv2/imgproc.hpp>
+#include <opencv2/opencv.hpp>
+#include <string>
 
 Ocr::Ocr() : ocr(new tesseract::TessBaseAPI()) {
     ocr->Init(NULL, "eng", tesseract::OEM_LSTM_ONLY);
