@@ -1,6 +1,3 @@
-//
-// Created by maciej on 14.04.23.
-//
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
 

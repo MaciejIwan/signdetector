@@ -1,6 +1,3 @@
-//
-// Created by maciej on 20.04.23.
-//
 #include "../include/Common.h"
 #include <iomanip>
 

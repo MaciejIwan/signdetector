@@ -1,7 +1,3 @@
-//
-// Created by maciej on 15.05.23.
-//
-
 #include "../include/CircularRoadSignDetector.h"
 #include "../include/ShapeRoadSignDetector.h"
 

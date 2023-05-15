@@ -1,7 +1,3 @@
-//
-// Created by maciej on 21.04.23.
-//
-
 #include "include/utils/VideoTestUtils.h"
 #include <gtest/gtest.h>
 #include <string>

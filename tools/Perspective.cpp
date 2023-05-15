@@ -1,6 +1,3 @@
-//
-// Created by maciej on 21.04.23.
-//
 #include <iostream>
 #include <opencv2/opencv.hpp>
 

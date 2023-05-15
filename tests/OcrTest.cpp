@@ -1,7 +1,3 @@
-//
-// Created by maciej on 20.04.23.
-//
-
 #include <gtest/gtest.h>
 #include <string>
 #include <opencv2/imgcodecs.hpp>

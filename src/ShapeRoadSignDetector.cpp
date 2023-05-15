@@ -1,8 +1,3 @@
-//
-// Created by maciej on 14.04.23.
-//
-
-// #include "../include/IRoadSignDetector.h"
 #include "../include/ShapeRoadSignDetector.h"
 
 
