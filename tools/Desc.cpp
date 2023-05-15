@@ -41,7 +41,7 @@ void mergeImages(const std::vector<cv::Mat> &images, cv::Mat &output) {
 
 int main() {
     // Load the image
-    Mat image = imread("imgs/img.jpg");
+    Mat image = imread("imgs/0.jpg");
 
     // Convert the image to grayscale
     Mat gray;
