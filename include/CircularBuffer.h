@@ -82,9 +82,13 @@ T CircularBuffer<T>::findMostPopularValue() const {
         }
     }
 
-    if (maxCount == 0 && !counts[false] && isEmpty()) {
+    //
+    if (maxCount == 0 && !counts[0] && isEmpty()) {
         return 0;
     }
+
+    if(maxCount < 3)
+        return 0;
 
     return mostPopularValue;
 }
