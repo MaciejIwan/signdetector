@@ -25,10 +25,12 @@ set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/qt5/")
 
 # find_package(Libao REQUIRED)
 
-find_package(Qt5Core REQUIRED)
-find_package(Qt5Gui REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS
+        Widgets
+        Core
+        Gui
+        REQUIRED
+        )
 
 
 include_directories(
