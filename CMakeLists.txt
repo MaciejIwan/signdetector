@@ -27,11 +27,11 @@ find_library(LIBAO_LIBRARY NAMES ao PATHS usr/lib/x86_64-linux-gnu/ REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(MPG123 REQUIRED IMPORTED_TARGET libmpg123)
 
-find_package(Qt5 COMPONENTS
+find_package(Qt5 REQUIRED COMPONENTS
         Widgets
         Core
         Gui
-        REQUIRED
+        Multimedia
         )
 
 
@@ -74,6 +74,7 @@ target_link_libraries(main
         RoadSignDetection
         Tesseract::libtesseract
         Qt5::Widgets
+        Qt5::Multimedia
         ${LIBAO_LIBRARY}
         PkgConfig::MPG123
         )
@@ -150,6 +151,8 @@ target_link_libraries(tests
         RoadSignDetection
         ${LIBAO_LIBRARY}
         PkgConfig::MPG123
+        Qt5::Widgets
+        Qt5::Multimedia
         )
 enable_testing()
 gtest_discover_tests(tests)
