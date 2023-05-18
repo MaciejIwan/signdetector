@@ -14,12 +14,15 @@ RoadSign *CircularRoadSignDetector::detectRoadSign(cv::Mat &image) {
         return lastSeenSign;
 
     lastSeenSign = sign;
+    callNotificationCallback();
+
     if (DEBUG_MODE) {
         std::cout << "Speed limit changed from " << lastSeenSign->getLimit() << " to " << sign->getLimit()
                   << std::endl;
     }
     return lastSeenSign;
 }
+
 
 
 CircularRoadSignDetector::~CircularRoadSignDetector() {

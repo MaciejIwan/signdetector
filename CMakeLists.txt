@@ -22,7 +22,6 @@ endif ()
 
 set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/qt5/")
 
-find_library(LIBAO_LIBRARY NAMES ao PATHS usr/lib/x86_64-linux-gnu/ REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(MPG123 REQUIRED IMPORTED_TARGET libmpg123)
@@ -38,7 +37,6 @@ find_package(Qt5 REQUIRED COMPONENTS
 include_directories(
         ${OpenCV_INCLUDE_DIRS}
         ${Tesseract_INCLUDE_DIRS}
-        ${LIBAO_INCLUDE_DIR}
         )
 
 
@@ -79,7 +77,6 @@ target_link_libraries(main
         Tesseract::libtesseract
         Qt5::Widgets
         Qt5::Multimedia
-        ${LIBAO_LIBRARY}
         PkgConfig::MPG123
         )
 
@@ -153,7 +150,6 @@ target_link_libraries(tests
         Tesseract::libtesseract
         GTest::gtest_main
         RoadSignDetection
-        ${LIBAO_LIBRARY}
         PkgConfig::MPG123
         Qt5::Widgets
         Qt5::Multimedia

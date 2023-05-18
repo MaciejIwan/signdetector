@@ -65,6 +65,9 @@ int main(int argc, char **argv) {
         return -1;
     }
 
+    detector->setNotificationCallback([&notificationPlayer]() {
+        notificationPlayer.play();
+    });
     cv::Mat frame;
     int64 prevTickCount = cv::getTickCount();
 
@@ -83,7 +86,6 @@ int main(int argc, char **argv) {
 
         fpsLabel->setText("fps: " + QString::number(calcFPS(&prevTickCount)));
         speedLimitLabel->setNum(sign->getLimit());
-        notificationPlayer.play();
 
         if (sign->getLimit() != 0 && DEBUG_MODE) {
             std::cout << *sign << std::endl;

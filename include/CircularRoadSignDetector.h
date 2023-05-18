@@ -8,11 +8,12 @@
 #include "models/SpeedLimitSign.h"
 
 
+
 class CircularRoadSignDetector : public IRoadSignDetector {
 public:
-    RoadSign *detectRoadSign(cv::Mat &image) override;
-
     explicit CircularRoadSignDetector(int bufferSize = 30, IRoadSignDetector *engine = new ShapeRoadSignDetector());
+
+    RoadSign *detectRoadSign(cv::Mat &image) override;
 
     ~CircularRoadSignDetector();
 
