@@ -9,6 +9,8 @@ class CircularBuffer {
 public:
     explicit CircularBuffer(size_t size);
 
+    CircularBuffer() {}
+
     void push(const T &value);
 
     T pop();
