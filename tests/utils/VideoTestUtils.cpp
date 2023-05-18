@@ -1,12 +1,16 @@
 #include "../include/utils/VideoTestUtils.h"
 #include "../../include/IRoadSignDetector.h"
 #include "../../include/ShapeRoadSignDetector.h"
+#include "../../include/Common.h"
+#include "../../include/models/RoadSign.h"
+#include "../../include/models/SpeedLimitSign.h"
 #include <fstream>
 #include <gtest/gtest.h>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <tesseract/baseapi.h>
+
 
 const int MAX_SIGN_LABELS = 100;
 

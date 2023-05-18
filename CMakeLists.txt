@@ -19,10 +19,23 @@ if (NOT Tesseract_FOUND)
     add_library(Tesseract::libtesseract ALIAS PkgConfig::Tesseract)
 endif ()
 
+set(LIBAO_INCLUDE_DIR "/usr/include")
+set(LIBAO_LIBRARY "/usr/lib/x86_64-linux-gnu/libao.so")
+set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/qt5/")
+
+# find_package(Libao REQUIRED)
+
+find_package(Qt5Core REQUIRED)
+find_package(Qt5Gui REQUIRED)
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
+
+
 include_directories(
         ${OpenCV_INCLUDE_DIRS}
         ${Tesseract_INCLUDE_DIRS}
-        )
+        ${LIBAO_INCLUDE_DIR}
+)
 
 
 # ========================================
@@ -54,7 +67,10 @@ target_link_libraries(main
         ${OpenCV_LIBS}
         RoadSignDetection
         Tesseract::libtesseract
+        Qt5::Widgets
+        ${LIBAO_LIBRARY}
         )
+
 
 
 # ========================================

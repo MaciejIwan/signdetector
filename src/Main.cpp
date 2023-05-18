@@ -5,14 +5,25 @@
 #include "../include/CircularBuffer.h"
 #include "../include/models/SpeedLimitSign.h"
 #include "../include/Common.h"
+#include <QApplication>
+#include <QWidget>
+
+
 
 int main(int argc, char **argv) {
     std::cout << "OpenCV version : " << CV_VERSION << std::endl;
 
+    QApplication app(argc, argv);
+    QWidget window;
+
+    window.setWindowTitle("Sign detector");
+    window.setGeometry(100,100,300,300);
+    window.show();
+
     ShapeRoadSignDetector detector = ShapeRoadSignDetector();
     auto *lastSeenSign = new SpeedLimitSign(SpeedLimitSign::DEFAULT_SPEED_LIMIT);
 
-    std::string videoFile = "video/speed_limit_seqence_1.mp4";
+    std::string videoFile = "video/speed_limit_2.mp4";
     if (argc == 2)
         videoFile = std::string(argv[1]);
 
@@ -63,11 +74,11 @@ int main(int argc, char **argv) {
             lastSeenSign = sign;
 
         drawSpeedLimitOnFrame(frame, lastSeenSign->getLimit(), fps);
-
         cv::imshow("Preview", frame);
         cv::waitKey(15); // change if calculation is too fast/slow
     }
     delete lastSeenSign;
+    return app.exec();
 }
 
 
