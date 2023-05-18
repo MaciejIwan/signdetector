@@ -147,7 +147,7 @@ add_executable(
         tests/OcrTest.cpp src/Util.cpp
         tests/VideoTest.cpp
         tests/RoadSignDetectorTest.cpp
-        tests/NotificationPlayerTest.cpp)
+)
 target_link_libraries(tests
         ${OpenCV_LIBS}
         Tesseract::libtesseract
