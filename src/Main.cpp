@@ -56,8 +56,6 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    cv::namedWindow("Preview", cv::WINDOW_NORMAL);
-
     cv::Mat frame;
     int64 prevTickCount = cv::getTickCount();
     double fps = 0;
@@ -72,7 +70,7 @@ int main(int argc, char **argv) {
         QPixmap pixmap = QPixmap::fromImage(QImage((unsigned char *) frame.data,
                                                    frame.cols,
                                                    frame.rows,
-                                                   QImage::Format_RGB888));
+                                                   QImage::Format_BGR888));
         label->setPixmap(pixmap);
         int64 curTickCount = cv::getTickCount();
         double timeElapsed = (curTickCount - prevTickCount) / cv::getTickFrequency();
@@ -85,7 +83,6 @@ int main(int argc, char **argv) {
         buffer.push(sign->getLimit());
         int mostPopular = buffer.findMostPopularValue();
         if (mostPopular != 0 && mostPopular <= 140) {
-            std::cout << "mostPopular" << mostPopular << std::endl;
             sign->setLimit(mostPopular);
             if (sign->getLimit() != lastSeenSign->getLimit()) {
                 std::cout << "Speed limit changed from " << lastSeenSign->getLimit() << " to " << sign->getLimit()
@@ -95,16 +92,12 @@ int main(int argc, char **argv) {
                 notificationPlayer.play();
             }
         }
-        if (sign->getLimit() != 0) {
+        if (sign->getLimit() != 0 && DEBUG_MODE) {
             std::cout << *sign << std::endl;
         }
 
-        if (sign->getLimit() != 0)
-            lastSeenSign = sign;
+        QCoreApplication::processEvents();
 
-        drawSpeedLimitOnFrame(frame, lastSeenSign->getLimit(), fps);
-        cv::imshow("Preview", frame);
-        cv::waitKey(1); // change if calculation is too fast/slow
     }
     delete lastSeenSign;
     return app.exec();
