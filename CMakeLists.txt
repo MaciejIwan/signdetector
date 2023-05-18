@@ -19,11 +19,15 @@ if (NOT Tesseract_FOUND)
     add_library(Tesseract::libtesseract ALIAS PkgConfig::Tesseract)
 endif ()
 
-set(LIBAO_INCLUDE_DIR "/usr/include")
-set(LIBAO_LIBRARY "/usr/lib/x86_64-linux-gnu/libao.so")
+#set(LIBAO_LIBRARY NAMES ao PATHS "/usr/lib/x86_64-linux-gnu/libao.so")
 set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/qt5/")
 
-# find_package(Libao REQUIRED)
+find_library(LIBAO_LIBRARY NAMES ao PATHS usr/lib/x86_64-linux-gnu/)
+
+#find_package(Libao REQUIRED)
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(MPG123 REQUIRED IMPORTED_TARGET libmpg123)
 
 find_package(Qt5 COMPONENTS
         Widgets
@@ -56,7 +60,8 @@ add_library(RoadSignDetection
         src/Util.cpp
         src/CircularRoadSignDetector.cpp
         include/CircularRoadSignDetector.h
-        )
+        src/NotificationPlayer.cpp
+        include/NotificationPlayer.h)
 
 
 # ========================================
@@ -71,6 +76,7 @@ target_link_libraries(main
         Tesseract::libtesseract
         Qt5::Widgets
         ${LIBAO_LIBRARY}
+        PkgConfig::MPG123
         )
 
 

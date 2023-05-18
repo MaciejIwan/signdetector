@@ -1,5 +1,6 @@
 #include "../include/IRoadSignDetector.h"
 #include "../include/ShapeRoadSignDetector.h"
+#include "../include/NotificationPlayer.h"
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
 #include "../include/CircularBuffer.h"
@@ -7,23 +8,43 @@
 #include "../include/Common.h"
 #include <QApplication>
 #include <QWidget>
-
+#include <QPixmap>
+#include <QLabel>
+#include <QFont>
+#include <QPushButton>
 
 
 int main(int argc, char **argv) {
     std::cout << "OpenCV version : " << CV_VERSION << std::endl;
 
+    NotificationPlayer notificationPlayer = NotificationPlayer();
+
     QApplication app(argc, argv);
+
     QWidget window;
+    QLabel *label = new QLabel(&window);
+    QLabel *speedLimit = new QLabel(&window);
+
+    QPushButton *button = new QPushButton("Wycisz", &window);
+
+    speedLimit->setGeometry(30,100,100,30);
+
+    QFont font = speedLimit->font();
+    font.setPointSize(28);
+    font.setBold(true);
+    speedLimit->setFont(font);
+    speedLimit->setNum(0);
+
+    label->setGeometry(0, 0, 600, 600);
 
     window.setWindowTitle("Sign detector");
-    window.setGeometry(100,100,300,300);
+    window.setGeometry(400,400,600,600);
     window.show();
 
     ShapeRoadSignDetector detector = ShapeRoadSignDetector();
     auto *lastSeenSign = new SpeedLimitSign(SpeedLimitSign::DEFAULT_SPEED_LIMIT);
 
-    std::string videoFile = "video/speed_limit_2.mp4";
+    std::string videoFile = "video/speed_limit_seqence_1.mp4";
     if (argc == 2)
         videoFile = std::string(argv[1]);
 
@@ -47,7 +68,11 @@ int main(int argc, char **argv) {
             cap.set(cv::CAP_PROP_POS_FRAMES, 0);
             continue;
         }
-
+        QPixmap pixmap = QPixmap::fromImage(QImage((unsigned char*) frame.data,
+                                                   frame.cols,
+                                                   frame.rows,
+                                                   QImage::Format_RGB888));
+        label->setPixmap(pixmap);
         int64 curTickCount = cv::getTickCount();
         double timeElapsed = (curTickCount - prevTickCount) / cv::getTickFrequency();
         prevTickCount = curTickCount;
@@ -58,12 +83,15 @@ int main(int argc, char **argv) {
         // todo integrate buffer with system (maybe decetor module). Now it is just print value to console
         buffer.push(sign->getLimit());
         int mostPopular = buffer.findMostPopularValue();
-        if (mostPopular != 0) {
+        if (mostPopular != 0 && mostPopular<=140) {
             std::cout << "mostPopular" << mostPopular << std::endl;
+            sign->setLimit(mostPopular);
             if (sign->getLimit() != lastSeenSign->getLimit()) {
                 std::cout << "Speed limit changed from " << lastSeenSign->getLimit() << " to " << sign->getLimit()
                           << std::endl;
                 lastSeenSign = sign;
+                speedLimit->setNum(sign->getLimit());
+                notificationPlayer.play();
             }
         }
         if (sign->getLimit() != 0) {
