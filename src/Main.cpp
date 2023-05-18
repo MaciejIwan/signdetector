@@ -26,13 +26,13 @@ int main(int argc, char **argv) {
             QCoreApplication::applicationDirPath() + "/" + relativePath);
 
     QWidget window;
-    QLabel *label = new QLabel(&window);
+    auto *label = new QLabel(&window);
     label->setGeometry(0, 0, 600, 600);
 
-    QLabel *speedLimitLabel = new QLabel(&window);
-    QLabel *fpsLabel = new QLabel(&window);
+    auto *speedLimitLabel = new QLabel(&window);
+    auto *fpsLabel = new QLabel(&window);
 
-    QPushButton *button = new QPushButton("Wycisz", &window);
+    auto *button = new QPushButton("Wycisz", &window);
 
     speedLimitLabel->setGeometry(30, 100, 100, 30);
     QFont font = speedLimitLabel->font();

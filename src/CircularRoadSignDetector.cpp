@@ -1,10 +1,8 @@
 #include "../include/CircularRoadSignDetector.h"
-#include "../include/ShapeRoadSignDetector.h"
-#include "../include/models/SpeedLimitSign.h"
 #include "../include/Common.h"
 
 RoadSign *CircularRoadSignDetector::detectRoadSign(cv::Mat &image) {
-    auto *sign = (SpeedLimitSign *) roadSignDetector->detectRoadSign(image);
+    auto *sign = (SpeedLimitSign *) roadSignDetectorEngine->detectRoadSign(image);
     buffer.push(sign->getLimit());
     int mostPopular = buffer.findMostPopularValue();
 
@@ -25,10 +23,9 @@ RoadSign *CircularRoadSignDetector::detectRoadSign(cv::Mat &image) {
 
 
 CircularRoadSignDetector::~CircularRoadSignDetector() {
-    delete roadSignDetector;
+    delete roadSignDetectorEngine;
 }
 
-CircularRoadSignDetector::CircularRoadSignDetector(int bufferSize) {
-    roadSignDetector = new ShapeRoadSignDetector();
+CircularRoadSignDetector::CircularRoadSignDetector(int bufferSize, IRoadSignDetector* engine): roadSignDetectorEngine(engine) {
     buffer = CircularBuffer<int>(bufferSize);
 }
