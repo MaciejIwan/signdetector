@@ -19,12 +19,10 @@ if (NOT Tesseract_FOUND)
     add_library(Tesseract::libtesseract ALIAS PkgConfig::Tesseract)
 endif ()
 
-#set(LIBAO_LIBRARY NAMES ao PATHS "/usr/lib/x86_64-linux-gnu/libao.so")
+
 set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/qt5/")
 
-find_library(LIBAO_LIBRARY NAMES ao PATHS usr/lib/x86_64-linux-gnu/)
-
-#find_package(Libao REQUIRED)
+find_library(LIBAO_LIBRARY NAMES ao PATHS usr/lib/x86_64-linux-gnu/ REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(MPG123 REQUIRED IMPORTED_TARGET libmpg123)
@@ -41,7 +39,7 @@ include_directories(
         ${OpenCV_INCLUDE_DIRS}
         ${Tesseract_INCLUDE_DIRS}
         ${LIBAO_INCLUDE_DIR}
-)
+        )
 
 
 # ========================================
@@ -61,7 +59,8 @@ add_library(RoadSignDetection
         src/CircularRoadSignDetector.cpp
         include/CircularRoadSignDetector.h
         src/NotificationPlayer.cpp
-        include/NotificationPlayer.h)
+        include/NotificationPlayer.h
+        )
 
 
 # ========================================
@@ -143,12 +142,14 @@ add_executable(
         tests/OcrTest.cpp src/Util.cpp
         tests/VideoTest.cpp
         tests/RoadSignDetectorTest.cpp
-        )
+        tests/NotificationPlayerTest.cpp)
 target_link_libraries(tests
         ${OpenCV_LIBS}
         Tesseract::libtesseract
         GTest::gtest_main
         RoadSignDetection
+        ${LIBAO_LIBRARY}
+        PkgConfig::MPG123
         )
 enable_testing()
 gtest_discover_tests(tests)
@@ -158,4 +159,5 @@ gtest_discover_tests(tests)
 # Copy resources to build directory
 # ========================================
 FILE(COPY resources/video DESTINATION ${CMAKE_BINARY_DIR})
-FILE(COPY resources/imgs DESTINATION ${CMAKE_BINARY_DIR})
+FILE(COPY resources/img DESTINATION ${CMAKE_BINARY_DIR})
+FILE(COPY resources/sound DESTINATION ${CMAKE_BINARY_DIR})

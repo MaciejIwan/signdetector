@@ -3,7 +3,7 @@
 
 int main() {
     // Load image
-    cv::Mat src = cv::imread("imgs/0.jpg");
+    cv::Mat src = cv::imread("img/0.jpg");
 
     if (src.empty()) {
         std::cerr << "Failed to load image" << std::endl;

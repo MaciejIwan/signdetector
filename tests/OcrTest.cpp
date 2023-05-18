@@ -11,7 +11,7 @@ public:
         int expectedSpeedLimit = std::stoi(filename);
 
         //when
-        cv::Mat image = cv::imread("../resources/imgs/signs/" + filename);
+        cv::Mat image = cv::imread("../resources/img/signs/" + filename);
         int actualSpeedLimit = ocr.getNumberFromRoi(image);
 
         // then

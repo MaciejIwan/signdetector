@@ -105,7 +105,7 @@ void updateImageView() {
 
 int main() {
     // Load image
-    cv::glob("imgs/*.jpg", fn, false);
+    cv::glob("img/*.jpg", fn, false);
     size_t count = fn.size(); //number of png files in images folder
     for (size_t i = 0; i < count; i++) {
         cv::Mat image;

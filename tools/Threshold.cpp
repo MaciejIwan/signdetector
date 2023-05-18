@@ -63,7 +63,7 @@ void onImageTrackbar(int, void *) {
 
 int main() {
 
-    glob("imgs/*.jpg", fn, false);
+    glob("img/*.jpg", fn, false);
     size_t count = fn.size(); //number of png files in images folder
     for (size_t i = 0; i < count; i++)
         images.push_back(imread(fn[i]));
