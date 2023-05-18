@@ -1,11 +1,12 @@
 #include "../include/IRoadSignDetector.h"
 #include "../include/ShapeRoadSignDetector.h"
 #include "../include/NotificationPlayer.h"
-#include <opencv2/opencv.hpp>
-#include <tesseract/baseapi.h>
 #include "../include/CircularBuffer.h"
 #include "../include/models/SpeedLimitSign.h"
 #include "../include/Common.h"
+
+#include <opencv2/opencv.hpp>
+#include <tesseract/baseapi.h>
 #include <QApplication>
 #include <QWidget>
 #include <QPixmap>
