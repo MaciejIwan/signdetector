@@ -1,51 +1,26 @@
 #include "../include/NotificationPlayer.h"
-#include <ao/ao.h>
-#include <mpg123.h>
+#include <QMediaPlayer>
+#include <QCoreApplication>
 
-NotificationPlayer::NotificationPlayer() {}
+NotificationPlayer::NotificationPlayer(QString path) {
+    player = new QMediaPlayer;
+    unmute();
+    media = QUrl::fromLocalFile(path);
+
+}
 
 void NotificationPlayer::play() {
+    if (player->state() == QMediaPlayer::PlayingState)
+        player->setPosition(0);
+    else if (player->state() == QMediaPlayer::StoppedState)
+        player->setMedia(media);
+    player->play();
+}
 
-    ao_initialize();
+void NotificationPlayer::mute() {
+    player->setVolume(0);
+}
 
-    mpg123_handle *mpg123;
-    ao_device *device;
-
-    int err;
-
-    mpg123_init();
-    mpg123 = mpg123_new(NULL, &err);
-
-
-    int channels, encoding;
-    long rate;
-    unsigned char *buffer;
-
-    mpg123_open(mpg123, "sound/notification_sound.mp3");
-    mpg123_getformat(mpg123, &rate, &channels, &encoding);
-
-    ao_sample_format format;
-    format.bits = mpg123_encsize(encoding);
-    format.rate = rate;
-    format.channels = channels;
-    format.byte_format = AO_FMT_NATIVE;
-    format.matrix = 0;
-
-    device = ao_open_live(ao_default_driver_id(), &format, 0);
-
-    size_t buffer_size = mpg123_outblock(mpg123);
-    buffer = new unsigned char [buffer_size];
-    size_t done;
-
-
-
-    while (mpg123_read(mpg123, buffer, buffer_size, &done) == MPG123_OK)
-        ao_play(device, reinterpret_cast<char*>(buffer), done);
-
-    delete[] buffer;
-    ao_close(device);
-    mpg123_close(mpg123);
-    mpg123_delete(mpg123);
-    mpg123_exit();
-    ao_shutdown();
+void NotificationPlayer::unmute() {
+    player->setVolume(100);
 }

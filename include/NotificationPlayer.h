@@ -1,9 +1,15 @@
 #pragma once
 
+#include <QMediaPlayer>
+
 class NotificationPlayer {
 public:
-    NotificationPlayer();
+    explicit NotificationPlayer(QString path);
     void play();
-
+    void mute();
+    void unmute();
+private:
+    QMediaPlayer *player;
+    QUrl media;
 };
 

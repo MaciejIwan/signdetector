@@ -12,16 +12,15 @@
 #include <QLabel>
 #include <QFont>
 #include <QPushButton>
-#include <QMediaPlayer>
 #include <QAudioOutput>
-
 
 int main(int argc, char **argv) {
     std::cout << "OpenCV version : " << CV_VERSION << std::endl;
 
-    NotificationPlayer notificationPlayer = NotificationPlayer();
-
     QApplication app(argc, argv);
+
+    const QString relativePath = "sound/notification_sound.mp3";
+    NotificationPlayer notificationPlayer = NotificationPlayer(QCoreApplication::applicationDirPath() + "/" + relativePath);
 
     QWidget window;
     QLabel *label = new QLabel(&window);
@@ -29,7 +28,7 @@ int main(int argc, char **argv) {
 
     QPushButton *button = new QPushButton("Wycisz", &window);
 
-    speedLimit->setGeometry(30,100,100,30);
+    speedLimit->setGeometry(30, 100, 100, 30);
 
     QFont font = speedLimit->font();
     font.setPointSize(28);
@@ -40,7 +39,7 @@ int main(int argc, char **argv) {
     label->setGeometry(0, 0, 600, 600);
 
     window.setWindowTitle("Sign detector");
-    window.setGeometry(400,400,600,600);
+    window.setGeometry(400, 400, 600, 600);
     window.show();
 
     ShapeRoadSignDetector detector = ShapeRoadSignDetector();
@@ -70,7 +69,7 @@ int main(int argc, char **argv) {
             cap.set(cv::CAP_PROP_POS_FRAMES, 0);
             continue;
         }
-        QPixmap pixmap = QPixmap::fromImage(QImage((unsigned char*) frame.data,
+        QPixmap pixmap = QPixmap::fromImage(QImage((unsigned char *) frame.data,
                                                    frame.cols,
                                                    frame.rows,
                                                    QImage::Format_RGB888));
@@ -85,7 +84,7 @@ int main(int argc, char **argv) {
         // todo integrate buffer with system (maybe decetor module). Now it is just print value to console
         buffer.push(sign->getLimit());
         int mostPopular = buffer.findMostPopularValue();
-        if (mostPopular != 0 && mostPopular<=140) {
+        if (mostPopular != 0 && mostPopular <= 140) {
             std::cout << "mostPopular" << mostPopular << std::endl;
             sign->setLimit(mostPopular);
             if (sign->getLimit() != lastSeenSign->getLimit()) {
@@ -105,7 +104,7 @@ int main(int argc, char **argv) {
 
         drawSpeedLimitOnFrame(frame, lastSeenSign->getLimit(), fps);
         cv::imshow("Preview", frame);
-        cv::waitKey(15); // change if calculation is too fast/slow
+        cv::waitKey(1); // change if calculation is too fast/slow
     }
     delete lastSeenSign;
     return app.exec();

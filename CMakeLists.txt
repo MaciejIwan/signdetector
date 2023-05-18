@@ -61,6 +61,10 @@ add_library(RoadSignDetection
         src/NotificationPlayer.cpp
         include/NotificationPlayer.h
         )
+target_link_libraries(RoadSignDetection
+        Qt5::Widgets
+        Qt5::Multimedia
+        )
 
 
 # ========================================
