@@ -5,6 +5,7 @@
 #include "../include/models/SpeedLimitSign.h"
 #include "../include/Common.h"
 #include "../include/CircularRoadSignDetector.h"
+#include "../include/FrameProvider.h"
 
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
@@ -54,16 +55,12 @@ int main(int argc, char **argv) {
 
     IRoadSignDetector *detector = new CircularRoadSignDetector();
 
-    std::string videoFile = "video/speed_limit_seqence_1.mp4";
+    std::string videoFile = "video/speed_limit_1.mp4";
     if (argc == 2)
         videoFile = std::string(argv[1]);
 
-    cv::VideoCapture cap(videoFile);
+    FrameProvider frameProvider = FrameProvider(videoFile); // is it checking if file exists?
 
-    if (!cap.isOpened()) {
-        std::cerr << "Error opening video file " << std::endl;
-        return -1;
-    }
 
     detector->setNotificationCallback([&notificationPlayer]() {
         notificationPlayer.play();
@@ -72,18 +69,12 @@ int main(int argc, char **argv) {
     int64 prevTickCount = cv::getTickCount();
 
     while (true) {
-        if (!cap.read(frame)) {
-            cap.set(cv::CAP_PROP_POS_FRAMES, 0);
-            continue;
-        }
-        QPixmap pixmap = QPixmap::fromImage(
-                QImage((unsigned char *) frame.data, frame.cols, frame.rows, QImage::Format_BGR888));
-
-
+        frame = frameProvider.getFrame();
         auto *sign = (SpeedLimitSign *) detector->detectRoadSign(frame);
 
+        QPixmap pixmap = QPixmap::fromImage(
+                QImage((unsigned char *) frame.data, frame.cols, frame.rows, QImage::Format_BGR888));
         label->setPixmap(pixmap);
-
         fpsLabel->setText("fps: " + QString::number(calcFPS(&prevTickCount)));
         speedLimitLabel->setNum(sign->getLimit());
 
@@ -100,7 +91,7 @@ int main(int argc, char **argv) {
 
 float calcFPS(int64 *prevTickCount) {
     int64 curTickCount = cv::getTickCount();
-    double timeElapsed = (double)(curTickCount - *prevTickCount) / cv::getTickFrequency();
+    double timeElapsed = (double) (curTickCount - *prevTickCount) / cv::getTickFrequency();
     *prevTickCount = curTickCount;
     return 1 / timeElapsed;
 }

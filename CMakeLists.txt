@@ -2,7 +2,7 @@
 # Setup CMake
 # ========================================
 cmake_minimum_required(VERSION 3.16)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 
 # ========================================
@@ -58,7 +58,7 @@ add_library(RoadSignDetection
         include/CircularRoadSignDetector.h
         src/NotificationPlayer.cpp
         include/NotificationPlayer.h
-        )
+        include/FrameProvider.h)
 target_link_libraries(RoadSignDetection
         Qt5::Widgets
         Qt5::Multimedia
@@ -112,11 +112,6 @@ target_link_libraries(threshold_preview
 
 add_executable(mean_shift tools/MeanShift.cpp)
 target_link_libraries(mean_shift
-        ${OpenCV_LIBS}
-        )
-
-add_executable(perspective tools/Perspective.cpp)
-target_link_libraries(perspective
         ${OpenCV_LIBS}
         )
 
