@@ -115,11 +115,6 @@ target_link_libraries(mean_shift
         ${OpenCV_LIBS}
         )
 
-add_executable(perspective tools/Perspective.cpp)
-target_link_libraries(perspective
-        ${OpenCV_LIBS}
-        )
-
 add_executable(video_editor tools/VideoEditor.cpp)
 target_link_libraries(video_editor
         ${OpenCV_LIBS}
