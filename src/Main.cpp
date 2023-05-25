@@ -1,39 +1,74 @@
-#include "../include/IRoadSignDetector.h"
-#include "../include/ShapeRoadSignDetector.h"
-#include "../include/NotificationPlayer.h"
 #include "../include/CircularBuffer.h"
-#include "../include/models/SpeedLimitSign.h"
-#include "../include/Common.h"
 #include "../include/CircularRoadSignDetector.h"
+#include "../include/Common.h"
 #include "../include/FrameProvider.h"
+#include "../include/IRoadSignDetector.h"
+#include "../include/NotificationPlayer.h"
+#include "../include/ShapeRoadSignDetector.h"
+#include "../include/models/SpeedLimitSign.h"
 
+#include <QApplication>
+#include <QAudioOutput>
+#include <QFont>
+#include <QLabel>
+#include <QPixmap>
+#include <QPushButton>
+#include <QWidget>
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
-#include <QApplication>
-#include <QWidget>
-#include <QPixmap>
-#include <QLabel>
-#include <QFont>
-#include <QPushButton>
-#include <QAudioOutput>
 
-float calcFPS(int64 *prevTickCount);
+float calcFPS(int64* prevTickCount);
 
-int main(int argc, char **argv) {
+cv::Mat gui_filter_image(cv::Mat& raw, bool darkmode)
+{
+    // Applies simple Sobel edge detection to simplify
+    // the raw image and make it more readable for GUI
+
+    int ksize = 3;
+    int ksize_blur = 5;
+    int delta = 1;
+    int ddepth = CV_16S;
+
+    cv::Mat output, grayscale;
+
+    cv::GaussianBlur(raw, output, cv::Size(ksize_blur, ksize_blur), 0);
+    cv::cvtColor(output, output, cv::COLOR_BGR2GRAY);
+
+    cv::Mat grad_x, grad_y, grad;
+    cv::Mat abs_grad_x, abs_grad_y;
+
+    cv::Sobel(output, grad_x, ddepth, 1, 0, ksize, 1, delta, cv::BORDER_DEFAULT);
+    cv::Sobel(output, grad_y, ddepth, 0, 1, ksize, 1, delta, cv::BORDER_DEFAULT);
+
+    cv::convertScaleAbs(grad_x, abs_grad_x);
+    cv::convertScaleAbs(grad_y, abs_grad_y);
+    cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
+
+    if (!darkmode) {
+        cv::bitwise_not(grad, grad);
+    }
+
+    cv::cvtColor(grad, output, cv::COLOR_GRAY2RGB);
+
+    return output;
+}
+
+int main(int argc, char** argv)
+{
     QApplication app(argc, argv);
 
     const QString relativePath = "sound/notification_sound.mp3";
     NotificationPlayer notificationPlayer = NotificationPlayer(
-            QCoreApplication::applicationDirPath() + "/" + relativePath);
+        QCoreApplication::applicationDirPath() + "/" + relativePath);
 
     QWidget window;
-    auto *label = new QLabel(&window);
+    auto* label = new QLabel(&window);
     label->setGeometry(0, 0, 600, 600);
 
-    auto *speedLimitLabel = new QLabel(&window);
-    auto *fpsLabel = new QLabel(&window);
+    auto* speedLimitLabel = new QLabel(&window);
+    auto* fpsLabel = new QLabel(&window);
 
-    auto *button = new QPushButton("Wycisz", &window);
+    auto* button = new QPushButton("Wycisz", &window);
 
     speedLimitLabel->setGeometry(30, 100, 100, 30);
     QFont font = speedLimitLabel->font();
@@ -53,7 +88,7 @@ int main(int argc, char **argv) {
     window.setGeometry(400, 400, 600, 600);
     window.show();
 
-    IRoadSignDetector *detector = new CircularRoadSignDetector();
+    IRoadSignDetector* detector = new CircularRoadSignDetector();
 
     std::string videoFile = "video/speed_limit_1.mp4";
     if (argc == 2)
@@ -61,19 +96,21 @@ int main(int argc, char **argv) {
 
     FrameProvider frameProvider = FrameProvider(videoFile); // is it checking if file exists?
 
-
     detector->setNotificationCallback([&notificationPlayer]() {
         notificationPlayer.play();
     });
-    cv::Mat frame;
+    cv::Mat frame, filtered;
     int64 prevTickCount = cv::getTickCount();
 
     while (true) {
+
         frame = frameProvider.getFrame();
-        auto *sign = (SpeedLimitSign *) detector->detectRoadSign(frame);
+        auto* sign = (SpeedLimitSign*)detector->detectRoadSign(frame);
+
+        filtered = gui_filter_image(frame, true); // false for light mode
 
         QPixmap pixmap = QPixmap::fromImage(
-                QImage((unsigned char *) frame.data, frame.cols, frame.rows, QImage::Format_BGR888));
+            QImage((unsigned char*)filtered.data, filtered.cols, filtered.rows, QImage::Format_BGR888));
         label->setPixmap(pixmap);
         fpsLabel->setText("fps: " + QString::number(calcFPS(&prevTickCount)));
         speedLimitLabel->setNum(sign->getLimit());
@@ -83,17 +120,15 @@ int main(int argc, char **argv) {
         }
 
         QCoreApplication::processEvents();
-
     }
 
     return app.exec();
 }
 
-float calcFPS(int64 *prevTickCount) {
+float calcFPS(int64* prevTickCount)
+{
     int64 curTickCount = cv::getTickCount();
-    double timeElapsed = (double) (curTickCount - *prevTickCount) / cv::getTickFrequency();
+    double timeElapsed = (double)(curTickCount - *prevTickCount) / cv::getTickFrequency();
     *prevTickCount = curTickCount;
     return 1 / timeElapsed;
 }
-
-
