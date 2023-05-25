@@ -1,12 +1,9 @@
-//
-// Created by maciej on 21.04.23.
-//
 #include <iostream>
 #include <opencv2/opencv.hpp>
 
 int main() {
     // Load image
-    cv::Mat src = cv:: imread("imgs/0.jpg");
+    cv::Mat src = cv::imread("img/0.jpg");
 
     if (src.empty()) {
         std::cerr << "Failed to load image" << std::endl;
@@ -45,11 +42,12 @@ int main() {
     cv::imshow("mask", mask);
     // Perspective transform
     cv::Mat warped;
-    std::vector<cv::Point2f> src_pts = { ellipse.center + cv::Point2f(-ellipse.size.width / 2, -ellipse.size.height / 2),
-                                         ellipse.center + cv::Point2f(-ellipse.size.width / 2, ellipse.size.height / 2),
-                                         ellipse.center + cv::Point2f(ellipse.size.width / 2, ellipse.size.height / 2),
-                                         ellipse.center + cv::Point2f(ellipse.size.width / 2, -ellipse.size.height / 2) };
-    std::vector<cv::Point2f> dst_pts = { cv::Point2f(0, 0), cv::Point2f(0, src.rows), cv::Point2f(src.cols, src.rows), cv::Point2f(src.cols, 0) };
+    std::vector<cv::Point2f> src_pts = {ellipse.center + cv::Point2f(-ellipse.size.width / 2, -ellipse.size.height / 2),
+                                        ellipse.center + cv::Point2f(-ellipse.size.width / 2, ellipse.size.height / 2),
+                                        ellipse.center + cv::Point2f(ellipse.size.width / 2, ellipse.size.height / 2),
+                                        ellipse.center + cv::Point2f(ellipse.size.width / 2, -ellipse.size.height / 2)};
+    std::vector<cv::Point2f> dst_pts = {cv::Point2f(0, 0), cv::Point2f(0, src.rows), cv::Point2f(src.cols, src.rows),
+                                        cv::Point2f(src.cols, 0)};
     cv::Mat transform = cv::getPerspectiveTransform(src_pts, dst_pts);
     cv::warpPerspective(src, warped, transform, src.size());
 

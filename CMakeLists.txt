@@ -1,8 +1,14 @@
+# ========================================
+# Setup CMake
+# ========================================
 cmake_minimum_required(VERSION 3.16)
-
 set(CMAKE_CXX_STANDARD 17)
 
-project(sign_edge_method_test_1)
+
+# ========================================
+# Setup project and dependencies
+# ========================================
+project(SIGN_DETECTOR)
 
 find_package(OpenCV 4.0 REQUIRED)
 find_package(Tesseract 4)
@@ -13,43 +19,72 @@ if (NOT Tesseract_FOUND)
     add_library(Tesseract::libtesseract ALIAS PkgConfig::Tesseract)
 endif ()
 
+
+set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/qt5/")
+
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(MPG123 REQUIRED IMPORTED_TARGET libmpg123)
+
+find_package(Qt5 REQUIRED COMPONENTS
+        Widgets
+        Core
+        Gui
+        Multimedia
+        )
+
+
 include_directories(
         ${OpenCV_INCLUDE_DIRS}
         ${Tesseract_INCLUDE_DIRS}
-)
-
-include(FetchContent)
-FetchContent_Declare(
-  googletest
-  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
-)
-
-FetchContent_MakeAvailable(googletest)
-
-add_executable(main 
-        src/Main.cpp 
-        include/models/RoadSign.h 
-        include/IRoadSignDetector.h 
-
-        src/ShapeRoadSignDetector.cpp 
-        include/ShapeRoadSignDetector.h
-
-        include/Ocr.h 
-        src/Ocr.cpp 
-        
-        include/models/SpeedLimitSign.h 
-        include/Common.h 
-        
-        include/CircularBuffer.h 
-
-        src/Util.cpp
-        
-)
-target_link_libraries(main
-        ${OpenCV_LIBS}
-        Tesseract::libtesseract
         )
 
+
+# ========================================
+# Setup library
+# ========================================
+add_library(RoadSignDetection
+        include/models/RoadSign.h
+        include/IRoadSignDetector.h
+        src/ShapeRoadSignDetector.cpp
+        include/ShapeRoadSignDetector.h
+        include/Ocr.h
+        src/Ocr.cpp
+        include/models/SpeedLimitSign.h
+        include/Common.h
+        include/CircularBuffer.h
+        src/Util.cpp
+        src/CircularRoadSignDetector.cpp
+        include/CircularRoadSignDetector.h
+        src/NotificationPlayer.cpp
+        include/NotificationPlayer.h
+        )
+target_link_libraries(RoadSignDetection
+        Qt5::Widgets
+        Qt5::Multimedia
+        )
+
+
+# ========================================
+# Setup executable
+# ========================================
+add_executable(main
+        src/Main.cpp
+        )
+target_link_libraries(main
+        ${OpenCV_LIBS}
+        RoadSignDetection
+        Tesseract::libtesseract
+        Qt5::Widgets
+        Qt5::Multimedia
+        PkgConfig::MPG123
+        )
+
+
+
+# ========================================
+# Setup tools
+# ========================================
 add_executable(colorPicker tools/HsvColorPicker.cpp)
 target_link_libraries(colorPicker
         ${OpenCV_LIBS}
@@ -90,24 +125,42 @@ target_link_libraries(video_editor
         ${OpenCV_LIBS}
         )
 
-FILE(COPY resources/video DESTINATION ${CMAKE_BINARY_DIR})
-FILE(COPY resources/imgs DESTINATION ${CMAKE_BINARY_DIR})
 
-enable_testing()
+# ========================================
+# Setup testing
+# ========================================
+include(FetchContent)
+FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+FetchContent_MakeAvailable(googletest)
+include(GoogleTest)
+
 
 add_executable(
-  tests
-  include/models/RoadSign.h src/ShapeRoadSignDetector.cpp include/IRoadSignDetector.h src/Ocr.cpp include/Ocr.h include/models/SpeedLimitSign.h
-        include/Common.h tests/utils/VideoTestUtils.cpp tests/OcrTest.cpp src/Util.cpp tests/VideoTest.cpp tests/RoadSignDetectorTest.cpp)
+        tests
+        tests/utils/VideoTestUtils.cpp
+        tests/OcrTest.cpp src/Util.cpp
+        tests/VideoTest.cpp
+        tests/RoadSignDetectorTest.cpp
+)
 target_link_libraries(tests
         ${OpenCV_LIBS}
         Tesseract::libtesseract
+        GTest::gtest_main
+        RoadSignDetection
+        PkgConfig::MPG123
+        Qt5::Widgets
+        Qt5::Multimedia
         )
-
-target_link_libraries(
-  tests
-  GTest::gtest_main
-)
-
-include(GoogleTest)
+enable_testing()
 gtest_discover_tests(tests)
+
+
+# ========================================
+# Copy resources to build directory
+# ========================================
+FILE(COPY resources/video DESTINATION ${CMAKE_BINARY_DIR})
+FILE(COPY resources/img DESTINATION ${CMAKE_BINARY_DIR})
+FILE(COPY resources/sound DESTINATION ${CMAKE_BINARY_DIR})

@@ -5,7 +5,7 @@ using namespace cv;
 
 int main() {
     // Load the input image
-    Mat inputImage = imread("imgs/0.jpg");
+    Mat inputImage = imread("img/0.jpg");
 
     // Convert the image to the Lab color space
     Mat labImage;

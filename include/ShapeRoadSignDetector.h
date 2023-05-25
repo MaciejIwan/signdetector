@@ -1,21 +1,10 @@
-//
-// Created by maciej on 26.04.23.
-//
-
-#ifndef SIGN_EDGE_METHOD_TEST_1_SHAPEROADSIGNDETECTOR_H
-#define SIGN_EDGE_METHOD_TEST_1_SHAPEROADSIGNDETECTOR_H
-
+#pragma once
 
 #include <opencv2/core/mat.hpp>
-#include "models/RoadSign.h"
 #include "Ocr.h"
-#include "Common.h"
-#include "IRoadSignDetector.h"
-#include <iomanip>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/opencv.hpp>
 #include <vector>
-#include "../include/models/SpeedLimitSign.h"
+#include "models/RoadSign.h"
+#include "IRoadSignDetector.h"
 
 class ShapeRoadSignDetector : public IRoadSignDetector {
 public:
@@ -40,5 +29,3 @@ private:
     void findSignsBoundingBoxes(const cv::Mat &red_binary_mask, std::vector<cv::Rect> &boundingBoxes) const;
 };
 
-
-#endif //SIGN_EDGE_METHOD_TEST_1_SHAPEROADSIGNDETECTOR_H

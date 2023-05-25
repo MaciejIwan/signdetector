@@ -1,8 +1,6 @@
-//
-// Created by maciej on 20.04.23.
-//
 #include "../include/Common.h"
 #include <iomanip>
+#include <opencv2/imgproc.hpp>
 
 void drawSpeedLimitOnFrame(const cv::Mat &frame, int speedLimitValue, double fps) {
     std::stringstream speedLimitText;

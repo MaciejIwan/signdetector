@@ -27,8 +27,7 @@ cv::Scalar upper_red_dark(10, 90, 50);
 void updateImageView();
 
 
-
-double compareContoursToCircle(const std::vector<cv::Point>& contour) {
+double compareContoursToCircle(const std::vector<cv::Point> &contour) {
     // Fit a minimum enclosing circle to the contour
     cv::Point2f center;
     float radius;
@@ -76,7 +75,7 @@ void updateImageView() {
     cv::Mat contour_preview = currImage.clone();
 
     // Iterate through each contour and check if it is a circle
-    for (const auto& contour : contours) {
+    for (const auto &contour: contours) {
         double area = cv::contourArea(contour);
         if (area > 2048) {
             cv::Rect bounding_rect = cv::boundingRect(contour);
@@ -86,10 +85,12 @@ void updateImageView() {
                 cv::rectangle(currImage, bounding_rect, cv::Scalar(0, 255, 0), 2);
             }
             // Draw the contour on the contour preview image
-            cv::drawContours(contour_preview, std::vector<std::vector<cv::Point>>{contour}, 0, cv::Scalar(0, 255, 0), 2);
+            cv::drawContours(contour_preview, std::vector<std::vector<cv::Point>>{contour}, 0, cv::Scalar(0, 255, 0),
+                             2);
             std::stringstream similarity_text;
             similarity_text << "Similarity: " << std::fixed << std::setprecision(2) << contour_similarity;
-            cv::putText(contour_preview, similarity_text.str(), cv::Point(bounding_rect.x, bounding_rect.y + bounding_rect.height + 20),
+            cv::putText(contour_preview, similarity_text.str(),
+                        cv::Point(bounding_rect.x, bounding_rect.y + bounding_rect.height + 20),
                         cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 255, 0), 2);
         }
     }
@@ -104,7 +105,7 @@ void updateImageView() {
 
 int main() {
     // Load image
-    cv::glob("imgs/*.jpg", fn, false);
+    cv::glob("img/*.jpg", fn, false);
     size_t count = fn.size(); //number of png files in images folder
     for (size_t i = 0; i < count; i++) {
         cv::Mat image;

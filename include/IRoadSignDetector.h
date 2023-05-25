@@ -1,21 +1,27 @@
-//
-// Created by maciej on 14.04.23.
-//
-
-#ifndef SIGN_EDGE_METHOD_TEST_1_IROADSIGNDETECTOR_H
-#define SIGN_EDGE_METHOD_TEST_1_IROADSIGNDETECTOR_H
+#pragma once
 
 
-#include <vector>
 #include <opencv2/core/mat.hpp>
-#include "Ocr.h"
 #include "models/RoadSign.h"
-#include "Common.h"
-#include "models/SpeedLimitSign.h"
+
+using NotificationCallback = std::function<void()>;
 
 class IRoadSignDetector {
 public:
     virtual RoadSign *detectRoadSign(cv::Mat &image) = 0;
-};
 
-#endif
+    void setNotificationCallback(const NotificationCallback &callback) {
+        notificationCallback = callback;
+    }
+
+
+
+protected:
+    NotificationCallback notificationCallback;
+
+    void callNotificationCallback() {
+        if (notificationCallback) {
+            notificationCallback();
+        }
+    }
+};

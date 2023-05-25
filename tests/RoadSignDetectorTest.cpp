@@ -32,7 +32,8 @@ TEST_F(RoadSignDetectorTest, detectRoadSignPerformance) {
         detector.detectRoadSign(frame);
 
         auto endFrameTime = std::chrono::steady_clock::now();
-        double fps = 1000.0 / std::chrono::duration_cast<std::chrono::milliseconds>(endFrameTime - startFrameTime).count();
+        double fps =
+                1000.0 / std::chrono::duration_cast<std::chrono::milliseconds>(endFrameTime - startFrameTime).count();
         fpsSum += fps;
         minFps = std::min(minFps, fps);
         maxFps = std::max(maxFps, fps);

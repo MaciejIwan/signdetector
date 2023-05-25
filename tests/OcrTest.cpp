@@ -1,7 +1,3 @@
-//
-// Created by maciej on 20.04.23.
-//
-
 #include <gtest/gtest.h>
 #include <string>
 #include <opencv2/imgcodecs.hpp>
@@ -15,12 +11,13 @@ public:
         int expectedSpeedLimit = std::stoi(filename);
 
         //when
-        cv::Mat image = cv::imread("../resources/imgs/signs/" + filename);
+        cv::Mat image = cv::imread("../resources/img/signs/" + filename);
         int actualSpeedLimit = ocr.getNumberFromRoi(image);
 
         // then
         ASSERT_EQ(expectedSpeedLimit, actualSpeedLimit);
     }
+
 protected:
     void SetUp() override {
     }
@@ -28,8 +25,6 @@ protected:
     void TearDown() override {
     }
 };
-
-
 
 
 TEST_F(RoiOcrTest, shouldReturn30_1) {

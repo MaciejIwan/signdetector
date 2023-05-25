@@ -1,7 +1,3 @@
-//
-// Created by maciej on 26.03.23.
-//
-
 #include <opencv2/opencv.hpp>
 #include <iostream>
 
@@ -18,7 +14,7 @@ void resizeImage(cv::Mat &img, int max_height) {
 }
 
 
-void mergeImages(const std::vector<cv::Mat>& images, cv::Mat& output) {
+void mergeImages(const std::vector<cv::Mat> &images, cv::Mat &output) {
     // Check that there are exactly 4 input images
     CV_Assert(images.size() == 4);
 
@@ -27,7 +23,7 @@ void mergeImages(const std::vector<cv::Mat>& images, cv::Mat& output) {
 
     // Convert grayscale photos to color
     std::vector<cv::Mat> color_images;
-    for (const cv::Mat& image : images) {
+    for (const cv::Mat &image: images) {
         cv::Mat color_image;
         if (image.channels() == 1) {
             cv::cvtColor(image, color_image, cv::COLOR_GRAY2BGR);
@@ -45,7 +41,7 @@ void mergeImages(const std::vector<cv::Mat>& images, cv::Mat& output) {
 
 int main() {
     // Load the image
-    Mat image = imread("imgs/img.jpg");
+    Mat image = imread("img/0.jpg");
 
     // Convert the image to grayscale
     Mat gray;

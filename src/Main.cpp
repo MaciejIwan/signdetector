@@ -1,14 +1,58 @@
 #include "../include/IRoadSignDetector.h"
 #include "../include/ShapeRoadSignDetector.h"
+#include "../include/NotificationPlayer.h"
+#include "../include/CircularBuffer.h"
+#include "../include/models/SpeedLimitSign.h"
+#include "../include/Common.h"
+#include "../include/CircularRoadSignDetector.h"
+
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
-#include "../include/CircularBuffer.h"
+#include <QApplication>
+#include <QWidget>
+#include <QPixmap>
+#include <QLabel>
+#include <QFont>
+#include <QPushButton>
+#include <QAudioOutput>
+
+float calcFPS(int64 *prevTickCount);
 
 int main(int argc, char **argv) {
-    std::cout << "OpenCV version : " << CV_VERSION << std::endl;
+    QApplication app(argc, argv);
 
-    ShapeRoadSignDetector detector = ShapeRoadSignDetector();
-    auto *lastSeenSign = new SpeedLimitSign(SpeedLimitSign::DEFAULT_SPEED_LIMIT);
+    const QString relativePath = "sound/notification_sound.mp3";
+    NotificationPlayer notificationPlayer = NotificationPlayer(
+            QCoreApplication::applicationDirPath() + "/" + relativePath);
+
+    QWidget window;
+    auto *label = new QLabel(&window);
+    label->setGeometry(0, 0, 600, 600);
+
+    auto *speedLimitLabel = new QLabel(&window);
+    auto *fpsLabel = new QLabel(&window);
+
+    auto *button = new QPushButton("Wycisz", &window);
+
+    speedLimitLabel->setGeometry(30, 100, 100, 30);
+    QFont font = speedLimitLabel->font();
+    font.setPointSize(28);
+    font.setBold(true);
+    speedLimitLabel->setFont(font);
+    speedLimitLabel->setNum(0);
+
+    fpsLabel->setGeometry(30, 150, 100, 30);
+    font = fpsLabel->font();
+    font.setPointSize(18);
+    font.setBold(false);
+    fpsLabel->setFont(font);
+    fpsLabel->setText("fps: " + QString::number(0));
+
+    window.setWindowTitle("Sign detector");
+    window.setGeometry(400, 400, 600, 600);
+    window.show();
+
+    IRoadSignDetector *detector = new CircularRoadSignDetector();
 
     std::string videoFile = "video/speed_limit_seqence_1.mp4";
     if (argc == 2)
@@ -21,44 +65,44 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    cv::namedWindow("Preview", cv::WINDOW_NORMAL);
-
+    detector->setNotificationCallback([&notificationPlayer]() {
+        notificationPlayer.play();
+    });
     cv::Mat frame;
     int64 prevTickCount = cv::getTickCount();
-    double fps = 0;
 
-    // TODO: it should keep Signs not ints
-    CircularBuffer<int> buffer(30);
     while (true) {
         if (!cap.read(frame)) {
             cap.set(cv::CAP_PROP_POS_FRAMES, 0);
             continue;
         }
+        QPixmap pixmap = QPixmap::fromImage(
+                QImage((unsigned char *) frame.data, frame.cols, frame.rows, QImage::Format_BGR888));
 
-        int64 curTickCount = cv::getTickCount();
-        double timeElapsed = (curTickCount - prevTickCount) / cv::getTickFrequency();
-        prevTickCount = curTickCount;
-        fps = 1 / timeElapsed;
 
-        auto *sign = (SpeedLimitSign *) detector.detectRoadSign(frame);
+        auto *sign = (SpeedLimitSign *) detector->detectRoadSign(frame);
 
-        // todo integrate buffer with system (maybe decetor module). Now it is just print value to console
-        buffer.push(sign->getLimit());
-        int mostPopular = buffer.findMostPopularValue();
-        if(mostPopular != 0){
-            std::cout << "mostPopular" << mostPopular << std::endl;
-        } 
-        if(sign->getLimit() != 0)
+        label->setPixmap(pixmap);
+
+        fpsLabel->setText("fps: " + QString::number(calcFPS(&prevTickCount)));
+        speedLimitLabel->setNum(sign->getLimit());
+
+        if (sign->getLimit() != 0 && DEBUG_MODE) {
             std::cout << *sign << std::endl;
-        if (sign->getLimit() != 0)
-            lastSeenSign = sign;
+        }
 
-        drawSpeedLimitOnFrame(frame, lastSeenSign->getLimit(), fps);
+        QCoreApplication::processEvents();
 
-        cv::imshow("Preview", frame);
-        cv::waitKey(15); // change if calculation is too fast/slow
     }
-    delete lastSeenSign;
+
+    return app.exec();
+}
+
+float calcFPS(int64 *prevTickCount) {
+    int64 curTickCount = cv::getTickCount();
+    double timeElapsed = (double)(curTickCount - *prevTickCount) / cv::getTickFrequency();
+    *prevTickCount = curTickCount;
+    return 1 / timeElapsed;
 }
 
 
