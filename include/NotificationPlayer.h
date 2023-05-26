@@ -6,8 +6,7 @@ class NotificationPlayer {
 public:
     explicit NotificationPlayer(QString path);
     void play();
-    void mute();
-    void unmute();
+    void changeVolume() ;
 private:
     QMediaPlayer *player;
     QUrl media;
