@@ -18,6 +18,8 @@
 #include <tesseract/baseapi.h>
 
 float calcFPS(int64* prevTickCount);
+void changeMode();
+bool isDarkModeOn = true;
 
 cv::Mat gui_filter_image(cv::Mat& raw, bool darkmode)
 {
@@ -68,7 +70,15 @@ int main(int argc, char** argv)
     auto* speedLimitLabel = new QLabel(&window);
     auto* fpsLabel = new QLabel(&window);
 
-    auto* button = new QPushButton("Wycisz", &window);
+  	auto *muteButton = new QPushButton("Mute", &window);
+    muteButton->setGeometry(100, 500, 100, 50);
+    QObject::connect(muteButton, &QPushButton::clicked, &notificationPlayer.changeVolume);
+
+
+    auto *themeButton = new QPushButton("Dark mode", &window);
+    themeButton->setGeometry(400, 500, 100, 50);
+    QObject::connect(themeButton, &QPushButton::clicked, &changeMode);
+
 
     speedLimitLabel->setGeometry(30, 100, 100, 30);
     QFont font = speedLimitLabel->font();
@@ -107,7 +117,7 @@ int main(int argc, char** argv)
         frame = frameProvider.getFrame();
         auto* sign = (SpeedLimitSign*)detector->detectRoadSign(frame);
 
-        filtered = gui_filter_image(frame, true); // false for light mode
+        filtered = gui_filter_image(frame, isDarkModeOn); // false for light mode
 
         QPixmap pixmap = QPixmap::fromImage(
             QImage((unsigned char*)filtered.data, filtered.cols, filtered.rows, QImage::Format_BGR888));
@@ -123,6 +133,14 @@ int main(int argc, char** argv)
     }
 
     return app.exec();
+}
+
+void changeMode(){
+    isLDarkModeOn= !isDarkModeOn;
+    if(isLightModeOn)
+        std::cout<<"Changed to dark mode\n";
+    else
+        std::cout<<"Changed to light mode\n";
 }
 
 float calcFPS(int64* prevTickCount)
