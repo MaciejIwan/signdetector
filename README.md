@@ -24,6 +24,9 @@ sudo apt-get install cmake
 sudo apt install tesseract-ocr
 sudo apt install libtesseract-dev
 sudo apt install libopencv-dev
+sudo apt-get install libmpg123-dev
+sudo apt install qt5-default
+sudo apt-get install qtmultimedia5-dev
 ```
 
 # Build
