@@ -4,7 +4,7 @@
 
 NotificationPlayer::NotificationPlayer(QString path) {
     player = new QMediaPlayer;
-    unmute();
+    player->setVolume(100);
     media = QUrl::fromLocalFile(path);
 
 }
@@ -17,10 +17,6 @@ void NotificationPlayer::play() {
     player->play();
 }
 
-void NotificationPlayer::mute() {
-    player->setVolume(0);
-}
-
-void NotificationPlayer::unmute() {
-    player->setVolume(100);
+void NotificationPlayer::changeVolume() {
+    player->isMuted() ? player->setVolume(100) : player->setVolume(0);
 }
