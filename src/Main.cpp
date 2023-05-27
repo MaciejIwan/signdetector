@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 
   	auto *muteButton = new QPushButton("Mute", &window);
     muteButton->setGeometry(100, 500, 100, 50);
-    QObject::connect(muteButton, &QPushButton::clicked, &notificationPlayer.changeVolume);
+    QObject::connect(muteButton, &QPushButton::clicked, [&notificationPlayer]() {notificationPlayer.changeVolume();});
 
 
     auto *themeButton = new QPushButton("Dark mode", &window);
@@ -100,7 +100,7 @@ int main(int argc, char** argv)
 
     IRoadSignDetector* detector = new CircularRoadSignDetector();
 
-    std::string videoFile = "video/speed_limit_1.mp4";
+    std::string videoFile = "video/speed_limit_seqence_1.mp4";
     if (argc == 2)
         videoFile = std::string(argv[1]);
 
@@ -136,8 +136,8 @@ int main(int argc, char** argv)
 }
 
 void changeMode(){
-    isLDarkModeOn= !isDarkModeOn;
-    if(isLightModeOn)
+    isDarkModeOn= !isDarkModeOn;
+    if(isDarkModeOn)
         std::cout<<"Changed to dark mode\n";
     else
         std::cout<<"Changed to light mode\n";
