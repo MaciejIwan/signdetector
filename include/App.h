@@ -1,14 +1,35 @@
-//
-// Created by daniel on 01.06.23.
-//
+#pragma once
 
-#ifndef SIGN_DETECTOR_APP_H
-#define SIGN_DETECTOR_APP_H
-
+#include <QApplication>
+#include <QAudioOutput>
+#include <QFont>
+#include <QLabel>
+#include <QPixmap>
+#include <QPushButton>
+#include <QPainter>
+#include <QVBoxLayout>
+#include <QWidget>
+#include "../include/NotificationPlayer.h"
+#include "../include/SignDrawer.h"
 
 class App {
+public:
+    bool isDarkModeOn;
+    bool isMuted;
+    NotificationPlayer notificationPlayer = NotificationPlayer(QString());
+    QString relativePath;
+    QWidget window;
+    QLabel *frame;
+    QPushButton *muteButton;
+    QPushButton *themeButton;
+    QVBoxLayout *layout;
+    QLabel *fpsLabel;
+    SignDrawer *paintedSign;
+
+    explicit App();
+    void init();
+    void changeMode();
+    void changeVolume();
 
 };
 
-
-#endif //SIGN_DETECTOR_APP_H
