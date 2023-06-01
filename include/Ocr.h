@@ -24,6 +24,10 @@ private:
 
     cv::Mat preprocess1(cv::Mat roi);
     cv::Mat preprocess2(cv::Mat roi);
+    cv::Mat preprocess3(cv::Mat roi);
+    cv::Mat preprocess4(cv::Mat roi);
+    cv::Mat preprocess5(cv::Mat roi);
+    cv::Mat preprocess6(cv::Mat roi, int thresholdValue);
 
     using preprocessFun = std::function<cv::Mat(cv::Mat)>;
     std::vector<preprocessFun> preprocessVector;
