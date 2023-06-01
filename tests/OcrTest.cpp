@@ -42,6 +42,16 @@ TEST_F(RoiOcrTest, shouldReturn30_3) {
     testTextReading(filename);
 }
 
+TEST_F(RoiOcrTest, shouldReturn30_4) {
+    std::string filename = "30_4.jpg";
+    testTextReading(filename);
+}
+
+TEST_F(RoiOcrTest, shouldReturn30_5) {
+    std::string filename = "30_5.jpg";
+    testTextReading(filename);
+}
+
 TEST_F(RoiOcrTest, shouldReturn40_1) {
     std::string filename = "40_1.jpg";
     testTextReading(filename);
@@ -57,6 +67,31 @@ TEST_F(RoiOcrTest, shouldReturn40_5) {
     testTextReading(filename);
 }
 
+TEST_F(RoiOcrTest, shouldReturn40_6) {
+    std::string filename = "40_6.jpg";
+    testTextReading(filename);
+}
+
+TEST_F(RoiOcrTest, shouldReturn40_7) {
+    std::string filename = "40_7.jpg";
+    testTextReading(filename);
+}
+
+TEST_F(RoiOcrTest, shouldReturn40_8) {
+    std::string filename = "40_8.jpg";
+    testTextReading(filename);
+}
+
+TEST_F(RoiOcrTest, shouldReturn40_9) {
+    std::string filename = "40_9.jpg";
+    testTextReading(filename);
+}
+
+TEST_F(RoiOcrTest, shouldReturn40_10) {
+    std::string filename = "40_10.jpg";
+    testTextReading(filename);
+}
+
 TEST_F(RoiOcrTest, shouldReturn50_1) {
     std::string filename = "50_1.jpg";
     testTextReading(filename);
@@ -69,6 +104,11 @@ TEST_F(RoiOcrTest, shouldReturn60_1) {
 
 TEST_F(RoiOcrTest, shouldReturn60_2) {
     std::string filename = "60_2.jpg";
+    testTextReading(filename);
+}
+
+TEST_F(RoiOcrTest, shouldReturn60_3) {
+    std::string filename = "60_3.jpg";
     testTextReading(filename);
 }
 

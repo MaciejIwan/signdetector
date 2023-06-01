@@ -16,7 +16,7 @@ Ocr::~Ocr() {
     delete ocr;
 }
 
-void Ocr::preprocess(cv::Mat &roi) {
+cv::Mat Ocr::preprocess(cv::Mat roi) {
     double alpha = 1.5; // contrast control, adjust as needed
     int beta = 20; // brightness control, adjust as needed
     cv::Mat result;
@@ -38,18 +38,21 @@ void Ocr::preprocess(cv::Mat &roi) {
 
     cv::erode(roi, roi, getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
     cv::dilate(roi, roi, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
+
+    return roi;
 }
 
 int Ocr::getNumberFromRoi(cv::Mat &roi) {
-    preprocess(roi);
-    ocr->SetImage(roi.data, roi.cols, roi.rows, 1, roi.step);
+    cv::Mat preprocessedRoi = preprocess(roi);
+    ocr->SetImage(preprocessedRoi.data, preprocessedRoi.cols, preprocessedRoi.rows, 1, preprocessedRoi.step);
 
     if (DEBUG_MODE) {
         if (DEBUG_OCR_CONSOLE_LOG)
             std::cout << "OCR: " << ocr->GetUTF8Text() << std::endl;
 
         if (DEBUG_OCR_IMG) {
-            cv::imshow("final ROI", roi);
+            cv::imwrite("output.jpg", roi);
+            cv::imshow("preprocessedRoi ROI", preprocessedRoi);
             cv::waitKey(DEBUG_OCR_IMG_DELAY);
         }
     }
@@ -61,6 +64,7 @@ int Ocr::getNumberFromRoi(cv::Mat &roi) {
     std::regex_match(text, match, re);
     try {
         std::regex_search(text, match, std::regex("\\b\\d+\\b"));
+        std::cout << "match: " << match.str() << std::endl;
         return std::stoi(match.str());
     } catch (...) {
         return 0;
