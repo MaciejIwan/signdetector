@@ -136,7 +136,7 @@ int main(int argc, char** argv)
 }
 
 void changeMode(){
-    isDarkModeOn= !isDarkModeOn;
+    isDarkModeOn =! isDarkModeOn;
     if(isDarkModeOn)
         std::cout<<"Changed to dark mode\n";
     else

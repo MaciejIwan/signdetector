@@ -11,20 +11,13 @@ set(CMAKE_CXX_STANDARD 20)
 project(SIGN_DETECTOR)
 
 find_package(OpenCV 4.0 REQUIRED)
-find_package(Tesseract 4)
-if (NOT Tesseract_FOUND)
-    find_package(PkgConfig REQUIRED)
+find_package(PkgConfig REQUIRED)
 
-    pkg_check_modules(Tesseract REQUIRED IMPORTED_TARGET tesseract lept)
-    add_library(Tesseract::libtesseract ALIAS PkgConfig::Tesseract)
-endif ()
-
+pkg_check_modules(Tesseract REQUIRED IMPORTED_TARGET tesseract lept)
+add_library(Tesseract::libtesseract ALIAS PkgConfig::Tesseract)
 
 set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/qt5/")
 
-
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(MPG123 REQUIRED IMPORTED_TARGET libmpg123)
 
 find_package(Qt5 REQUIRED COMPONENTS
         Widgets
@@ -77,7 +70,6 @@ target_link_libraries(main
         Tesseract::libtesseract
         Qt5::Widgets
         Qt5::Multimedia
-        PkgConfig::MPG123
         )
 
 
@@ -145,9 +137,6 @@ target_link_libraries(tests
         Tesseract::libtesseract
         GTest::gtest_main
         RoadSignDetection
-        PkgConfig::MPG123
-        Qt5::Widgets
-        Qt5::Multimedia
         )
 enable_testing()
 gtest_discover_tests(tests)
