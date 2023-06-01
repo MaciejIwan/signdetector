@@ -47,8 +47,8 @@ add_library(RoadSignDetection
         src/NotificationPlayer.cpp
         src/Ocr.cpp
         src/ShapeRoadSignDetector.cpp
-        src/Util.cpp      
-)
+        src/Util.cpp
+        src/SignDrawer.cpp include/SignDrawer.h)
 target_link_libraries(RoadSignDetection
         Qt5::Multimedia
         Qt5::Widgets

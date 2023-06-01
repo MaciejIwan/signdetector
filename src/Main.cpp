@@ -5,6 +5,7 @@
 #include "../include/IRoadSignDetector.h"
 #include "../include/NotificationPlayer.h"
 #include "../include/ShapeRoadSignDetector.h"
+#include "../include/SignDrawer.h"
 #include "../include/models/SpeedLimitSign.h"
 
 #include <QApplication>
@@ -13,6 +14,8 @@
 #include <QLabel>
 #include <QPixmap>
 #include <QPushButton>
+#include <QPainter>
+#include <QVBoxLayout>
 #include <QWidget>
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
@@ -80,19 +83,16 @@ int main(int argc, char** argv)
     QObject::connect(themeButton, &QPushButton::clicked, &changeMode);
 
 
-    speedLimitLabel->setGeometry(30, 100, 100, 30);
-    QFont font = speedLimitLabel->font();
-    font.setPointSize(28);
-    font.setBold(true);
-    speedLimitLabel->setFont(font);
-    speedLimitLabel->setNum(0);
-
     fpsLabel->setGeometry(30, 150, 100, 30);
-    font = fpsLabel->font();
+    QFont font = fpsLabel->font();
     font.setPointSize(18);
     font.setBold(false);
     fpsLabel->setFont(font);
     fpsLabel->setText("fps: " + QString::number(0));
+
+    QVBoxLayout *layout = new QVBoxLayout(&window);
+    SignDrawer *paintedSign = new SignDrawer(&window);
+    layout->addWidget(paintedSign);
 
     window.setWindowTitle("Sign detector");
     window.setGeometry(400, 400, 600, 600);
@@ -123,7 +123,7 @@ int main(int argc, char** argv)
             QImage((unsigned char*)filtered.data, filtered.cols, filtered.rows, QImage::Format_BGR888));
         label->setPixmap(pixmap);
         fpsLabel->setText("fps: " + QString::number(calcFPS(&prevTickCount)));
-        speedLimitLabel->setNum(sign->getLimit());
+        paintedSign->setSpeedText(QString(sign->getLimit()));
 
         if (sign->getLimit() != 0 && DEBUG_MODE) {
             std::cout << *sign << std::endl;
