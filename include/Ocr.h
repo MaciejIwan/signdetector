@@ -21,5 +21,5 @@ private:
 
     std::string trim(const std::string &s);
 
-    void preprocess(cv::Mat &roi);
+    cv::Mat preprocess(cv::Mat roi);
 };
