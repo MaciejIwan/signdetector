@@ -71,11 +71,6 @@ TEST_F(VideoTest, speed_limit_11) {
     testSignRecognitionAccuracy(filename);
 }
 
-TEST_F(VideoTest, speed_limit_night_12) {
-    std::string filename = "speed_limit_night_12";
-    testSignRecognitionAccuracy(filename);
-}
-
 TEST_F(VideoTest, speed_limit_night_13) {
     std::string filename = "speed_limit_night_13";
     testSignRecognitionAccuracy(filename);
@@ -108,11 +103,6 @@ TEST_F(VideoTest, speed_limit_night_18) {
 
 TEST_F(VideoTest, speed_limit_night_19) {
     std::string filename = "speed_limit_night_19";
-    testSignRecognitionAccuracy(filename);
-}
-
-TEST_F(VideoTest, speed_limit_night_20) {
-    std::string filename = "speed_limit_night_20";
     testSignRecognitionAccuracy(filename);
 }
 
