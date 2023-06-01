@@ -67,7 +67,9 @@ int Ocr::getNumberFromRoi(cv::Mat &roi) {
 
             if (DEBUG_OCR_IMG) {
                 cv::imwrite("output.jpg", roi);
+
                 cv::imshow("preprocessedRoi ROI", preprocessedRoi);
+                cv::imshow("original ROI", preprocessedRoi);
                 cv::waitKey(DEBUG_OCR_IMG_DELAY);
             }
         }        
