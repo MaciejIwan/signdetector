@@ -6,7 +6,6 @@
 #include <opencv2/opencv.hpp>
 
 
-
 ShapeRoadSignDetector::ShapeRoadSignDetector()
         : ocr() {
 }
@@ -85,17 +84,16 @@ void ShapeRoadSignDetector::findSignsBoundingBoxes(const cv::Mat &red_binary_mas
                                                    std::vector<cv::Rect> &boundingBoxes) const {  // Find contours in the masked image
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(red_binary_mask, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
-    // cv::Mat contourPreview = currentFrame.clone();
 
-    // Iterate through each contour and check if it is a circle
     for (const auto &contour: contours) {
         double area = cv::contourArea(contour);
-        if (area > 750) {
+        if (area < 750)
+            continue;
+
+        double contour_similarity = compareContoursToCircle(contour);
+        if (contour_similarity >= MIN_CONTOUR_SIMILARITY) {
             cv::Rect bounding_rect = cv::boundingRect(contour);
-            double contour_similarity = compareContoursToCircle(contour);
-            if (contour_similarity >= MIN_CONTOUR_SIMILARITY) {
-                boundingBoxes.push_back(bounding_rect);
-            }
+            boundingBoxes.push_back(bounding_rect);
         }
     }
 }
