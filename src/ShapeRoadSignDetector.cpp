@@ -1,13 +1,14 @@
 #include "../include/ShapeRoadSignDetector.h"
-#include "../include/Common.h"
-#include "../include/models/SpeedLimitSign.h"
+
 #include <iomanip>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 
+#include "../include/Common.h"
+#include "../include/models/SpeedLimitSign.h"
 
 ShapeRoadSignDetector::ShapeRoadSignDetector()
-        : ocr() {
+    : ocr() {
 }
 
 ShapeRoadSignDetector::~ShapeRoadSignDetector() = default;
@@ -21,9 +22,11 @@ RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
 
     cv::Mat cached_image = image.clone();
     int lastSpeedLimit = 0;
-    for (cv::Rect bounding_rect: boundingBoxes) {
+    for (cv::Rect bounding_rect : boundingBoxes) {
         cv::Mat roi = cached_image(bounding_rect);
-
+        if (DEBUG_OCR_IMG) {
+            cv::imshow("roi", roi);
+        }
         int numberFromRoi = ocr.getNumberFromRoi(roi);
         if (numberFromRoi != 0) {
             lastSpeedLimit = numberFromRoi;
@@ -80,20 +83,46 @@ cv::Mat ShapeRoadSignDetector::extractRedColorFromImage(const cv::Mat &hsvFrame)
     return red_mask;
 }
 
+cv::Rect findMaxSizeBoxInContour(const std::vector<cv::Point> &contour, const cv::Size &imageSize) {
+    // Find the minimum area enclosing rectangle for the contour
+    cv::RotatedRect minRect = cv::minAreaRect(contour);
+
+    // Calculate the width and height of the rectangle
+    float rectWidth = minRect.size.width;
+    float rectHeight = minRect.size.height;
+
+    // Determine the side length of the square region
+    float sideLength = std::min(rectWidth, rectHeight);
+
+    // Calculate the center of the rectangle
+    cv::Point2f center = minRect.center;
+
+    // Calculate the coordinates for the top-left corner of the square region
+    cv::Point2f topLeft(center.x - sideLength / 2, center.y - sideLength / 2);
+
+    // Define the square region using the top-left corner and side length
+    cv::Rect squareRect(topLeft, cv::Size(sideLength, sideLength));
+
+    // Check if the square region is out of the image bounds
+    squareRect &= cv::Rect(cv::Point(), imageSize);
+
+    return squareRect;
+}
+
 void ShapeRoadSignDetector::findSignsBoundingBoxes(const cv::Mat &red_binary_mask,
                                                    std::vector<cv::Rect> &boundingBoxes) const {  // Find contours in the masked image
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(red_binary_mask, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
-    for (const auto &contour: contours) {
+    for (const auto &contour : contours) {
         double area = cv::contourArea(contour);
         if (area < 750)
             continue;
 
         double contour_similarity = compareContoursToCircle(contour);
         if (contour_similarity >= MIN_CONTOUR_SIMILARITY) {
-            cv::Rect bounding_rect = cv::boundingRect(contour);
-            boundingBoxes.push_back(bounding_rect);
+            cv::Rect maxSquareBox = findMaxSizeBoxInContour(contour, red_binary_mask.size());
+            boundingBoxes.push_back(maxSquareBox);
         }
     }
 }
