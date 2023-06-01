@@ -11,7 +11,7 @@ public:
     void paintEvent(QPaintEvent *event) override;
     void setSpeedText(const QString& text);
 private:
-    QString speedLimit;
+    QString speedLimit="0";
 
 };
 

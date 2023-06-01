@@ -11,15 +11,17 @@ void SignDrawer::paintEvent(QPaintEvent *event) {
     painter.setPen(QPen(Qt::black, 2));
 
     // Draw outer circle
-    int outerCircleSize = width() * 0.33;
-    int outerCircleX = (width() - outerCircleSize) / 2;
-    int outerCircleY = (height() - outerCircleSize+200) / 2;
+    int outerCircleSize = 400 * 0.33;
+    int outerCircleX = (400 - outerCircleSize) / 2;
+    int outerCircleY = (600 - outerCircleSize+200) / 2;
     painter.drawEllipse(outerCircleX, outerCircleY, outerCircleSize, outerCircleSize);
 
+    painter.setBrush(Qt::white);
+
     // Draw inner circle
-    int innerCircleSize = width() * 0.25;
-    int innerCircleX = (width() - innerCircleSize) / 2;
-    int innerCircleY = (height() - innerCircleSize+200) / 2;
+    int innerCircleSize = 400 * 0.25;
+    int innerCircleX = (400 - innerCircleSize) / 2;
+    int innerCircleY = (600 - innerCircleSize+200) / 2;
     painter.drawEllipse(innerCircleX, innerCircleY, innerCircleSize, innerCircleSize);
 
     QPainterPath ringPath;

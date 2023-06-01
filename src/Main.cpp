@@ -3,26 +3,16 @@
 #include "../include/Common.h"
 #include "../include/FrameProvider.h"
 #include "../include/IRoadSignDetector.h"
-#include "../include/NotificationPlayer.h"
+#include "../include/App.h"
 #include "../include/ShapeRoadSignDetector.h"
-#include "../include/SignDrawer.h"
 #include "../include/models/SpeedLimitSign.h"
 
-#include <QApplication>
-#include <QAudioOutput>
-#include <QFont>
-#include <QLabel>
-#include <QPixmap>
-#include <QPushButton>
-#include <QPainter>
-#include <QVBoxLayout>
-#include <QWidget>
+
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
+#include <string>
 
 float calcFPS(int64* prevTickCount);
-void changeMode();
-bool isDarkModeOn = true;
 
 cv::Mat gui_filter_image(cv::Mat& raw, bool darkmode)
 {
@@ -62,41 +52,8 @@ int main(int argc, char** argv)
 {
     QApplication app(argc, argv);
 
-    const QString relativePath = "sound/notification_sound.mp3";
-    NotificationPlayer notificationPlayer = NotificationPlayer(
-        QCoreApplication::applicationDirPath() + "/" + relativePath);
-
-    QWidget window;
-    auto* label = new QLabel(&window);
-    label->setGeometry(0, 0, 600, 600);
-
-    auto* speedLimitLabel = new QLabel(&window);
-    auto* fpsLabel = new QLabel(&window);
-
-  	auto *muteButton = new QPushButton("Mute", &window);
-    muteButton->setGeometry(100, 500, 100, 50);
-    QObject::connect(muteButton, &QPushButton::clicked, [&notificationPlayer]() {notificationPlayer.changeVolume();});
-
-
-    auto *themeButton = new QPushButton("Dark mode", &window);
-    themeButton->setGeometry(400, 500, 100, 50);
-    QObject::connect(themeButton, &QPushButton::clicked, &changeMode);
-
-
-    fpsLabel->setGeometry(30, 150, 100, 30);
-    QFont font = fpsLabel->font();
-    font.setPointSize(18);
-    font.setBold(false);
-    fpsLabel->setFont(font);
-    fpsLabel->setText("fps: " + QString::number(0));
-
-    QVBoxLayout *layout = new QVBoxLayout(&window);
-    SignDrawer *paintedSign = new SignDrawer(&window);
-    layout->addWidget(paintedSign);
-
-    window.setWindowTitle("Sign detector");
-    window.setGeometry(400, 400, 600, 600);
-    window.show();
+    App uiApp;
+    uiApp.init();
 
     IRoadSignDetector* detector = new CircularRoadSignDetector();
 
@@ -106,8 +63,8 @@ int main(int argc, char** argv)
 
     FrameProvider frameProvider = FrameProvider(videoFile); // is it checking if file exists?
 
-    detector->setNotificationCallback([&notificationPlayer]() {
-        notificationPlayer.play();
+    detector->setNotificationCallback([&uiApp]() {
+        uiApp.notificationPlayer.play();
     });
     cv::Mat frame, filtered;
     int64 prevTickCount = cv::getTickCount();
@@ -117,13 +74,13 @@ int main(int argc, char** argv)
         frame = frameProvider.getFrame();
         auto* sign = (SpeedLimitSign*)detector->detectRoadSign(frame);
 
-        filtered = gui_filter_image(frame, isDarkModeOn); // false for light mode
+        filtered = gui_filter_image(frame, uiApp.isDarkModeOn); // false for light mode
 
         QPixmap pixmap = QPixmap::fromImage(
             QImage((unsigned char*)filtered.data, filtered.cols, filtered.rows, QImage::Format_BGR888));
-        label->setPixmap(pixmap);
-        fpsLabel->setText("fps: " + QString::number(calcFPS(&prevTickCount)));
-        paintedSign->setSpeedText(QString(sign->getLimit()));
+        uiApp.frame->setPixmap(pixmap);
+        uiApp.fpsLabel->setText("fps: " + QString::number(calcFPS(&prevTickCount)));
+        uiApp.paintedSign->setSpeedText(QString::fromStdString(std::to_string(sign->getLimit())));
 
         if (sign->getLimit() != 0 && DEBUG_MODE) {
             std::cout << *sign << std::endl;
@@ -135,13 +92,6 @@ int main(int argc, char** argv)
     return app.exec();
 }
 
-void changeMode(){
-    isDarkModeOn =! isDarkModeOn;
-    if(isDarkModeOn)
-        std::cout<<"Changed to dark mode\n";
-    else
-        std::cout<<"Changed to light mode\n";
-}
 
 float calcFPS(int64* prevTickCount)
 {
