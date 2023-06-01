@@ -4,7 +4,6 @@
 cmake_minimum_required(VERSION 3.16)
 set(CMAKE_CXX_STANDARD 20)
 
-
 # ========================================
 # Setup project and dependencies
 # ========================================
@@ -18,20 +17,17 @@ add_library(Tesseract::libtesseract ALIAS PkgConfig::Tesseract)
 
 set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/qt5/")
 
-
 find_package(Qt5 REQUIRED COMPONENTS
         Widgets
         Core
         Gui
         Multimedia
-        )
-
+)
 
 include_directories(
         ${OpenCV_INCLUDE_DIRS}
         ${Tesseract_INCLUDE_DIRS}
-        )
-
+)
 
 # ========================================
 # Setup library
@@ -51,67 +47,77 @@ add_library(RoadSignDetection
         include/CircularRoadSignDetector.h
         src/NotificationPlayer.cpp
         include/NotificationPlayer.h
-        include/FrameProvider.h)
+        include/FrameProvider.h
+)
 target_link_libraries(RoadSignDetection
         Qt5::Widgets
         Qt5::Multimedia
-        )
-
+)
 
 # ========================================
 # Setup executable
 # ========================================
 add_executable(main
         src/Main.cpp
-        )
+)
 target_link_libraries(main
         ${OpenCV_LIBS}
         RoadSignDetection
         Tesseract::libtesseract
         Qt5::Widgets
         Qt5::Multimedia
-        )
-
-
+)
 
 # ========================================
 # Setup tools
 # ========================================
-add_executable(colorPicker tools/HsvColorPicker.cpp)
+add_executable(colorPicker 
+        tools/HsvColorPicker.cpp
+)
 target_link_libraries(colorPicker
         ${OpenCV_LIBS}
-        )
+)
 
-add_executable(edges tools/Edges.cpp)
+add_executable(edges 
+        tools/Edges.cpp
+)
 target_link_libraries(edges
         ${OpenCV_LIBS}
-        )
+)
 
-add_executable(desc tools/Desc.cpp)
+add_executable(desc 
+        tools/Desc.cpp)
 target_link_libraries(desc
         ${OpenCV_LIBS}
-        )
+)
 
-add_executable(mask_red tools/MaskRed.cpp)
+add_executable(mask_red 
+        tools/MaskRed.cpp
+)
 target_link_libraries(mask_red
         ${OpenCV_LIBS}
-        )
+)
 
-add_executable(threshold_preview tools/Threshold.cpp)
+add_executable(threshold_preview 
+        tools/Threshold.cpp
+)
 target_link_libraries(threshold_preview
         ${OpenCV_LIBS}
-        )
+)
 
-add_executable(mean_shift tools/MeanShift.cpp)
+add_executable(mean_shift 
+        tools/MeanShift.cpp
+)
 target_link_libraries(mean_shift
         ${OpenCV_LIBS}
-        )
+)
 
-add_executable(video_editor tools/VideoEditor.cpp)
+add_executable(video_editor
+        tools/VideoEditor.cpp
+)
 target_link_libraries(video_editor
         ${OpenCV_LIBS}
-        )
-
+)
 
 # ========================================
 # Setup testing
@@ -124,9 +130,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(googletest)
 include(GoogleTest)
 
-
-add_executable(
-        tests
+add_executable(tests
         tests/utils/VideoTestUtils.cpp
         tests/OcrTest.cpp src/Util.cpp
         tests/VideoTest.cpp
@@ -137,10 +141,10 @@ target_link_libraries(tests
         Tesseract::libtesseract
         GTest::gtest_main
         RoadSignDetection
-        )
+)
+
 enable_testing()
 gtest_discover_tests(tests)
-
 
 # ========================================
 # Copy resources to build directory
