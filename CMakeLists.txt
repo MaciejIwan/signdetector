@@ -18,9 +18,9 @@ add_library(Tesseract::libtesseract ALIAS PkgConfig::Tesseract)
 set(CMAKE_PREFIX_PATH "/usr/lib/x86_64-linux-gnu/cmake/qt5/")
 
 find_package(Qt5 REQUIRED COMPONENTS
+        Core   
+        Gui     
         Widgets
-        Core
-        Gui
         Multimedia
 )
 
@@ -33,25 +33,25 @@ include_directories(
 # Setup library
 # ========================================
 add_library(RoadSignDetection
-        include/models/RoadSign.h
-        include/IRoadSignDetector.h
-        src/ShapeRoadSignDetector.cpp
-        include/ShapeRoadSignDetector.h
-        include/Ocr.h
-        src/Ocr.cpp
-        include/models/SpeedLimitSign.h
-        include/Common.h
         include/CircularBuffer.h
-        src/Util.cpp
-        src/CircularRoadSignDetector.cpp
         include/CircularRoadSignDetector.h
-        src/NotificationPlayer.cpp
-        include/NotificationPlayer.h
+        include/Common.h
         include/FrameProvider.h
+        include/IRoadSignDetector.h
+        include/NotificationPlayer.h
+        include/Ocr.h
+        include/models/RoadSign.h
+        include/models/SpeedLimitSign.h
+        include/ShapeRoadSignDetector.h
+        src/CircularRoadSignDetector.cpp
+        src/NotificationPlayer.cpp
+        src/Ocr.cpp
+        src/ShapeRoadSignDetector.cpp
+        src/Util.cpp      
 )
 target_link_libraries(RoadSignDetection
-        Qt5::Widgets
         Qt5::Multimedia
+        Qt5::Widgets
 )
 
 # ========================================
@@ -64,8 +64,8 @@ target_link_libraries(main
         ${OpenCV_LIBS}
         RoadSignDetection
         Tesseract::libtesseract
-        Qt5::Widgets
         Qt5::Multimedia
+        Qt5::Widgets
 )
 
 # ========================================
@@ -86,7 +86,8 @@ target_link_libraries(edges
 )
 
 add_executable(desc 
-        tools/Desc.cpp)
+        tools/Desc.cpp
+)
 target_link_libraries(desc
         ${OpenCV_LIBS}
 )
@@ -131,16 +132,17 @@ FetchContent_MakeAvailable(googletest)
 include(GoogleTest)
 
 add_executable(tests
-        tests/utils/VideoTestUtils.cpp
-        tests/OcrTest.cpp src/Util.cpp
-        tests/VideoTest.cpp
+        tests/include/utils/VideoTestUtils.h
+        tests/OcrTest.cpp
         tests/RoadSignDetectorTest.cpp
+        tests/VideoTest.cpp
+        tests/utils/VideoTestUtils.cpp
 )
 target_link_libraries(tests
         ${OpenCV_LIBS}
-        Tesseract::libtesseract
         GTest::gtest_main
         RoadSignDetection
+        Tesseract::libtesseract 
 )
 
 enable_testing()
@@ -149,6 +151,6 @@ gtest_discover_tests(tests)
 # ========================================
 # Copy resources to build directory
 # ========================================
-FILE(COPY resources/video DESTINATION ${CMAKE_BINARY_DIR})
 FILE(COPY resources/img DESTINATION ${CMAKE_BINARY_DIR})
 FILE(COPY resources/sound DESTINATION ${CMAKE_BINARY_DIR})
+FILE(COPY resources/video DESTINATION ${CMAKE_BINARY_DIR})
