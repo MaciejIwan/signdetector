@@ -19,7 +19,12 @@ private:
 
     std::string ltrim(const std::string &s);
 
+    int filtrOcrOutput(std::string input);
     std::string trim(const std::string &s);
 
-    cv::Mat preprocess(cv::Mat roi);
+    cv::Mat preprocess1(cv::Mat roi);
+    cv::Mat preprocess2(cv::Mat roi);
+
+    using preprocessFun = std::function<cv::Mat(cv::Mat)>;
+    std::vector<preprocessFun> preprocessVector;
 };
