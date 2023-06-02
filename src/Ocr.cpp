@@ -12,10 +12,11 @@ Ocr::Ocr() : ocr(new tesseract::TessBaseAPI()) {
     ocr->SetVariable("debug_file", "/dev/null");
     ocr->SetPageSegMode(tesseract::PSM_SINGLE_LINE);
 
+    preprocessVector.push_back([this](cv::Mat roi) { return rawPreprocess(roi); });
     preprocessVector.push_back([this](cv::Mat roi) { return adaptiveBrightnessPreprocess(roi); });
     preprocessVector.push_back([this](cv::Mat roi) { return binaryDarkPreprocess(roi); });
     preprocessVector.push_back([this](cv::Mat roi) { return binaryBrightPreprocess(roi); });
-    preprocessVector.push_back([this](cv::Mat roi) { return rawPreprocess(roi); });
+
 }
 
 Ocr::~Ocr() {
