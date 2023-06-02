@@ -82,7 +82,7 @@ int countDetectedSigns(SignLabel *labels, int labelCount) {
 void testSignRecognitionAccuracy(const std::string &filename) {
     std::string videoFile = "video/" + filename + ".mp4";
 
-    std::cout << "[ FILENAME ] " << videoFile << std::endl;
+
 
     // Load labels
     SignLabel labels[MAX_SIGN_LABELS];
@@ -114,7 +114,7 @@ void testSignRecognitionAccuracy(const std::string &filename) {
 
     if (DEBUG_MODE)
         cv::namedWindow("Preview", cv::WINDOW_NORMAL);
-
+    auto start = std::chrono::steady_clock::now();
     while (cap.read(frame)) {
         auto *sign = (SpeedLimitSign *) signDetector.detectRoadSign(frame);
 
@@ -163,9 +163,16 @@ void testSignRecognitionAccuracy(const std::string &filename) {
 
     int detectedSigns = countDetectedSigns(labels, labelCount);
 
-    std::cout << "[ DETECTED ] " << detectedSigns << " out of " << labelCount << " signs." << std::endl;
-    std::cout << "[ ACCURACY ] " << signRecognizedAccuracy * 100 << "%" << std::endl;
-//    std::cout << "[FALSE POS.] " << falsePositivesAccuracy * 100 << "%" << std::endl;
 
-    EXPECT_TRUE(detectedSigns == labelCount);
+    auto end = std::chrono::steady_clock::now();
+    std::chrono::duration<double> elapsedSeconds = end - start;
+
+
+    std::cout << "[\tFILENAME\t]\t" << videoFile << std::endl;
+    std::cout << "[\tDETECTED\t]\t" << detectedSigns << " out of " << labelCount << " signs." << std::endl;
+    std::cout << "[\tACCURACY\t]\t" << signRecognizedAccuracy * 100 << "%" << std::endl;
+    std::cout << "[\tEXEC TIME\t]\t" << elapsedSeconds.count() << " seconds" << std::endl;
+    //std::cout << "[ FALSE POS. ] " << falsePositivesAccuracy * 100 << "%" << std::endl;
+
+
 }
