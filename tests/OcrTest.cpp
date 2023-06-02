@@ -126,3 +126,8 @@ TEST_F(RoiOcrTest, shouldReturn70_3) {
     std::string filename = "70_3.jpg";
     testTextReading(filename);
 }
+
+TEST_F(RoiOcrTest, shouldReturn70_black_4) {
+    std::string filename = "70_black_4.jpg";
+    testTextReading(filename);
+}
