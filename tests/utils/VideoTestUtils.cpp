@@ -174,5 +174,7 @@ void testSignRecognitionAccuracy(const std::string &filename) {
     std::cout << "[\tEXEC TIME\t]\t" << elapsedSeconds.count() << " seconds" << std::endl;
     //std::cout << "[ FALSE POS. ] " << falsePositivesAccuracy * 100 << "%" << std::endl;
 
+    EXPECT_TRUE(detectedSigns == labelCount);
+
 
 }
