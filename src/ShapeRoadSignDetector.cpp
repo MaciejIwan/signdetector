@@ -84,26 +84,13 @@ cv::Mat ShapeRoadSignDetector::extractRedColorFromImage(const cv::Mat &hsvFrame)
 }
 
 cv::Rect findMaxSizeBoxInContour(const std::vector<cv::Point> &contour, const cv::Size &imageSize) {
-    // Find the minimum area enclosing rectangle for the contour
     cv::RotatedRect minRect = cv::minAreaRect(contour);
-
-    // Calculate the width and height of the rectangle
     float rectWidth = minRect.size.width;
     float rectHeight = minRect.size.height;
-
-    // Determine the side length of the square region
     float sideLength = std::min(rectWidth, rectHeight);
-
-    // Calculate the center of the rectangle
     cv::Point2f center = minRect.center;
-
-    // Calculate the coordinates for the top-left corner of the square region
     cv::Point2f topLeft(center.x - sideLength / 2, center.y - sideLength / 2);
-
-    // Define the square region using the top-left corner and side length
     cv::Rect squareRect(topLeft, cv::Size(sideLength, sideLength));
-
-    // Check if the square region is out of the image bounds
     squareRect &= cv::Rect(cv::Point(), imageSize);
 
     return squareRect;

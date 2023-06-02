@@ -12,11 +12,9 @@ Ocr::Ocr() : ocr(new tesseract::TessBaseAPI()) {
     ocr->SetVariable("debug_file", "/dev/null");
     ocr->SetPageSegMode(tesseract::PSM_SINGLE_LINE);
 
-    preprocessVector.push_back([this](cv::Mat roi) { return preprocess1(roi); });
-    preprocessVector.push_back([this](cv::Mat roi) { return preprocess2(roi); });
-    preprocessVector.push_back([this](cv::Mat roi) { return preprocess3(roi); });
-    preprocessVector.push_back([this](cv::Mat roi) { return preprocess4(roi); });
-    preprocessVector.push_back([this](cv::Mat roi) { return preprocess5(roi); });
+    preprocessVector.push_back([this](cv::Mat roi) { return adaptiveBrightnessPreprocess(roi); });
+    preprocessVector.push_back([this](cv::Mat roi) { return binaryDarkPreprocess(roi); });
+    preprocessVector.push_back([this](cv::Mat roi) { return binaryBrightPreprocess(roi); });
 }
 
 Ocr::~Ocr() {
@@ -24,7 +22,7 @@ Ocr::~Ocr() {
     delete ocr;
 }
 
-cv::Mat Ocr::preprocess1(cv::Mat roi) {
+cv::Mat Ocr::adaptiveBrightnessPreprocess(cv::Mat roi) {
     double alpha = 1.5;  // contrast control, adjust as needed
     int beta = 20;       // brightness control, adjust as needed
     cv::Mat result;
@@ -35,8 +33,6 @@ cv::Mat Ocr::preprocess1(cv::Mat roi) {
     cv::bitwise_not(result, result);
 
     cv::adaptiveThreshold(result, result, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 81, 0);
-    // cv::threshold(roi, roi, 0, 255, cv::THRESH_BINARY_INV | cv::THRESH_OTSU);
-    // cv::threshold(roi, roi, 90, 255, cv::THRESH_BINARY_INV);
 
     cv::erode(result, result, getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
     cv::dilate(result, result, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
@@ -44,59 +40,16 @@ cv::Mat Ocr::preprocess1(cv::Mat roi) {
     return result;
 }
 
-cv::Mat Ocr::preprocess2(cv::Mat roi) {
+cv::Mat Ocr::binaryDarkPreprocess(cv::Mat roi) {
     cv::cvtColor(roi, roi, cv::COLOR_BGR2GRAY);
-
-    cv::threshold(roi, roi, 120, 255, cv::THRESH_BINARY);
-
-    // cv::erode(roi, roi, getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
-    // cv::dilate(roi, roi, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
+    cv::threshold(roi, roi, 100, 255, cv::THRESH_BINARY);
 
     return roi;
 }
 
-cv::Mat Ocr::preprocess3(cv::Mat roi) {
+cv::Mat Ocr::binaryBrightPreprocess(cv::Mat roi) {
     cv::cvtColor(roi, roi, cv::COLOR_BGR2GRAY);
-
-    cv::threshold(roi, roi, 90, 255, cv::THRESH_BINARY);
-
-    // cv::erode(roi, roi, getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
-    // cv::dilate(roi, roi, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
-
-    return roi;
-}
-
-cv::Mat Ocr::preprocess4(cv::Mat roi) {
-    cv::cvtColor(roi, roi, cv::COLOR_BGR2GRAY);
-
-    cv::threshold(roi, roi, 150, 255, cv::THRESH_BINARY);
-
-    // cv::erode(roi, roi, getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
-    // cv::dilate(roi, roi, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
-
-    return roi;
-}
-
-cv::Mat Ocr::preprocess5(cv::Mat roi) {
-    cv::cvtColor(roi, roi, cv::COLOR_BGR2GRAY);
-
-    cv::threshold(roi, roi, 150, 255, cv::THRESH_BINARY);
-
-    // cv::erode(roi, roi, getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
-    // cv::dilate(roi, roi, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
-
-    return roi;
-}
-
-// 60 -> 200 ; += 5
-
-cv::Mat Ocr::preprocess6(cv::Mat roi, int thresholdValue) {
-    cv::cvtColor(roi, roi, cv::COLOR_BGR2GRAY);
-
-    cv::threshold(roi, roi, thresholdValue, 255, cv::THRESH_BINARY);
-
-    // cv::erode(roi, roi, getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
-    // cv::dilate(roi, roi, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
+    cv::threshold(roi, roi, 200, 255, cv::THRESH_BINARY);
 
     return roi;
 }
@@ -104,18 +57,17 @@ cv::Mat Ocr::preprocess6(cv::Mat roi, int thresholdValue) {
 int Ocr::getNumberFromRoi(cv::Mat &roi) {
     int value = 0;  // default value
 
-    for (volatile int j = 40; j <= 180; j += 10) {
-    
-        cv::Mat preprocessedRoi = preprocess6(roi, j);        
+    for (const auto &preprocessFunc : preprocessVector) {
+        cv::Mat preprocessedRoi = preprocessFunc(roi);
         ocr->SetImage(preprocessedRoi.data, preprocessedRoi.cols, preprocessedRoi.rows, 1, preprocessedRoi.step);
-        
-        char* text = ocr->GetUTF8Text();
+
+        char *text = ocr->GetUTF8Text();
         std::string stringText(text);
         delete[] text;
-        
+
         if (DEBUG_MODE) {
             if (DEBUG_OCR_CONSOLE_LOG)
-                std::cout << "OCR: " <<  stringText << std::endl;
+                std::cout << "OCR: " << stringText << std::endl;
 
             if (DEBUG_OCR_IMG) {
                 cv::imwrite("output.jpg", roi);
@@ -126,7 +78,7 @@ int Ocr::getNumberFromRoi(cv::Mat &roi) {
 
         try {
             value = filtrOcrOutput(stringText);
-            
+
             if (value % 10 != 0)  // todo maybe use sign whitelist here?
                 continue;
             break;
@@ -134,7 +86,6 @@ int Ocr::getNumberFromRoi(cv::Mat &roi) {
             continue;
         }
     }
-
 
     return value;
 }
