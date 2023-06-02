@@ -11,7 +11,7 @@ App::App() {
     layout = new QVBoxLayout(&window);
     paintedSign = new SignDrawer(&window);
     muteButton = new QPushButton("Mute", &window);
-    themeButton = new QPushButton("Dark mode", &window);
+    themeButton = new QPushButton("Light Mode", &window);
 }
 
 void App::init() {
@@ -29,6 +29,7 @@ void App::init() {
     fpsLabel->setText("fps: " + QString::number(0));
 
     muteButton->setGeometry(30, 500, 150, 80);
+
     QObject::connect(muteButton, &QPushButton::clicked, [this]() {
         App::changeVolume();
     });
@@ -38,6 +39,9 @@ void App::init() {
         App::changeMode();
     });
 
+    themeButton->setStyleSheet("background-color: gray; color: white;");
+    muteButton->setStyleSheet("background-color: gray; color: white;");
+
     window.setWindowTitle("Sign detector");
     window.setGeometry(400, 400, 400, 600);
     window.show();
@@ -45,7 +49,17 @@ void App::init() {
 
 void App::changeMode() {
     isDarkModeOn = !isDarkModeOn;
-    isDarkModeOn ? themeButton->setText("Dark Mode") : themeButton->setText("Light Mode");
+    if(isDarkModeOn){
+        themeButton->setText("Light Mode");
+        themeButton->setStyleSheet("background-color: gray; color: white;");
+        muteButton->setStyleSheet("background-color: gray; color: white;");
+    }
+    else{
+       themeButton->setText("Dark Mode");
+       themeButton->setStyleSheet("background-color: white; color: black;");
+       muteButton->setStyleSheet("background-color: white; color: black;");
+    }
+
 }
 
 void App::changeVolume() {
