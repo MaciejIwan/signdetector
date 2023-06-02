@@ -24,7 +24,7 @@ RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
     int lastSpeedLimit = 0;
     for (cv::Rect bounding_rect : boundingBoxes) {
         cv::Mat roi = cached_image(bounding_rect);
-        if (DEBUG_OCR_IMG) {
+        if (DEBUG_OCR_IMG && DEBUG_MODE) {
             cv::imshow("roi", roi);
         }
         int numberFromRoi = ocr.getNumberFromRoi(roi);

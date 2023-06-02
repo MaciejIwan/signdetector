@@ -2,14 +2,6 @@
 #include <gtest/gtest.h>
 #include <string>
 
-class VideoTest : public ::testing::Test {
-protected:
-    void SetUp() override {
-    }
-
-    void TearDown() override {
-    }
-};
 
 TEST_F(VideoTest, VideoTest_speed_limit_11) {
     std::string filename = "speed_limit_0";
