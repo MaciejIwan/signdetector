@@ -24,6 +24,7 @@ private:
     cv::Mat adaptiveBrightnessPreprocess(cv::Mat roi);
     cv::Mat binaryDarkPreprocess(cv::Mat roi);
     cv::Mat binaryBrightPreprocess(cv::Mat roi);
+    cv::Mat rawPreprocess(cv::Mat roi);
 
     using preprocessFun = std::function<cv::Mat(cv::Mat)>;
     std::vector<preprocessFun> preprocessVector;

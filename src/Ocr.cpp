@@ -15,6 +15,7 @@ Ocr::Ocr() : ocr(new tesseract::TessBaseAPI()) {
     preprocessVector.push_back([this](cv::Mat roi) { return adaptiveBrightnessPreprocess(roi); });
     preprocessVector.push_back([this](cv::Mat roi) { return binaryDarkPreprocess(roi); });
     preprocessVector.push_back([this](cv::Mat roi) { return binaryBrightPreprocess(roi); });
+    preprocessVector.push_back([this](cv::Mat roi) { return rawPreprocess(roi); });
 }
 
 Ocr::~Ocr() {
@@ -54,12 +55,16 @@ cv::Mat Ocr::binaryBrightPreprocess(cv::Mat roi) {
     return roi;
 }
 
+cv::Mat Ocr::rawPreprocess(cv::Mat roi) {
+    return roi;
+}
+
 int Ocr::getNumberFromRoi(cv::Mat &roi) {
     int value = 0;  // default value
 
     for (const auto &preprocessFunc : preprocessVector) {
         cv::Mat preprocessedRoi = preprocessFunc(roi);
-        ocr->SetImage(preprocessedRoi.data, preprocessedRoi.cols, preprocessedRoi.rows, 1, preprocessedRoi.step);
+        ocr->SetImage(preprocessedRoi.data, preprocessedRoi.cols, preprocessedRoi.rows, preprocessedRoi.channels(), preprocessedRoi.step);
 
         char *text = ocr->GetUTF8Text();
         std::string stringText(text);
@@ -113,5 +118,15 @@ std::string Ocr::rtrim(const std::string &s) {
 }
 
 std::string Ocr::trim(const std::string &s) {
-    return rtrim(ltrim(s));
+    std::string trimmedString = rtrim(ltrim(s));
+
+    // Remove whitespace between characters
+    size_t pos = trimmedString.find_first_of(WHITESPACE);
+    while (pos != std::string::npos) {
+        size_t next = trimmedString.find_first_not_of(WHITESPACE, pos);
+        trimmedString.erase(pos, next - pos);
+        pos = trimmedString.find_first_of(WHITESPACE, pos);
+    }
+
+    return trimmedString;
 }
