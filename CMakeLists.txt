@@ -33,6 +33,7 @@ include_directories(
 # Setup library
 # ========================================
 add_library(RoadSignDetection
+        include/App.h
         include/CircularBuffer.h
         include/CircularRoadSignDetector.h
         include/Common.h
@@ -42,14 +43,18 @@ add_library(RoadSignDetection
         include/Ocr.h
         include/models/RoadSign.h
         include/models/SpeedLimitSign.h
+        include/SignDrawer.h
         include/ShapeRoadSignDetector.h
+        src/App.cpp
         src/CircularRoadSignDetector.cpp
         src/NotificationPlayer.cpp
         src/Ocr.cpp
+        src/SignDrawer.cpp
         src/ShapeRoadSignDetector.cpp
         src/Util.cpp
-        src/SignDrawer.cpp include/SignDrawer.h src/App.cpp include/App.h)
+)
 target_link_libraries(RoadSignDetection
+        ${OpenCV_LIBS}
         Qt5::Multimedia
         Qt5::Widgets
 )
