@@ -17,6 +17,6 @@ void NotificationPlayer::play() {
     player->play();
 }
 
-void NotificationPlayer::changeVolume() {
-    player->isMuted() ? player->setVolume(100) : player->setVolume(0);
+void NotificationPlayer::changeVolume(bool isMuted) {
+    player->setMuted(isMuted);
 }

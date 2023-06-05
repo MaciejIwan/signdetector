@@ -23,7 +23,6 @@ public:
     QPushButton *muteButton;
     QPushButton *themeButton;
     QVBoxLayout *layout;
-    QLabel *fpsLabel;
     SignDrawer *paintedSign;
 
     explicit App();
