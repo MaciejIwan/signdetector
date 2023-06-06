@@ -2,7 +2,6 @@
 
 #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
-#include <regex>
 #include <string>
 
 #include "../include/Common.h"
@@ -63,8 +62,7 @@ std::vector<std::function<cv::Mat(cv::Mat)>> &Ocr::getpreprocessVector() {
     return preprocessVector;
 }
 
-int Ocr::getNumberFromRoi(cv::Mat &roi, const std::function<cv::Mat(cv::Mat)>& preprocessFunction) {
-    
+int Ocr::getNumberFromRoi(cv::Mat &roi, const std::function<cv::Mat(cv::Mat)> &preprocessFunction) {
     int value = 0;  // default value
 
     cv::Mat preprocessedRoi = preprocessFunction(roi);
@@ -93,16 +91,9 @@ int Ocr::getNumberFromRoi(cv::Mat &roi, const std::function<cv::Mat(cv::Mat)>& p
     return value;
 }
 
-int Ocr::filtrOcrOutput(std::string input) {
-    std::string text = trim(input);
-
-    std::regex re("[^0-9]?\\d+[^0-9]?");
-    std::smatch match;
-
-    std::regex_match(text, match, re);
-    std::regex_search(text, match, std::regex("\\b\\d+\\b"));
-
-    return std::stoi(match.str());
+int Ocr::filtrOcrOutput(std::string &input) {
+    std::string text = replaceParenthesesWithWhitespace(input);
+    return std::stoi(trim(text));
 }
 
 std::string Ocr::ltrim(const std::string &s) {
@@ -127,4 +118,13 @@ std::string Ocr::trim(const std::string &s) {
     }
 
     return trimmedString;
+}
+
+std::string Ocr::replaceParenthesesWithWhitespace(const std::string &s) {
+    std::string replacedString = s;
+
+    std::replace(replacedString.begin(), replacedString.end(), '(', ' ');
+    std::replace(replacedString.begin(), replacedString.end(), ')', ' ');
+
+    return replacedString;
 }
