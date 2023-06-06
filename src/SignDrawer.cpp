@@ -17,8 +17,6 @@ void SignDrawer::paintEvent(QPaintEvent *event) {
     painter.drawEllipse(outerCircleX, outerCircleY, outerCircleSize, outerCircleSize);
 
     painter.setBrush(Qt::white);
-    if(isDarkMode)
-        painter.setBrush(Qt::lightGray);
 
     // Draw inner circle
     int innerCircleSize = 400 * 0.25;
@@ -32,9 +30,6 @@ void SignDrawer::paintEvent(QPaintEvent *event) {
 
     // Set the fill color and fill the ring path
     painter.setBrush(Qt::red);
-    if(isDarkMode)
-        painter.setBrush(Qt::darkRed);
-
     painter.fillPath(ringPath, painter.brush());
 
     // Draw speed limit text
@@ -42,11 +37,6 @@ void SignDrawer::paintEvent(QPaintEvent *event) {
     painter.setFont(font);
     painter.drawText(innerCircleX, innerCircleY, innerCircleSize, innerCircleSize, Qt::AlignCenter, speedLimit);
 
-}
-
-void SignDrawer::setThemeMode(bool theme){
-    isDarkMode = theme;
-    update();
 }
 
 void SignDrawer::setSpeedText(const QString &text) {

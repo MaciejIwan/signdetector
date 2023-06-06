@@ -7,6 +7,7 @@ App::App() {
     notificationPlayer = NotificationPlayer(
             QCoreApplication::applicationDirPath() + "/" + relativePath);
     frame = new QLabel(&window);
+    fpsLabel = new QLabel(&window);
     layout = new QVBoxLayout(&window);
     paintedSign = new SignDrawer(&window);
     muteButton = new QPushButton("Mute", &window);
@@ -14,11 +15,18 @@ App::App() {
 }
 
 void App::init() {
-    window.setFixedSize(400, 600);
 
     frame->setGeometry(0, 0, 600, 600);
 
     layout->addWidget(paintedSign);
+
+    fpsLabel->setGeometry(30, 150, 100, 30);
+
+    QFont font = fpsLabel->font();
+    font.setPointSize(18);
+    font.setBold(false);
+    fpsLabel->setFont(font);
+    fpsLabel->setText("fps: " + QString::number(0));
 
     muteButton->setGeometry(30, 500, 150, 80);
 
@@ -41,20 +49,21 @@ void App::init() {
 
 void App::changeMode() {
     isDarkModeOn = !isDarkModeOn;
-    if (isDarkModeOn) {
+    if(isDarkModeOn){
         themeButton->setText("Light Mode");
         themeButton->setStyleSheet("background-color: gray; color: white;");
         muteButton->setStyleSheet("background-color: gray; color: white;");
-    } else {
-        themeButton->setText("Dark Mode");
-        themeButton->setStyleSheet("background-color: white; color: black;");
-        muteButton->setStyleSheet("background-color: white; color: black;");
     }
-    paintedSign->setThemeMode(isDarkModeOn);
+    else{
+       themeButton->setText("Dark Mode");
+       themeButton->setStyleSheet("background-color: white; color: black;");
+       muteButton->setStyleSheet("background-color: white; color: black;");
+    }
+
 }
 
 void App::changeVolume() {
+    notificationPlayer.changeVolume();
     isMuted = !isMuted;
-    notificationPlayer.changeVolume(isMuted);
     isMuted ? muteButton->setText("Unmute") : muteButton->setText("Mute");
 }
