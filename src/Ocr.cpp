@@ -2,7 +2,6 @@
 
 #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
-#include <regex>
 #include <string>
 
 #include "../include/Common.h"
@@ -16,7 +15,6 @@ Ocr::Ocr() : ocr(new tesseract::TessBaseAPI()) {
     preprocessVector.push_back([this](cv::Mat roi) { return adaptiveBrightnessPreprocess(roi); });
     preprocessVector.push_back([this](cv::Mat roi) { return binaryDarkPreprocess(roi); });
     preprocessVector.push_back([this](cv::Mat roi) { return binaryBrightPreprocess(roi); });
-
 }
 
 Ocr::~Ocr() {
@@ -60,52 +58,42 @@ cv::Mat Ocr::rawPreprocess(cv::Mat roi) {
     return roi;
 }
 
-int Ocr::getNumberFromRoi(cv::Mat &roi) {
+std::vector<std::function<cv::Mat(cv::Mat)>> &Ocr::getpreprocessVector() {
+    return preprocessVector;
+}
+
+int Ocr::getNumberFromRoi(cv::Mat &roi, const std::function<cv::Mat(cv::Mat)> &preprocessFunction) {
     int value = 0;  // default value
 
-    for (const auto &preprocessFunc : preprocessVector) {
-        cv::Mat preprocessedRoi = preprocessFunc(roi);
-        ocr->SetImage(preprocessedRoi.data, preprocessedRoi.cols, preprocessedRoi.rows, preprocessedRoi.channels(), preprocessedRoi.step);
+    cv::Mat preprocessedRoi = preprocessFunction(roi);
+    ocr->SetImage(preprocessedRoi.data, preprocessedRoi.cols, preprocessedRoi.rows, preprocessedRoi.channels(), preprocessedRoi.step);
 
-        char *text = ocr->GetUTF8Text();
-        std::string stringText(text);
-        delete[] text;
+    char *text = ocr->GetUTF8Text();
+    std::string stringText(text);
+    delete[] text;
 
-        if (DEBUG_MODE) {
-            if (DEBUG_OCR_CONSOLE_LOG)
-                std::cout << "OCR: " << stringText << std::endl;
+    if (DEBUG_MODE) {
+        if (DEBUG_OCR_CONSOLE_LOG)
+            std::cout << "OCR: " << stringText << std::endl;
 
-            if (DEBUG_OCR_IMG) {
-                cv::imwrite("output.jpg", roi);
-                cv::imshow("preprocessedRoi ROI", preprocessedRoi);
-                cv::waitKey(DEBUG_OCR_IMG_DELAY);
-            }
-        }
-
-        try {
-            value = filtrOcrOutput(stringText);
-
-            if (value % 10 != 0)  // todo maybe use sign whitelist here?
-                continue;
-            break;
-        } catch (...) {
-            continue;
+        if (DEBUG_OCR_IMG) {
+            cv::imwrite("output.jpg", roi);
+            cv::imshow("preprocessedRoi ROI", preprocessedRoi);
+            cv::waitKey(DEBUG_OCR_IMG_DELAY);
         }
     }
 
+    try {
+        value = filtrOcrOutput(stringText);
+    } catch (...) {
+        return 0;
+    }
     return value;
 }
 
-int Ocr::filtrOcrOutput(std::string input) {
-    std::string text = trim(input);
-
-    std::regex re("[^0-9]?\\d+[^0-9]?");
-    std::smatch match;
-
-    std::regex_match(text, match, re);
-    std::regex_search(text, match, std::regex("\\b\\d+\\b"));
-
-    return std::stoi(match.str());
+int Ocr::filtrOcrOutput(std::string &input) {
+    std::string text = replaceParenthesesWithWhitespace(input);
+    return std::stoi(trim(text));
 }
 
 std::string Ocr::ltrim(const std::string &s) {
@@ -130,4 +118,13 @@ std::string Ocr::trim(const std::string &s) {
     }
 
     return trimmedString;
+}
+
+std::string Ocr::replaceParenthesesWithWhitespace(const std::string &s) {
+    std::string replacedString = s;
+
+    std::replace(replacedString.begin(), replacedString.end(), '(', ' ');
+    std::replace(replacedString.begin(), replacedString.end(), ')', ' ');
+
+    return replacedString;
 }
