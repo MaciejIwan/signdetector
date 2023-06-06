@@ -14,6 +14,7 @@ ShapeRoadSignDetector::ShapeRoadSignDetector()
 ShapeRoadSignDetector::~ShapeRoadSignDetector() = default;
 
 RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
+    SpeedLimitSign speedLimitSign(0);
     cv::Mat red_binary_mask;
     preprocess(image, red_binary_mask);
 
@@ -27,14 +28,19 @@ RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
         if (DEBUG_OCR_IMG && DEBUG_MODE) {
             cv::imshow("roi", roi);
         }
-        int numberFromRoi = ocr.getNumberFromRoi(roi);
-        if (numberFromRoi != 0) {
-            lastSpeedLimit = numberFromRoi;
+
+        for (const auto &preprocessFunction : ocr.getpreprocessVector()) {
+            speedLimitSign = SpeedLimitSign(ocr.getNumberFromRoi(roi, preprocessFunction));
+            if (speedLimitSign.getLimit() == SpeedLimitSign::DEFAULT_SPEED_LIMIT) {
+                continue;
+            } else {
+                break;
+            }
         }
         cv::rectangle(image, bounding_rect, cv::Scalar(0, 255, 0), 2);
     }
 
-    return new SpeedLimitSign(lastSpeedLimit);
+    return new SpeedLimitSign(speedLimitSign);
 }
 
 void ShapeRoadSignDetector::blurImage(cv::Mat &image, int size) {

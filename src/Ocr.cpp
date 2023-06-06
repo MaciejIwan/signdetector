@@ -16,7 +16,6 @@ Ocr::Ocr() : ocr(new tesseract::TessBaseAPI()) {
     preprocessVector.push_back([this](cv::Mat roi) { return adaptiveBrightnessPreprocess(roi); });
     preprocessVector.push_back([this](cv::Mat roi) { return binaryDarkPreprocess(roi); });
     preprocessVector.push_back([this](cv::Mat roi) { return binaryBrightPreprocess(roi); });
-
 }
 
 Ocr::~Ocr() {
@@ -60,39 +59,37 @@ cv::Mat Ocr::rawPreprocess(cv::Mat roi) {
     return roi;
 }
 
-int Ocr::getNumberFromRoi(cv::Mat &roi) {
+std::vector<std::function<cv::Mat(cv::Mat)>> &Ocr::getpreprocessVector() {
+    return preprocessVector;
+}
+
+int Ocr::getNumberFromRoi(cv::Mat &roi, std::function<cv::Mat(cv::Mat)> preprocessFunction) {
+    
     int value = 0;  // default value
 
-    for (const auto &preprocessFunc : preprocessVector) {
-        cv::Mat preprocessedRoi = preprocessFunc(roi);
-        ocr->SetImage(preprocessedRoi.data, preprocessedRoi.cols, preprocessedRoi.rows, preprocessedRoi.channels(), preprocessedRoi.step);
+    cv::Mat preprocessedRoi = preprocessFunction(roi);
+    ocr->SetImage(preprocessedRoi.data, preprocessedRoi.cols, preprocessedRoi.rows, preprocessedRoi.channels(), preprocessedRoi.step);
 
-        char *text = ocr->GetUTF8Text();
-        std::string stringText(text);
-        delete[] text;
+    char *text = ocr->GetUTF8Text();
+    std::string stringText(text);
+    delete[] text;
 
-        if (DEBUG_MODE) {
-            if (DEBUG_OCR_CONSOLE_LOG)
-                std::cout << "OCR: " << stringText << std::endl;
+    if (DEBUG_MODE) {
+        if (DEBUG_OCR_CONSOLE_LOG)
+            std::cout << "OCR: " << stringText << std::endl;
 
-            if (DEBUG_OCR_IMG) {
-                cv::imwrite("output.jpg", roi);
-                cv::imshow("preprocessedRoi ROI", preprocessedRoi);
-                cv::waitKey(DEBUG_OCR_IMG_DELAY);
-            }
-        }
-
-        try {
-            value = filtrOcrOutput(stringText);
-
-            if (value % 10 != 0)  // todo maybe use sign whitelist here?
-                continue;
-            break;
-        } catch (...) {
-            continue;
+        if (DEBUG_OCR_IMG) {
+            cv::imwrite("output.jpg", roi);
+            cv::imshow("preprocessedRoi ROI", preprocessedRoi);
+            cv::waitKey(DEBUG_OCR_IMG_DELAY);
         }
     }
 
+    try {
+        value = filtrOcrOutput(stringText);
+    } catch (...) {
+        return 0;
+    }
     return value;
 }
 

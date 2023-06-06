@@ -12,7 +12,7 @@ public:
 
         //when
         cv::Mat image = cv::imread("../resources/img/signs/" + filename);
-        int actualSpeedLimit = ocr.getNumberFromRoi(image);
+        int actualSpeedLimit = ocr.getNumberFromRoi(image, ocr.getpreprocessVector()[0]);
 
         // then
         ASSERT_EQ(expectedSpeedLimit, actualSpeedLimit);

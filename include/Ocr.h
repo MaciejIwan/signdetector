@@ -9,7 +9,8 @@ public:
 
     ~Ocr();
 
-    int getNumberFromRoi(cv::Mat &roi);
+    int getNumberFromRoi(cv::Mat &roi, std::function<cv::Mat(cv::Mat)> preprocessFunction);
+    std::vector<std::function<cv::Mat(cv::Mat)>>& getpreprocessVector();
 
 private:
     const std::string WHITESPACE = " \n\r\t\f\v";
@@ -26,6 +27,5 @@ private:
     cv::Mat binaryBrightPreprocess(cv::Mat roi);
     cv::Mat rawPreprocess(cv::Mat roi);
 
-    using preprocessFun = std::function<cv::Mat(cv::Mat)>;
-    std::vector<preprocessFun> preprocessVector;
+    std::vector<std::function<cv::Mat(cv::Mat)>> preprocessVector;
 };
