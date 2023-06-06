@@ -16,6 +16,7 @@ class App {
 public:
     bool isDarkModeOn;
     bool isMuted;
+    bool isClosed;
     NotificationPlayer notificationPlayer = NotificationPlayer(QString());
     QString relativePath;
     QWidget window;
@@ -23,7 +24,6 @@ public:
     QPushButton *muteButton;
     QPushButton *themeButton;
     QVBoxLayout *layout;
-    QLabel *fpsLabel;
     SignDrawer *paintedSign;
 
     explicit App();

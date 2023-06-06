@@ -69,7 +69,8 @@ int main(int argc, char** argv)
     cv::Mat frame, filtered;
     int64 prevTickCount = cv::getTickCount();
 
-    while (true) {
+
+    while (!uiApp.isClosed) {
 
         frame = frameProvider.getFrame();
         auto* sign = (SpeedLimitSign*)detector->detectRoadSign(frame);
@@ -77,9 +78,8 @@ int main(int argc, char** argv)
         filtered = gui_filter_image(frame, uiApp.isDarkModeOn); // false for light mode
 
         QPixmap pixmap = QPixmap::fromImage(
-            QImage((unsigned char*)filtered.data, filtered.cols, filtered.rows, QImage::Format_BGR888));
+            QImage((unsigned char*)filtered.data, filtered.cols, filtered.rows, QImage::Format_RGB888)); //QImage::Format_BGR888
         uiApp.frame->setPixmap(pixmap);
-        uiApp.fpsLabel->setText("fps: " + QString::number(calcFPS(&prevTickCount)));
         uiApp.paintedSign->setSpeedText(QString::fromStdString(std::to_string(sign->getLimit())));
 
         if (sign->getLimit() != 0 && DEBUG_MODE) {
