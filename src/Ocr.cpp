@@ -63,7 +63,7 @@ std::vector<std::function<cv::Mat(cv::Mat)>> &Ocr::getpreprocessVector() {
     return preprocessVector;
 }
 
-int Ocr::getNumberFromRoi(cv::Mat &roi, std::function<cv::Mat(cv::Mat)> preprocessFunction) {
+int Ocr::getNumberFromRoi(cv::Mat &roi, const std::function<cv::Mat(cv::Mat)>& preprocessFunction) {
     
     int value = 0;  // default value
 

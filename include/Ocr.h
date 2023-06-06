@@ -9,7 +9,7 @@ public:
 
     ~Ocr();
 
-    int getNumberFromRoi(cv::Mat &roi, std::function<cv::Mat(cv::Mat)> preprocessFunction);
+    int getNumberFromRoi(cv::Mat &roi, const std::function<cv::Mat(cv::Mat)>& preprocessFunction);
     std::vector<std::function<cv::Mat(cv::Mat)>>& getpreprocessVector();
 
 private:
