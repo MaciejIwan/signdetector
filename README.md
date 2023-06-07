@@ -55,7 +55,7 @@ for file in *.mp4; do ffmpeg -i "$file" -vf scale=-2:720 "../${file%.*}_720p.mp4
 
 
 # Run video using ffplay
-# Useful for checking the frame number when the sign is visible.
+# Useful for checking the frameLabel number when the sign is visible.
 # To stop the video, press the spacebar.
 ffplay -loop 0 speed_limit_night_12.mp4 -vf "drawtext=fontfile=Arial.ttf: \
 text=%{n}: x=(w-tw)/2: y=h-(2*lh): \
