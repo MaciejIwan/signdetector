@@ -33,7 +33,7 @@ void VideoTest::testSignRecognitionAccuracy(const std::string& filename) {
         int currentFrameNumber = cap.get(cv::CAP_PROP_POS_FRAMES);
         bool frameCounted = false;
 
-        // Current frameLabel should contain the sign
+        // Current framePreviewLabel should contain the sign
         for (int i = 0; i < labelCount; i++) {
             if (currentFrameNumber >= labels[i].frameStart && currentFrameNumber <= labels[i].frameEnd) {
                 if (sign->getLimit() == labels[i].speedSignValue) {
@@ -48,7 +48,7 @@ void VideoTest::testSignRecognitionAccuracy(const std::string& filename) {
         }
 
         if (!frameCounted) {
-            // Current frameLabel should not contain any sign
+            // Current framePreviewLabel should not contain any sign
             if (sign->getLimit() == 0) {
                 framesWithoutSignCorrectlyRecognized++;
             } else {

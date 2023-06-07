@@ -30,7 +30,7 @@ public:
     NotificationPlayer notificationPlayer = NotificationPlayer(QString());
     QString relativePath;
     QWidget window;
-    QLabel *frameLabel;
+    QLabel *framePreviewLabel;
     QPushButton *muteButton;
     QPushButton *themeButton;
     QVBoxLayout *layout;
@@ -45,6 +45,8 @@ public:
     cv::Mat gui_filter_image(cv::Mat &raw);
 
 private:
+    int windowWidth = 1280;
+    int windowHeight = 720;
     IRoadSignDetector* detector;
     FrameProvider* frameProvider;
 };

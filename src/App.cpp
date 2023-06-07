@@ -5,7 +5,7 @@
 #include "../include/App.h"
 
 
-App::App(int &argc, char **argv, FrameProvider* frameProvider, IRoadSignDetector* detector) : QApplication(argc, argv) {
+App::App(int &argc, char **argv, FrameProvider *frameProvider, IRoadSignDetector *detector) : QApplication(argc, argv) {
     this->frameProvider = frameProvider;
     this->detector = detector;
     viewMode = ViewMode::NORMAL;
@@ -14,28 +14,33 @@ App::App(int &argc, char **argv, FrameProvider* frameProvider, IRoadSignDetector
     relativePath = "sound/notification_sound.mp3";
     notificationPlayer = NotificationPlayer(
             QCoreApplication::applicationDirPath() + "/" + relativePath);
-    frameLabel = new QLabel(&window);
+    framePreviewLabel = new QLabel(&window);
     layout = new QVBoxLayout(&window);
     paintedSignDrawer = new SignDrawer(&window);
     muteButton = new QPushButton("Mute", &window);
-    themeButton = new QPushButton("Light Mode", &window);
+    themeButton = new QPushButton("Switch Mode", &window);
     init();
 }
 
-App * App::init() {
-    window.setFixedSize(400, 600);
+App *App::init() {
+    int buttonWidth = 150;
+    int buttonHeight = 80;
+    int buttonSpace = 30;
+    int buttonY = windowHeight - buttonHeight - buttonSpace;
 
-    frameLabel->setGeometry(0, 0, 600, 600);
+    window.setFixedSize(windowWidth, windowHeight);
+
+    framePreviewLabel->setGeometry(0, 0, windowWidth, windowHeight);
 
     layout->addWidget(paintedSignDrawer);
 
-    muteButton->setGeometry(30, 500, 150, 80);
+    muteButton->setGeometry((windowWidth / 2) - buttonWidth - buttonSpace, buttonY, buttonWidth, buttonHeight);
 
     QObject::connect(muteButton, &QPushButton::clicked, [this]() {
         App::changeVolume();
     });
 
-    themeButton->setGeometry(220, 500, 150, 80);
+    themeButton->setGeometry((windowWidth / 2) + buttonSpace, buttonY, buttonWidth, buttonHeight);
     QObject::connect(themeButton, &QPushButton::clicked, [this]() {
         App::changeMode();
     });
@@ -44,11 +49,11 @@ App * App::init() {
     muteButton->setStyleSheet("background-color: gray; color: white;");
 
     window.setWindowTitle("Sign detector");
-    window.setGeometry(400, 400, 400, 600);
+    window.setGeometry(400, 400, windowWidth, windowHeight);
     window.show();
 
-    QObject::connect(&window, &QWidget::destroyed, [this](){
-        isClosed=true;
+    QObject::connect(&window, &QWidget::destroyed, [this]() {
+        isClosed = true;
     });
 
     detector->setNotificationCallback([&]() {
@@ -59,15 +64,18 @@ App * App::init() {
 }
 
 void App::changeMode() {
-    if(viewMode == DARK){
-        themeButton->setText("Light Mode");
+    if (viewMode == DARK) {
         themeButton->setStyleSheet("background-color: gray; color: white;");
         muteButton->setStyleSheet("background-color: gray; color: white;");
-    }
-    else{
-       themeButton->setText("Dark Mode");
-       themeButton->setStyleSheet("background-color: white; color: black;");
-       muteButton->setStyleSheet("background-color: white; color: black;");
+        viewMode = ViewMode::LIGHT;
+    } else if (viewMode == LIGHT) {
+        themeButton->setStyleSheet("background-color: white; color: black;");
+        muteButton->setStyleSheet("background-color: white; color: black;");
+        viewMode = ViewMode::NORMAL;
+    } else if (viewMode == NORMAL) {
+        themeButton->setStyleSheet("background-color: white; color: black;");
+        muteButton->setStyleSheet("background-color: white; color: black;");
+        viewMode = ViewMode::DARK;
     }
 
     paintedSignDrawer->setThemeMode(viewMode == ViewMode::DARK);
@@ -80,28 +88,32 @@ void App::changeVolume() {
 }
 
 
-float calcFPS(int64* prevTickCount)
-{
+float calcFPS(int64 *prevTickCount) {
     int64 curTickCount = cv::getTickCount();
-    double timeElapsed = (double)(curTickCount - *prevTickCount) / cv::getTickFrequency();
+    double timeElapsed = (double) (curTickCount - *prevTickCount) / cv::getTickFrequency();
     *prevTickCount = curTickCount;
     return 1 / timeElapsed;
 }
 
-cv::Mat App::gui_filter_image(cv::Mat& raw)
-{
-    if(viewMode == ViewMode::NORMAL)
-        return raw;
+cv::Mat App::gui_filter_image(cv::Mat &raw) {
+    cv::Mat output, grayscale;
+
+    if (viewMode == ViewMode::NORMAL) {
+        output = raw.clone();
+        cv::resize(output, output, cv::Size(windowWidth, windowHeight));
+        cv::cvtColor(output, output, cv::COLOR_BGR2RGB);
+        return output;
+    }
+
 
     int ksize = 3;
     int ksize_blur = 5;
     int delta = 1;
     int ddepth = CV_16S;
 
-    cv::Mat output, grayscale;
-
     cv::GaussianBlur(raw, output, cv::Size(ksize_blur, ksize_blur), 0);
     cv::cvtColor(output, output, cv::COLOR_BGR2GRAY);
+    cv::resize(output, output, cv::Size(windowWidth, windowHeight));
 
     cv::Mat grad_x, grad_y, grad;
     cv::Mat abs_grad_x, abs_grad_y;
@@ -128,16 +140,17 @@ int App::exec() {
     while (!isClosed) {
 
         frameImg = frameProvider->getFrame();
-        if(DEBUG_MODE)
+        if (DEBUG_MODE)
             cv::imshow("Raw", frameImg);
 
-        auto* sign = (SpeedLimitSign*)detector->detectRoadSign(frameImg);
+        auto *sign = (SpeedLimitSign *) detector->detectRoadSign(frameImg);
 
         filtered = gui_filter_image(frameImg); // false for light mode
 
         QPixmap pixmap = QPixmap::fromImage(
-                QImage((unsigned char*)filtered.data, filtered.cols, filtered.rows, QImage::Format_RGB888)); //QImage::Format_BGR888
-        frameLabel->setPixmap(pixmap);
+                QImage((unsigned char *) filtered.data, filtered.cols, filtered.rows,
+                       QImage::Format_RGB888)); //QImage::Format_BGR888
+        framePreviewLabel->setPixmap(pixmap);
         paintedSignDrawer->setSpeedText(QString::fromStdString(std::to_string(sign->getLimit())));
 
         if (sign->getLimit() != 0 && DEBUG_MODE) {
@@ -150,7 +163,7 @@ int App::exec() {
 }
 
 App::~App() {
-    delete frameLabel;
+    delete framePreviewLabel;
     delete muteButton;
     delete themeButton;
     delete layout;
