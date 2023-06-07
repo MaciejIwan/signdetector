@@ -14,6 +14,7 @@ public:
         notificationCallback = callback;
     }
 
+    virtual ~IRoadSignDetector() {};
 
 
 protected:
