@@ -22,6 +22,8 @@ FrameProvider::FrameProvider(const FrameProviderConfig &config)
 
         cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
         cap.set(cv::CAP_PROP_FPS, config.frameRate);
+
+        flipImage = true;
     }
 
     readThread = std::thread(&FrameProvider::readFrames, this);
@@ -40,7 +42,8 @@ cv::Mat FrameProvider::getFrame() {
     semaphore.release();
 
     // flip image 180 degrees
-    cv::flip(frame, frame, -1);
+    if(flipImage)
+        cv::flip(frame, frame, -1);
     return frame;
 }
 
