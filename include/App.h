@@ -16,7 +16,8 @@
 enum ViewMode {
     DARK,
     LIGHT,
-    NORMAL
+    NORMAL,
+    SIMPLE_DARK
 };
 class App : QApplication {
 public:

@@ -45,9 +45,6 @@ App *App::init() {
         App::changeMode();
     });
 
-    themeButton->setStyleSheet("background-color: gray; color: white;");
-    muteButton->setStyleSheet("background-color: gray; color: white;");
-
     window.setWindowTitle("Sign detector");
     window.setGeometry(400, 400, windowWidth, windowHeight);
     window.show();
@@ -64,12 +61,18 @@ App *App::init() {
 }
 
 void App::changeMode() {
-    paintedSignDrawer->setThemeMode(viewMode == ViewMode::DARK);
     if (viewMode == DARK) {
+        paintedSignDrawer->setThemeMode(true);
+        themeButton->setStyleSheet("background-color: gray; color: white;");
+        muteButton->setStyleSheet("background-color: gray; color: white;");
+        viewMode = ViewMode::SIMPLE_DARK;
+    } else if (viewMode == SIMPLE_DARK) {
+        paintedSignDrawer->setThemeMode(true);
         themeButton->setStyleSheet("background-color: gray; color: white;");
         muteButton->setStyleSheet("background-color: gray; color: white;");
         viewMode = ViewMode::LIGHT;
     } else if (viewMode == LIGHT) {
+        paintedSignDrawer->setThemeMode(false);
         themeButton->setStyleSheet("background-color: white; color: black;");
         muteButton->setStyleSheet("background-color: white; color: black;");
         viewMode = ViewMode::NORMAL;
@@ -78,8 +81,6 @@ void App::changeMode() {
         muteButton->setStyleSheet("background-color: white; color: black;");
         viewMode = ViewMode::DARK;
     }
-
-
 }
 
 void App::changeVolume() {
@@ -156,7 +157,14 @@ int App::exec() {
         QPixmap pixmap = QPixmap::fromImage(
                 QImage((unsigned char *) filtered.data, filtered.cols, filtered.rows,
                        QImage::Format_RGB888)); //QImage::Format_BGR888
+
         framePreviewLabel->setPixmap(pixmap);
+
+        if (viewMode == SIMPLE_DARK){
+            pixmap.fill(Qt::darkGray);
+            framePreviewLabel->setPixmap(pixmap);
+        }
+
         paintedSignDrawer->setSpeedText(QString::fromStdString(std::to_string(sign->getLimit())));
 
         if (sign->getLimit() != 0 && DEBUG_MODE) {
