@@ -44,8 +44,8 @@ make
 ```sh
 ./main [options]
 # f.e ./main -h 720 -w 1280 -t camera -s 2
+# f.e -s video/valgrind.mp4 -t video -b 1
 ```
-
 - -s <source>: filename or camera id. Default is "video/speed_limit_seqence_1.mp4".
 - t <sourceType>: put "camera" or "video". Default is "video".
 - -b <bufferSize>: number of frames stored in the buffer. The default buffer size is 1.

@@ -5,10 +5,10 @@
 
 void parseArgs(int argc, char **argv, FrameProviderConfig *config);
 
-//-h 1080 -w 1920 -t camera -s 2
+// -h 1080 -w 1920 -t camera -s 0 -b 1
 int main(int argc, char **argv) {
     FrameProviderConfig config = {
-            1,
+            3,
             FrameSourceType::VideoFile,
             "video/speed_limit_seqence_1.mp4",
             1280,
@@ -24,7 +24,6 @@ int main(int argc, char **argv) {
     App uiApp(argc, argv, frameProvider, detector);
 
     int status = uiApp.exec();
-
     delete frameProvider;
     delete detector;
 

@@ -32,6 +32,7 @@ public:
 private:
     void readFrames();
     bool flipImage = false;
+    bool videoFinished = false;
     std::atomic<bool> stopFlag;
     CircularBuffer<cv::Mat> frameBuffer;
     std::mutex bufferMutex;

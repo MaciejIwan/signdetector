@@ -31,17 +31,27 @@ FrameProvider::FrameProvider(const FrameProviderConfig &config)
 
 FrameProvider::~FrameProvider() {
     stopFlag = true;
-    readThread.detach();
+
+    //semaphore.release();
+    frameBufferNotEmpty.notify_one();
+
+    if (readThread.joinable()) {
+        readThread.join();
+    }
+
+    cap.release();
+    std::cout << "FrameProvider deleted" << std::endl;
 }
 
 cv::Mat FrameProvider::getFrame() {
+    if(videoFinished) //todo it should check if buffer is empty
+        throw std::exception();
     std::unique_lock<std::mutex> lock(bufferMutex);
     frameBufferNotEmpty.wait(lock, [this] { return !frameBuffer.isEmpty(); });
 
     cv::Mat frame = frameBuffer.pop();
     semaphore.release();
 
-    // flip image 180 degrees
     if(flipImage)
         cv::flip(frame, frame, -1);
     return frame;
@@ -49,17 +59,23 @@ cv::Mat FrameProvider::getFrame() {
 
 void FrameProvider::readFrames() {
     while (!stopFlag) {
-
         cv::Mat frame;
         if (!cap.read(frame)) {
+            videoFinished = true;
             break;
         }
+
         semaphore.acquire();
+        if(stopFlag){
+            break;
+        }
 
         bufferMutex.lock();
         frameBuffer.push(frame);
         bufferMutex.unlock();
 
         frameBufferNotEmpty.notify_one();
+
+
     }
 }

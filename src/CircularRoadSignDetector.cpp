@@ -30,7 +30,8 @@ RoadSign *CircularRoadSignDetector::detectRoadSign(cv::Mat &image) {
 
 CircularRoadSignDetector::~CircularRoadSignDetector() {
     std::cout << "CircularRoadSignDetector destructor" << std::endl;
-    roadSignDetectorEngine->~IRoadSignDetector();
+    //roadSignDetectorEngine->~IRoadSignDetector();
+    delete roadSignDetectorEngine;
     delete lastSeenSign;
 }
 

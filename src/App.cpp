@@ -139,7 +139,12 @@ int App::exec() {
 
     while (!isClosed) {
 
-        frameImg = frameProvider->getFrame();
+        try {
+            frameImg = frameProvider->getFrame();
+        } catch (std::exception &e) {
+            break;
+        }
+
         if (DEBUG_MODE)
             cv::imshow("Raw", frameImg);
 
