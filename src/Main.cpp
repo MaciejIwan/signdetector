@@ -4,6 +4,7 @@
 #include <iostream>
 
 void parseArgs(int argc, char **argv, FrameProviderConfig *config);
+
 //-h 1080 -w 1920 -t camera -s 2
 int main(int argc, char **argv) {
     FrameProviderConfig config = {

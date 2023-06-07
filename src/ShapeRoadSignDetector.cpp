@@ -36,7 +36,8 @@ RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
                 break;
             }
         }
-        cv::rectangle(image, bounding_rect, cv::Scalar(0, 255, 0), 2);
+        if(DEBUG_MODE)
+            cv::rectangle(image, bounding_rect, cv::Scalar(0, 255, 0), 2);
     }
 
     return new SpeedLimitSign(speedLimitSign);

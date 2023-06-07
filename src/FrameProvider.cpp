@@ -39,6 +39,8 @@ cv::Mat FrameProvider::getFrame() {
     cv::Mat frame = frameBuffer.pop();
     semaphore.release();
 
+    // flip image 180 degrees
+    cv::flip(frame, frame, -1);
     return frame;
 }
 

@@ -89,7 +89,7 @@ T CircularBuffer<T>::findMostPopularValue() const {
         return 0;
     }
 
-    if(maxCount < 3)
+    if(maxCount < 6)
         return 0;
 
     return mostPopularValue;
