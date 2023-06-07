@@ -18,6 +18,7 @@ struct config {
     std::string framesSource;
     int width;
     int height;
+    int frameRate;
 } typedef FrameProviderConfig;
 
 class FrameProvider {

@@ -46,13 +46,12 @@ make
 # f.e ./main -h 720 -w 1280 -t camera -s 2
 ```
 
-
 - -s <source>: filename or camera id. Default is "video/speed_limit_seqence_1.mp4".
 - t <sourceType>: put "camera" or "video". Default is "video".
 - -b <bufferSize>: number of frames stored in the buffer. The default buffer size is 1.
-- -h <height>: Set the desired height for the frames. The default value is 720.
-- -w <width>: Set the desired width for the frames. The default value is 1280.
-
+- -h <height>: Camera resolution height. The default value is 720.
+- -w <width>: Camera resolution width. The default value is 1280.
+- -r <frameRate>: FrameRate for camera. The default value is 30.
 
 # Usefull comands 
 Here are some useful commands related to video processing that can be used in the project:

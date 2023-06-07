@@ -17,8 +17,11 @@ FrameProvider::FrameProvider(const FrameProviderConfig &config)
         if (!cap.isOpened()) {
             std::cerr << "Error opening camera with index: " << cameraIndex << std::endl;
         }
-        cap.set(cv::CAP_PROP_FRAME_WIDTH, config.height);
-        cap.set(cv::CAP_PROP_FRAME_HEIGHT, config.width);
+        cap.set(cv::CAP_PROP_FRAME_WIDTH, config.width);
+        cap.set(cv::CAP_PROP_FRAME_HEIGHT, config.height);
+
+        cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+        cap.set(cv::CAP_PROP_FPS, config.frameRate);
     }
 
     readThread = std::thread(&FrameProvider::readFrames, this);
