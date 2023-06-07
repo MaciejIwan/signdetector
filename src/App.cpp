@@ -51,6 +51,10 @@ App * App::init() {
         isClosed=true;
     });
 
+    detector->setNotificationCallback([&]() {
+        notificationPlayer.play();
+    });
+
     return this;
 }
 
@@ -119,11 +123,6 @@ cv::Mat App::gui_filter_image(cv::Mat& raw, bool darkmode)
 }
 
 int App::exec() {
-
-
-    detector->setNotificationCallback([&]() {
-        notificationPlayer.play();
-    });
     cv::Mat frameImg, filtered;
 
     while (!isClosed) {
