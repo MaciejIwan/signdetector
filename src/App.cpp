@@ -64,6 +64,7 @@ App *App::init() {
 }
 
 void App::changeMode() {
+    paintedSignDrawer->setThemeMode(viewMode == ViewMode::DARK);
     if (viewMode == DARK) {
         themeButton->setStyleSheet("background-color: gray; color: white;");
         muteButton->setStyleSheet("background-color: gray; color: white;");
@@ -78,7 +79,7 @@ void App::changeMode() {
         viewMode = ViewMode::DARK;
     }
 
-    paintedSignDrawer->setThemeMode(viewMode == ViewMode::DARK);
+
 }
 
 void App::changeVolume() {
@@ -138,7 +139,7 @@ int App::exec() {
     cv::Mat frameImg, filtered;
 
     while (!isClosed) {
-
+        QCoreApplication::processEvents();
         try {
             frameImg = frameProvider->getFrame();
         } catch (std::exception &e) {
@@ -162,7 +163,7 @@ int App::exec() {
             std::cout << *sign << std::endl;
         }
 
-        QCoreApplication::processEvents();
+
     }
     return 0;
 }
