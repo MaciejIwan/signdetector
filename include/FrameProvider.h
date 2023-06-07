@@ -12,9 +12,17 @@ enum class FrameSourceType {
     LiveCamera
 };
 
+struct config {
+    int bufferSize;
+    FrameSourceType sourceType;
+    std::string framesSource;
+    int width;
+    int height;
+} typedef FrameProviderConfig;
+
 class FrameProvider {
 public:
-    explicit FrameProvider(const std::string &source, int bufferSize, FrameSourceType sourceType = FrameSourceType::VideoFile);
+    explicit FrameProvider(const FrameProviderConfig &config);
 
     ~FrameProvider();
 

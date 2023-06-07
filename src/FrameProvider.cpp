@@ -2,21 +2,23 @@
 
 
 
-FrameProvider::FrameProvider(const std::string &source, int bufferSize, FrameSourceType sourceType)
-        : stopFlag(false), cap(source), frameBuffer(bufferSize), semaphore(bufferSize) {
+FrameProvider::FrameProvider(const FrameProviderConfig &config)
+        : stopFlag(false), cap(config.framesSource), frameBuffer(config.bufferSize), semaphore(config.bufferSize) {
 
-    if (sourceType == FrameSourceType::VideoFile) {
-        cap.open(source);
+    if (config.sourceType == FrameSourceType::VideoFile) {
+        cap.open(config.framesSource);
         if (!cap.isOpened()) {
             std::cerr << "Error opening video source" << std::endl;
         }
     }
-    else if (sourceType == FrameSourceType::LiveCamera) {
-        int cameraIndex = std::stoi(source);
+    else if (config.sourceType == FrameSourceType::LiveCamera) {
+        int cameraIndex = std::stoi(config.framesSource);
         cap.open(cameraIndex);
         if (!cap.isOpened()) {
             std::cerr << "Error opening camera with index: " << cameraIndex << std::endl;
         }
+        cap.set(cv::CAP_PROP_FRAME_WIDTH, config.height);
+        cap.set(cv::CAP_PROP_FRAME_HEIGHT, config.width);
     }
 
     readThread = std::thread(&FrameProvider::readFrames, this);
@@ -42,8 +44,7 @@ void FrameProvider::readFrames() {
 
         cv::Mat frame;
         if (!cap.read(frame)) {
-            cap.set(cv::CAP_PROP_POS_FRAMES, 0);
-            continue;
+            break;
         }
         semaphore.acquire();
 

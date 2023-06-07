@@ -40,11 +40,19 @@ cmake -B build
 make
 ```
 
-### then run main program like:
+## Run program
 ```sh
-./main [path to video]
-# f.e ./main video/znak1.mp4
+./main [options]
+# f.e ./main -h 720 -w 1280 -t camera -s 2
 ```
+
+
+- -s <source>: filename or camera id. Default is "video/speed_limit_seqence_1.mp4".
+- t <sourceType>: put "camera" or "video". Default is "video".
+- -b <bufferSize>: number of frames stored in the buffer. The default buffer size is 1.
+- -h <height>: Set the desired height for the frames. The default value is 720.
+- -w <width>: Set the desired width for the frames. The default value is 1280.
+
 
 # Usefull comands 
 Here are some useful commands related to video processing that can be used in the project:
@@ -71,4 +79,13 @@ boxcolor=0x00000099"
 ./tests --gtest_filter=RoiOcrTest* # to run example ts
 ./tests --gtest_filter=VideoTest* # to run tests for all videos
 ./tests --gtest_filter=VideoTest.speed_limit_night_19 # to run tests for video
+```
+
+### To list avaible cameras:
+```sh
+v4l2-ctl --list-devices
+```
+or 
+```sh
+ls -ltrh /dev/video*
 ```
