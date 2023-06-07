@@ -13,10 +13,15 @@
 #include "../include/SignDrawer.h"
 #include "FrameProvider.h"
 
+enum ViewMode {
+    DARK,
+    LIGHT,
+    NORMAL
+};
 class App : QApplication {
 public:
     App(int &argc, char **argv, FrameProvider *frameProvider, IRoadSignDetector *detector);
-    bool isDarkModeOn;
+    ViewMode viewMode;
     bool isMuted;
 
     ~App() override;
@@ -37,7 +42,7 @@ public:
     void changeVolume();
     int exec();
 
-    cv::Mat gui_filter_image(cv::Mat &raw, bool darkmode);
+    cv::Mat gui_filter_image(cv::Mat &raw);
 
 private:
     IRoadSignDetector* detector;

@@ -8,7 +8,7 @@
 App::App(int &argc, char **argv, FrameProvider* frameProvider, IRoadSignDetector* detector) : QApplication(argc, argv) {
     this->frameProvider = frameProvider;
     this->detector = detector;
-    isDarkModeOn = true;
+    viewMode = ViewMode::NORMAL;
     isMuted = false;
     isClosed = false;
     relativePath = "sound/notification_sound.mp3";
@@ -59,8 +59,7 @@ App * App::init() {
 }
 
 void App::changeMode() {
-    isDarkModeOn = !isDarkModeOn;
-    if(isDarkModeOn){
+    if(viewMode == DARK){
         themeButton->setText("Light Mode");
         themeButton->setStyleSheet("background-color: gray; color: white;");
         muteButton->setStyleSheet("background-color: gray; color: white;");
@@ -70,7 +69,8 @@ void App::changeMode() {
        themeButton->setStyleSheet("background-color: white; color: black;");
        muteButton->setStyleSheet("background-color: white; color: black;");
     }
-    paintedSignDrawer->setThemeMode(isDarkModeOn);
+
+    paintedSignDrawer->setThemeMode(viewMode == ViewMode::DARK);
 }
 
 void App::changeVolume() {
@@ -88,10 +88,10 @@ float calcFPS(int64* prevTickCount)
     return 1 / timeElapsed;
 }
 
-cv::Mat App::gui_filter_image(cv::Mat& raw, bool darkmode)
+cv::Mat App::gui_filter_image(cv::Mat& raw)
 {
-    // Applies simple Sobel edge detection to simplify
-    // the raw image and make it more readable for GUI
+    if(viewMode == ViewMode::NORMAL)
+        return raw;
 
     int ksize = 3;
     int ksize_blur = 5;
@@ -113,7 +113,7 @@ cv::Mat App::gui_filter_image(cv::Mat& raw, bool darkmode)
     cv::convertScaleAbs(grad_y, abs_grad_y);
     cv::addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, grad);
 
-    if (!darkmode) {
+    if (viewMode == ViewMode::DARK) {
         cv::bitwise_not(grad, grad);
     }
 
@@ -133,7 +133,7 @@ int App::exec() {
 
         auto* sign = (SpeedLimitSign*)detector->detectRoadSign(frameImg);
 
-        filtered = gui_filter_image(frameImg, isDarkModeOn); // false for light mode
+        filtered = gui_filter_image(frameImg); // false for light mode
 
         QPixmap pixmap = QPixmap::fromImage(
                 QImage((unsigned char*)filtered.data, filtered.cols, filtered.rows, QImage::Format_RGB888)); //QImage::Format_BGR888
