@@ -1,6 +1,5 @@
 #include "../include/ShapeRoadSignDetector.h"
 
-#include <iomanip>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/opencv.hpp>
 

@@ -10,9 +10,12 @@ RoadSign *CircularRoadSignDetector::detectRoadSign(cv::Mat &image) {
         return lastSeenSign;
 
     sign->setLimit(mostPopular);
-    if (sign->getLimit() == lastSeenSign->getLimit())
+    if (sign->getLimit() == lastSeenSign->getLimit()){
+        delete sign;
         return lastSeenSign;
+    }
 
+    delete lastSeenSign;
     lastSeenSign = sign;
     callNotificationCallback();
 
@@ -26,7 +29,9 @@ RoadSign *CircularRoadSignDetector::detectRoadSign(cv::Mat &image) {
 
 
 CircularRoadSignDetector::~CircularRoadSignDetector() {
-    delete roadSignDetectorEngine;
+    std::cout << "CircularRoadSignDetector destructor" << std::endl;
+    roadSignDetectorEngine->~IRoadSignDetector();
+    delete lastSeenSign;
 }
 
 CircularRoadSignDetector::CircularRoadSignDetector(int bufferSize, IRoadSignDetector* engine): roadSignDetectorEngine(engine) {

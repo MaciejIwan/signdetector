@@ -7,10 +7,14 @@
 #include <atomic>
 #include "../include/CircularBuffer.h"
 
+enum class FrameSourceType {
+    VideoFile,
+    LiveCamera
+};
 
 class FrameProvider {
 public:
-    explicit FrameProvider(const std::string &source);
+    explicit FrameProvider(const std::string &source, int bufferSize, FrameSourceType sourceType = FrameSourceType::VideoFile);
 
     ~FrameProvider();
 

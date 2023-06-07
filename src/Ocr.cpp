@@ -18,8 +18,9 @@ Ocr::Ocr() : ocr(new tesseract::TessBaseAPI()) {
 }
 
 Ocr::~Ocr() {
-    ocr->End();
+    std::cout << "Ocr destructor" << std::endl;
     delete ocr;
+    ocr = nullptr;
 }
 
 cv::Mat Ocr::adaptiveBrightnessPreprocess(cv::Mat roi) {
@@ -66,7 +67,8 @@ int Ocr::getNumberFromRoi(cv::Mat &roi, const std::function<cv::Mat(cv::Mat)> &p
     int value = 0;  // default value
 
     cv::Mat preprocessedRoi = preprocessFunction(roi);
-    ocr->SetImage(preprocessedRoi.data, preprocessedRoi.cols, preprocessedRoi.rows, preprocessedRoi.channels(), preprocessedRoi.step);
+    ocr->SetImage(preprocessedRoi.data, preprocessedRoi.cols, preprocessedRoi.rows, preprocessedRoi.channels(),
+                  preprocessedRoi.step);
 
     char *text = ocr->GetUTF8Text();
     std::string stringText(text);

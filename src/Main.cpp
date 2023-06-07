@@ -7,12 +7,19 @@ int main(int argc, char **argv) {
     if (argc > 1)
         videoFile = std::string(argv[1]);
 
-    auto *frameProvider = new FrameProvider(videoFile);
+    int bufferSize = 1;
+
+    auto *frameProvider = new FrameProvider(videoFile, bufferSize, FrameSourceType::VideoFile);
     auto *detector = new CircularRoadSignDetector();
 
     App uiApp(argc, argv, frameProvider, detector);
 
-    return uiApp.exec();
+    int status = uiApp.exec();
+
+    delete frameProvider;
+    delete detector;
+
+    return status;
 }
 
 

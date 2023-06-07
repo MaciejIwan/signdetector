@@ -2,10 +2,21 @@
 
 
 
-FrameProvider::FrameProvider(const std::string &source)
-        : stopFlag(false), cap(source), frameBuffer(3), semaphore(3) {
-    if (!cap.isOpened()) {
-        std::cerr << "Error opening video source" << std::endl;
+FrameProvider::FrameProvider(const std::string &source, int bufferSize, FrameSourceType sourceType)
+        : stopFlag(false), cap(source), frameBuffer(bufferSize), semaphore(bufferSize) {
+
+    if (sourceType == FrameSourceType::VideoFile) {
+        cap.open(source);
+        if (!cap.isOpened()) {
+            std::cerr << "Error opening video source" << std::endl;
+        }
+    }
+    else if (sourceType == FrameSourceType::LiveCamera) {
+        int cameraIndex = std::stoi(source);
+        cap.open(cameraIndex);
+        if (!cap.isOpened()) {
+            std::cerr << "Error opening camera with index: " << cameraIndex << std::endl;
+        }
     }
 
     readThread = std::thread(&FrameProvider::readFrames, this);
@@ -13,10 +24,7 @@ FrameProvider::FrameProvider(const std::string &source)
 
 FrameProvider::~FrameProvider() {
     stopFlag = true;
-
-    if (readThread.joinable()) {
-        readThread.join();
-    }
+    readThread.detach();
 }
 
 cv::Mat FrameProvider::getFrame() {

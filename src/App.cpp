@@ -151,11 +151,10 @@ int App::exec() {
 }
 
 App::~App() {
-    delete detector;
-    delete frameProvider;
     delete frameLabel;
-    delete layout;
-    delete paintedSignDrawer;
     delete muteButton;
     delete themeButton;
+    delete layout;
+    delete paintedSignDrawer;
+
 }
