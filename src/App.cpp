@@ -15,8 +15,8 @@ App::App(int &argc, char **argv, FrameProvider *frameProvider, IRoadSignDetector
     notificationPlayer = NotificationPlayer(
             QCoreApplication::applicationDirPath() + "/" + relativePath);
     framePreviewLabel = new QLabel(&window);
+    paintedSignDrawer = new SignDrawer(150, &window) ;
     layout = new QVBoxLayout(&window);
-    paintedSignDrawer = new SignDrawer(&window);
     muteButton = new QPushButton("Mute", &window);
     themeButton = new QPushButton("Switch Mode", &window);
     init();

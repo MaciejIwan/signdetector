@@ -7,13 +7,14 @@
 
 class SignDrawer :  public QWidget {
 public:
-    explicit SignDrawer(QWidget *parent = nullptr) : QWidget(parent) {}
+    explicit SignDrawer(int size, QWidget *parent = nullptr) : QWidget(parent), signSize(size) {}
     void paintEvent(QPaintEvent *event) override;
     void setSpeedText(const QString& text);
     void setThemeMode(bool theme);
 private:
-    bool isDarkMode=true;
+    bool isDarkMode=false;
     QString speedLimit="0";
+    int signSize;
 
 };
 
