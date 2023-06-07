@@ -8,7 +8,7 @@ void parseArgs(int argc, char **argv, FrameProviderConfig *config);
 int main(int argc, char **argv) {
     FrameProviderConfig config = {
             1,
-            FrameSourceType::LiveCamera,
+            FrameSourceType::VideoFile,
             "video/speed_limit_seqence_1.mp4",
             1280,
             720,
