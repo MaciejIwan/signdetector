@@ -52,12 +52,15 @@
             src/SignDrawer.cpp
             src/ShapeRoadSignDetector.cpp
             src/Util.cpp
-            src/FrameProvider.cpp)
+            src/FrameProvider.cpp
+            src/ImageProcessing.cpp
+            include/ImageProcessing.h
+    )
     target_link_libraries(RoadSignDetection
             ${OpenCV_LIBS}
             Qt5::Multimedia
             Qt5::Widgets
-            )
+    )
 
     # ========================================
     # Setup executable

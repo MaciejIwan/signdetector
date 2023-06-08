@@ -24,10 +24,7 @@ class Ocr {
 
     int filtrOcrOutput(std::string &input);
 
-    cv::Mat adaptiveBrightnessPreprocess(cv::Mat roi);
-    cv::Mat binaryDarkPreprocess(cv::Mat roi);
-    cv::Mat binaryBrightPreprocess(cv::Mat roi);
-    cv::Mat rawPreprocess(cv::Mat roi);
+
 
     std::vector<std::function<cv::Mat(cv::Mat)>> preprocessVector;
 };

@@ -5,58 +5,23 @@
 #include <string>
 
 #include "../include/Common.h"
+#include "../include/ImageProcessing.h"
 
 Ocr::Ocr() : ocr(new tesseract::TessBaseAPI()) {
     ocr->Init(NULL, "eng", tesseract::OEM_LSTM_ONLY);
     ocr->SetVariable("debug_file", "/dev/null");
     ocr->SetPageSegMode(tesseract::PSM_SINGLE_LINE);
 
-    preprocessVector.push_back([this](cv::Mat roi) { return rawPreprocess(roi); });
-    preprocessVector.push_back([this](cv::Mat roi) { return adaptiveBrightnessPreprocess(roi); });
-    preprocessVector.push_back([this](cv::Mat roi) { return binaryDarkPreprocess(roi); });
-    preprocessVector.push_back([this](cv::Mat roi) { return binaryBrightPreprocess(roi); });
+    preprocessVector.push_back([this](cv::Mat roi) { return ImageProcessing::rawPreprocess(roi); });
+    preprocessVector.push_back([this](cv::Mat roi) { return ImageProcessing::adaptiveBrightnessPreprocess(roi); });
+    preprocessVector.push_back([this](cv::Mat roi) { return ImageProcessing::binaryDarkPreprocess(roi); });
+    preprocessVector.push_back([this](cv::Mat roi) { return ImageProcessing::binaryBrightPreprocess(roi); });
 }
 
 Ocr::~Ocr() {
     std::cout << "Ocr destructor" << std::endl;
     delete ocr;
     ocr = nullptr;
-}
-
-cv::Mat Ocr::adaptiveBrightnessPreprocess(cv::Mat roi) {
-    double alpha = 1.5;  // contrast control, adjust as needed
-    int beta = 20;       // brightness control, adjust as needed
-    cv::Mat result;
-    roi.convertTo(result, -1, alpha, beta);
-
-    cv::cvtColor(result, result, cv::COLOR_BGR2GRAY);
-    cv::equalizeHist(result, result);
-    cv::bitwise_not(result, result);
-
-    cv::adaptiveThreshold(result, result, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C, cv::THRESH_BINARY_INV, 81, 0);
-
-    cv::erode(result, result, getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
-    cv::dilate(result, result, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(1, 1)));
-
-    return result;
-}
-
-cv::Mat Ocr::binaryDarkPreprocess(cv::Mat roi) {
-    cv::cvtColor(roi, roi, cv::COLOR_BGR2GRAY);
-    cv::threshold(roi, roi, 100, 255, cv::THRESH_BINARY);
-
-    return roi;
-}
-
-cv::Mat Ocr::binaryBrightPreprocess(cv::Mat roi) {
-    cv::cvtColor(roi, roi, cv::COLOR_BGR2GRAY);
-    cv::threshold(roi, roi, 200, 255, cv::THRESH_BINARY);
-
-    return roi;
-}
-
-cv::Mat Ocr::rawPreprocess(cv::Mat roi) {
-    return roi;
 }
 
 std::vector<std::function<cv::Mat(cv::Mat)>> &Ocr::getpreprocessVector() {

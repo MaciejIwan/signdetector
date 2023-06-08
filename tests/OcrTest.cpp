@@ -11,7 +11,7 @@ public:
         int expectedSpeedLimit = std::stoi(filename);
 
         //when
-        cv::Mat image = cv::imread("../resources/img/signs/" + filename);
+        cv::Mat image = cv::imread("./img/signs/" + filename);
         int actualSpeedLimit = ocr.getNumberFromRoi(image, ocr.getpreprocessVector()[0]);
 
         // then
@@ -130,4 +130,14 @@ TEST_F(RoiOcrTest, shouldReturn70_3) {
 TEST_F(RoiOcrTest, shouldReturn70_black_4) {
     std::string filename = "70_black_4.jpg";
     testTextReading(filename);
+}
+
+TEST_F(RoiOcrTest, output) {
+    Ocr ocr = Ocr();
+    std::string filename = "40output.jpg";
+    cv::Mat image = cv::imread("./img/signs/" + filename);
+
+    int actualSpeedLimit = ocr.getNumberFromRoi(image, ocr.getpreprocessVector()[0]);
+
+    ASSERT_EQ(40, actualSpeedLimit);
 }

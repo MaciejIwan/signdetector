@@ -5,6 +5,7 @@
 
 #include "../include/Common.h"
 #include "../include/models/SpeedLimitSign.h"
+#include "../include/ImageProcessing.h"
 
 ShapeRoadSignDetector::ShapeRoadSignDetector()
     : ocr() {
@@ -15,7 +16,7 @@ ShapeRoadSignDetector::~ShapeRoadSignDetector() = default;
 RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
     SpeedLimitSign speedLimitSign(0);
     cv::Mat red_binary_mask;
-    preprocess(image, red_binary_mask);
+    ImageProcessing::preprocess(image, red_binary_mask);
 
     std::vector<cv::Rect> boundingBoxes;
     findSignsBoundingBoxes(red_binary_mask, boundingBoxes);
@@ -43,10 +44,6 @@ RoadSign *ShapeRoadSignDetector::detectRoadSign(cv::Mat &image) {
     return new SpeedLimitSign(speedLimitSign);
 }
 
-void ShapeRoadSignDetector::blurImage(cv::Mat &image, int size) {
-    cv::medianBlur(image, image, size);
-}
-
 double ShapeRoadSignDetector::compareContoursToCircle(const std::vector<cv::Point> &contour) {
     // Fit a minimum enclosing circle to the contour
     cv::Point2f center;
@@ -61,32 +58,6 @@ double ShapeRoadSignDetector::compareContoursToCircle(const std::vector<cv::Poin
     double similarity = contour_area / circle_area;
 
     return similarity;
-}
-
-cv::Mat ShapeRoadSignDetector::extractRedColorFromImage(const cv::Mat &hsvFrame) {
-    static cv::Scalar lower_red1(0, 50, 30);
-    static cv::Scalar upper_red1(8, 255, 255);
-    static cv::Scalar lower_red2(160, 50, 30);
-    static cv::Scalar upper_red2(180, 255, 255);
-    static cv::Scalar lower_red_pink(138, 30, 60);
-    static cv::Scalar upper_red_pink(179, 255, 250);
-    //    static cv::Scalar lower_red_claret(0, 50, 10);
-    //    static cv::Scalar upper_red_claret(10, 255, 150);
-    static cv::Scalar lower_red_dark(0, 5, 0);
-    static cv::Scalar upper_red_dark(10, 90, 50);
-
-    cv::Mat red_mask, red_mask1, red_mask2, red_mask_pink, red_mask_claret, red_mask_dark;
-    cv::inRange(hsvFrame, lower_red1, upper_red1, red_mask1);
-    cv::inRange(hsvFrame, lower_red2, upper_red2, red_mask2);
-    cv::inRange(hsvFrame, lower_red_pink, upper_red_pink, red_mask_pink);
-    // cv::inRange(hsvFrame, lower_red_claret, upper_red_claret, red_mask_claret);
-    cv::inRange(hsvFrame, lower_red_dark, upper_red_dark, red_mask_dark);
-    cv::bitwise_or(red_mask1, red_mask2, red_mask);
-    cv::bitwise_or(red_mask, red_mask_pink, red_mask);
-    // cv::bitwise_or(red_mask, red_mask_claret, red_mask);
-    cv::bitwise_or(red_mask, red_mask_dark, red_mask);
-
-    return red_mask;
 }
 
 cv::Rect findMaxSizeBoxInContour(const std::vector<cv::Point> &contour, const cv::Size &imageSize) {
@@ -120,22 +91,3 @@ void ShapeRoadSignDetector::findSignsBoundingBoxes(const cv::Mat &red_binary_mas
     }
 }
 
-void ShapeRoadSignDetector::preprocess(cv::Mat &currentFrame, cv::Mat &red_binary_mask) {
-    // blurImage(currentFrame, 3);
-
-    cv::Mat hsvFrame;
-    cv::cvtColor(currentFrame, hsvFrame, cv::COLOR_BGR2HSV);  // Zdefiniuj rozmiar jądra dla operacji morfologicznych
-    red_binary_mask = extractRedColorFromImage(hsvFrame);
-
-    cv::Mat kernel = getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3));
-    // Zastosuj operację otwarcia
-    morphologyEx(red_binary_mask, red_binary_mask, cv::MORPH_OPEN, kernel);
-    // Zastosuj operację zamknięcia
-    morphologyEx(red_binary_mask, red_binary_mask, cv::MORPH_CLOSE, kernel);
-
-    if (DEBUG_MODE) {
-        cv::Mat maskedFrame;
-        currentFrame.copyTo(maskedFrame, red_binary_mask);
-        cv::imshow("Masked Image Red", maskedFrame);
-    }
-}

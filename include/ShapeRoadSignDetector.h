@@ -20,12 +20,6 @@ private:
 
     static double compareContoursToCircle(const std::vector<cv::Point> &contour);
 
-    cv::Mat extractRedColorFromImage(const cv::Mat &hsvFrame);
-
-    static void blurImage(cv::Mat &image, int size);
-
-    void preprocess(cv::Mat &currentFrame, cv::Mat &red_binary_mask);
-
     void findSignsBoundingBoxes(const cv::Mat &red_binary_mask, std::vector<cv::Rect> &boundingBoxes) const;
 };
 
