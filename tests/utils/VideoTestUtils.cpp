@@ -84,13 +84,20 @@ void VideoTest::SetUp() {
 
 void VideoTest::TearDown() {
     //std::ofstream reportFile("report.txt", std::ios::trunc);
-    std::ofstream reportFile("report.txt", std::ios::app);
+
 
     std::cout << "[\tFILENAME\t]\t" << filename << std::endl;
     std::cout << "[\tDETECTED\t]\t" << detectedSigns << " out of " << labelCount << " signs." << std::endl;
     std::cout << "[\tACCURACY\t]\t" << signRecognizedAccuracy * 100 << "%" << std::endl;
     std::cout << "[\tEXEC TIME\t]\t" << elapsedSeconds.count() << " seconds" << std::endl;
 
+    writeLogToFile();
+
+    cap.release();
+}
+
+void VideoTest::writeLogToFile() const {
+    std::ofstream reportFile("report.txt", std::ios::app);
     reportFile << filename << "\t";
     reportFile << detectedSigns << " of " << labelCount << "\t";
     reportFile << signRecognizedAccuracy * 100 << "%" << "\t";
@@ -98,7 +105,6 @@ void VideoTest::TearDown() {
 
     reportFile << std::endl;
     reportFile.close();
-    cap.release();
 }
 
 void VideoTest::loadFiles() {

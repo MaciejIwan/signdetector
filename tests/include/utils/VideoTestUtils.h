@@ -46,4 +46,6 @@ private:
     int framesWithoutSignCorrectlyRecognized = 0;
     int framesWithoutSignIncorrectlyRecognized = 0;
     cv::VideoCapture cap;
+
+    void writeLogToFile() const;
 };
