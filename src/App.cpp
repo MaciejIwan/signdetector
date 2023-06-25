@@ -151,7 +151,6 @@ int App::exec() {
             cv::imshow("Raw", frameImg);
 
         auto *sign = (SpeedLimitSign *) detector->detectRoadSign(frameImg);
-
         filtered = gui_filter_image(frameImg); // false for light mode
 
         QPixmap pixmap = QPixmap::fromImage(
@@ -182,5 +181,4 @@ App::~App() {
     delete themeButton;
     delete layout;
     delete paintedSignDrawer;
-
 }
